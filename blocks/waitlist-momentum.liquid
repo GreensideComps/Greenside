@@ -1,0 +1,156 @@
+{% doc %}
+  Social proof section for the pre-launch waitlist. Shows a merchant-editable signup count rather than
+  fabricated testimonials, since no real customers/orders exist yet. Falls back to count-free copy when
+  the count is 0 so the section never publishes a discouragingly small number.
+{% enddoc %}
+{% assign gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .waitlist-momentum-section-{{ gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+    width: 100%;
+  }
+
+  .waitlist-momentum-container-{{ gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .waitlist-momentum-count-{{ gen_id }} {
+    font-size: {{ block.settings.count_size }}px;
+    font-weight: 800;
+    color: {{ block.settings.accent_color }};
+    line-height: 1;
+    margin: 0 0 {{ block.settings.count_spacing }}px;
+  }
+
+  .waitlist-momentum-label-{{ gen_id }} {
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 {{ block.settings.label_spacing }}px;
+    letter-spacing: 0.3px;
+  }
+
+  .waitlist-momentum-supporting-{{ gen_id }} {
+    font-size: {{ block.settings.supporting_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.85;
+    margin: 0 0 {{ block.settings.cta_spacing }}px;
+    line-height: 1.6;
+  }
+
+  .waitlist-momentum-cta-{{ gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.cta_padding_vertical }}px {{ block.settings.cta_padding_horizontal }}px;
+    background-color: {{ block.settings.cta_background }};
+    color: {{ block.settings.cta_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.cta_border_radius }}px;
+    font-size: {{ block.settings.cta_font_size }}px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .waitlist-momentum-cta-{{ gen_id }}:hover {
+    background-color: {{ block.settings.cta_hover_background }};
+    color: {{ block.settings.cta_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .waitlist-momentum-section-{{ gen_id }} {
+      padding: {{ block.settings.padding_top_desktop }}px 40px {{ block.settings.padding_bottom_desktop }}px;
+    }
+
+    .waitlist-momentum-count-{{ gen_id }} {
+      font-size: {{ block.settings.count_size_desktop }}px;
+    }
+
+    .waitlist-momentum-label-{{ gen_id }} {
+      font-size: {{ block.settings.label_size_desktop }}px;
+    }
+
+    .waitlist-momentum-supporting-{{ gen_id }} {
+      font-size: {{ block.settings.supporting_size_desktop }}px;
+    }
+  }
+{% endstyle %}
+
+<waitlist-momentum-section-{{ gen_id }} class="waitlist-momentum-section-{{ gen_id }}" {{ block.shopify_attributes }}>
+  <div class="waitlist-momentum-container-{{ gen_id }}">
+    {% if block.settings.signup_count > 0 %}
+      <p class="waitlist-momentum-count-{{ gen_id }}">{{ block.settings.signup_count }}+</p>
+      <p class="waitlist-momentum-label-{{ gen_id }}">{{ block.settings.label_with_count }}</p>
+    {% else %}
+      <p class="waitlist-momentum-label-{{ gen_id }}">{{ block.settings.label_without_count }}</p>
+    {% endif %}
+
+    {% if block.settings.supporting_text != blank %}
+      <p class="waitlist-momentum-supporting-{{ gen_id }}">{{ block.settings.supporting_text }}</p>
+    {% endif %}
+
+    {% if block.settings.show_cta and block.settings.cta_text != blank %}
+      <a href="#" class="waitlist-momentum-cta-{{ gen_id }}" data-greenside-signup-trigger>
+        {{ block.settings.cta_text }}
+      </a>
+    {% endif %}
+  </div>
+</waitlist-momentum-section-{{ gen_id }}>
+
+{% schema %}
+{
+  "name": "Waitlist Momentum",
+  "settings": [
+    { "type": "header", "content": "Signup count" },
+    {
+      "type": "number",
+      "id": "signup_count",
+      "label": "Golfers on the waitlist",
+      "info": "Update this by hand as the waitlist grows (check your Klaviyo list for the current total). Leave at 0 to hide the number and show the fallback message below instead.",
+      "default": 0
+    },
+    { "type": "text", "id": "label_with_count", "label": "Label shown with the count", "default": "golfers already on the waitlist" },
+    { "type": "text", "id": "label_without_count", "label": "Fallback label shown when count is 0", "default": "Golfers are already joining the Greenside waitlist" },
+    { "type": "textarea", "id": "supporting_text", "label": "Supporting text", "default": "Be one of the first through the door when we launch." },
+    { "type": "header", "content": "Call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show call to action", "default": true },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "accent_color", "label": "Count color", "default": "#ffffff" },
+    { "type": "color", "id": "cta_background", "label": "Button background", "default": "#4a8c2a" },
+    { "type": "color", "id": "cta_text_color", "label": "Button text", "default": "#ffffff" },
+    { "type": "color", "id": "cta_hover_background", "label": "Button hover background", "default": "#ffffff" },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text", "default": "#1B4332" },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "count_size", "label": "Count size (mobile)", "min": 32, "max": 100, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "count_size_desktop", "label": "Count size (desktop)", "min": 40, "max": 140, "step": 2, "unit": "px", "default": 72 },
+    { "type": "range", "id": "label_size", "label": "Label size (mobile)", "min": 14, "max": 32, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "label_size_desktop", "label": "Label size (desktop)", "min": 16, "max": 40, "step": 1, "unit": "px", "default": 24 },
+    { "type": "range", "id": "supporting_size", "label": "Supporting text size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "supporting_size_desktop", "label": "Supporting text size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 17 },
+    { "type": "range", "id": "cta_font_size", "label": "Button font size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 400, "max": 1000, "step": 20, "unit": "px", "default": 640 },
+    { "type": "range", "id": "count_spacing", "label": "Spacing below count", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "label_spacing", "label": "Spacing below label", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "cta_spacing", "label": "Spacing below supporting text", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "padding_top", "label": "Padding top (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 44 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 44 },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 64 },
+    { "type": "header", "content": "Button style" },
+    { "type": "range", "id": "cta_padding_vertical", "label": "Vertical padding", "min": 8, "max": 30, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "cta_padding_horizontal", "label": "Horizontal padding", "min": 20, "max": 60, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "cta_border_radius", "label": "Border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "Waitlist Momentum" }]
+}
+{% endschema %}

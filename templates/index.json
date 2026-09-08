@@ -446,6 +446,86 @@
         "padding-block-end": 16
       }
     },
+    "how-it-works": {
+      "type": "_blocks",
+      "blocks": {
+        "how-it-works-block": {
+          "type": "how-it-works",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "how-it-works-block"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "#1B4332",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "waitlist-momentum": {
+      "type": "_blocks",
+      "blocks": {
+        "waitlist-momentum-block": {
+          "type": "waitlist-momentum",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "waitlist-momentum-block"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "#1B4332",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
     "1787740508d4bf1f2d": {
       "type": "_blocks",
       "blocks": {
@@ -633,8 +713,10 @@
   "order": [
     "17877400511d4b7cc4",
     "1787740319ad2d85a3",
+    "how-it-works",
     "1787757420c51d6933",
     "1787739799e358d422",
+    "waitlist-momentum",
     "1787739618ada1b80c",
     "1787740508d4bf1f2d",
     "17877389496f1710d2"

@@ -1,0 +1,278 @@
+{% doc %}
+  How It Works section. Explains the planned competition entry flow (choose, enter, draw, prize) for pre-launch messaging.
+{% enddoc %}
+{% assign gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .how-it-works-section-{{ gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+    width: 100%;
+  }
+
+  .how-it-works-container-{{ gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .how-it-works-header-{{ gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .how-it-works-title-{{ gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 {{ block.settings.title_spacing }}px;
+    letter-spacing: 0.5px;
+  }
+
+  .how-it-works-subtitle-{{ gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .how-it-works-steps-{{ gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ block.settings.grid_gap }}px;
+    counter-reset: how-it-works-step-{{ gen_id }};
+  }
+
+  .how-it-works-step-{{ gen_id }} {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: {{ block.settings.item_padding }}px;
+    background-color: {{ block.settings.item_background }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+    counter-increment: how-it-works-step-{{ gen_id }};
+  }
+
+  .how-it-works-step-number-{{ gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ block.settings.number_size }}px;
+    height: {{ block.settings.number_size }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.number_background }};
+    color: {{ block.settings.number_color }};
+    font-weight: 700;
+    font-size: calc({{ block.settings.number_size }}px * 0.4);
+    flex-shrink: 0;
+  }
+
+  .how-it-works-step-number-{{ gen_id }}::before {
+    content: counter(how-it-works-step-{{ gen_id }});
+  }
+
+  .how-it-works-step-title-{{ gen_id }} {
+    font-size: {{ block.settings.item_title_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .how-it-works-step-text-{{ gen_id }} {
+    font-size: {{ block.settings.item_text_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  .how-it-works-connector-{{ gen_id }} {
+    display: none;
+  }
+
+  .how-it-works-cta-wrapper-{{ gen_id }} {
+    text-align: center;
+    margin-top: {{ block.settings.cta_spacing }}px;
+  }
+
+  .how-it-works-cta-{{ gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.cta_padding_vertical }}px {{ block.settings.cta_padding_horizontal }}px;
+    background-color: {{ block.settings.cta_background }};
+    color: {{ block.settings.cta_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.cta_border_radius }}px;
+    font-size: {{ block.settings.cta_font_size }}px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .how-it-works-cta-{{ gen_id }}:hover {
+    background-color: {{ block.settings.cta_hover_background }};
+    color: {{ block.settings.cta_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .how-it-works-section-{{ gen_id }} {
+      padding: {{ block.settings.padding_top_desktop }}px 40px {{ block.settings.padding_bottom_desktop }}px;
+    }
+
+    .how-it-works-title-{{ gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+    }
+
+    .how-it-works-subtitle-{{ gen_id }} {
+      font-size: {{ block.settings.subtitle_size_desktop }}px;
+    }
+
+    .how-it-works-steps-{{ gen_id }} {
+      grid-template-columns: repeat({{ block.settings.steps_count }}, 1fr);
+    }
+
+    .how-it-works-step-{{ gen_id }} {
+      position: relative;
+    }
+
+    .how-it-works-step-{{ gen_id }}:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: calc({{ block.settings.item_padding }}px + ({{ block.settings.number_size }}px / 2));
+      left: 100%;
+      width: {{ block.settings.grid_gap }}px;
+      border-top: 2px dashed {{ block.settings.connector_color }};
+      transform: translateX(-{{ block.settings.grid_gap }}px);
+    }
+  }
+{% endstyle %}
+
+<how-it-works-section-{{ gen_id }} class="how-it-works-section-{{ gen_id }}" {{ block.shopify_attributes }}>
+  <div class="how-it-works-container-{{ gen_id }}">
+    <div class="how-it-works-header-{{ gen_id }}">
+      {% if block.settings.title != blank %}
+        <h2 class="how-it-works-title-{{ gen_id }}">{{ block.settings.title }}</h2>
+      {% endif %}
+      {% if block.settings.subtitle != blank %}
+        <p class="how-it-works-subtitle-{{ gen_id }}">{{ block.settings.subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <div class="how-it-works-steps-{{ gen_id }}">
+      {% if block.settings.show_step_1 %}
+        <div class="how-it-works-step-{{ gen_id }}">
+          <div class="how-it-works-step-number-{{ gen_id }}"></div>
+          <h3 class="how-it-works-step-title-{{ gen_id }}">{{ block.settings.step_1_title }}</h3>
+          <p class="how-it-works-step-text-{{ gen_id }}">{{ block.settings.step_1_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_step_2 %}
+        <div class="how-it-works-step-{{ gen_id }}">
+          <div class="how-it-works-step-number-{{ gen_id }}"></div>
+          <h3 class="how-it-works-step-title-{{ gen_id }}">{{ block.settings.step_2_title }}</h3>
+          <p class="how-it-works-step-text-{{ gen_id }}">{{ block.settings.step_2_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_step_3 %}
+        <div class="how-it-works-step-{{ gen_id }}">
+          <div class="how-it-works-step-number-{{ gen_id }}"></div>
+          <h3 class="how-it-works-step-title-{{ gen_id }}">{{ block.settings.step_3_title }}</h3>
+          <p class="how-it-works-step-text-{{ gen_id }}">{{ block.settings.step_3_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_step_4 %}
+        <div class="how-it-works-step-{{ gen_id }}">
+          <div class="how-it-works-step-number-{{ gen_id }}"></div>
+          <h3 class="how-it-works-step-title-{{ gen_id }}">{{ block.settings.step_4_title }}</h3>
+          <p class="how-it-works-step-text-{{ gen_id }}">{{ block.settings.step_4_text }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_cta and block.settings.cta_text != blank %}
+      <div class="how-it-works-cta-wrapper-{{ gen_id }}">
+        <a href="#" class="how-it-works-cta-{{ gen_id }}" data-greenside-signup-trigger>
+          {{ block.settings.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</how-it-works-section-{{ gen_id }}>
+
+{% schema %}
+{
+  "name": "How It Works",
+  "settings": [
+    { "type": "header", "content": "Section header" },
+    { "type": "text", "id": "title", "label": "Title", "default": "HOW IT WILL WORK" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "Here's how entering a Greenside competition will work once we launch." },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 600, "max": 1400, "step": 50, "unit": "px", "default": 1100 },
+    { "type": "select", "id": "steps_count", "label": "Steps shown on desktop", "options": [{ "value": "2", "label": "2" }, { "value": "3", "label": "3" }, { "value": "4", "label": "4" }], "default": "4" },
+    { "type": "header", "content": "Step 1" },
+    { "type": "checkbox", "id": "show_step_1", "label": "Show step 1", "default": true },
+    { "type": "text", "id": "step_1_title", "label": "Title", "default": "CHOOSE YOUR COMPETITION" },
+    { "type": "textarea", "id": "step_1_text", "label": "Description", "default": "Browse live competitions featuring the golf prizes you actually want to win." },
+    { "type": "header", "content": "Step 2" },
+    { "type": "checkbox", "id": "show_step_2", "label": "Show step 2", "default": true },
+    { "type": "text", "id": "step_2_title", "label": "Title", "default": "ENTER ONLINE" },
+    { "type": "textarea", "id": "step_2_text", "label": "Description", "default": "Buy your entry securely in a couple of clicks, with the full rules shown up front." },
+    { "type": "header", "content": "Step 3" },
+    { "type": "checkbox", "id": "show_step_3", "label": "Show step 3", "default": true },
+    { "type": "text", "id": "step_3_title", "label": "Title", "default": "WINNER IS DRAWN" },
+    { "type": "textarea", "id": "step_3_text", "label": "Description", "default": "Once a competition closes, the winner will be drawn following the published rules." },
+    { "type": "header", "content": "Step 4" },
+    { "type": "checkbox", "id": "show_step_4", "label": "Show step 4", "default": true },
+    { "type": "text", "id": "step_4_title", "label": "Title", "default": "PRIZE DELIVERED" },
+    { "type": "textarea", "id": "step_4_text", "label": "Description", "default": "We'll contact the winner directly and get the prize to their door." },
+    { "type": "header", "content": "Call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show call to action", "default": true },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "cta_link", "label": "Button link (used when not linking to the email signup)" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "item_background", "label": "Step card background", "default": "rgba(255, 255, 255, 0.05)" },
+    { "type": "color", "id": "number_background", "label": "Step number background", "default": "#4a8c2a" },
+    { "type": "color", "id": "number_color", "label": "Step number text", "default": "#ffffff" },
+    { "type": "color", "id": "connector_color", "label": "Connector line (desktop)", "default": "rgba(255, 255, 255, 0.3)" },
+    { "type": "color", "id": "cta_background", "label": "Button background", "default": "#4a8c2a" },
+    { "type": "color", "id": "cta_text_color", "label": "Button text", "default": "#ffffff" },
+    { "type": "color", "id": "cta_hover_background", "label": "Button hover background", "default": "#1B4332" },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text", "default": "#ffffff" },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_size", "label": "Title size (mobile)", "min": 20, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size (desktop)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 42 },
+    { "type": "range", "id": "subtitle_size", "label": "Subtitle size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "subtitle_size_desktop", "label": "Subtitle size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "item_title_size", "label": "Step title size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "item_text_size", "label": "Step text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "number_size", "label": "Step number size", "min": 32, "max": 80, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "cta_font_size", "label": "Button font size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 10, "max": 60, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "item_padding", "label": "Step card padding", "min": 10, "max": 50, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "item_border_radius", "label": "Step card border radius", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "header_spacing", "label": "Header spacing", "min": 20, "max": 80, "step": 4, "unit": "px", "default": 44 },
+    { "type": "range", "id": "title_spacing", "label": "Title spacing", "min": 8, "max": 40, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "cta_spacing", "label": "CTA spacing", "min": 20, "max": 80, "step": 4, "unit": "px", "default": 44 },
+    { "type": "range", "id": "padding_top", "label": "Padding top (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "header", "content": "Button style" },
+    { "type": "range", "id": "cta_padding_vertical", "label": "Vertical padding", "min": 8, "max": 30, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "cta_padding_horizontal", "label": "Horizontal padding", "min": 20, "max": 60, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "cta_border_radius", "label": "Border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "How It Works" }]
+}
+{% endschema %}
