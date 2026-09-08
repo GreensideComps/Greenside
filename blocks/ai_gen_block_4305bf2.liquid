@@ -1,0 +1,330 @@
+{% doc %}
+  Why Greenside trust section. Mobile: 2-col compact grid, no PC changes.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-trust-section-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+    width: 100%;
+  }
+
+  .ai-trust-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-trust-header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-trust-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 {{ block.settings.title_spacing }}px;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-trust-subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .ai-trust-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ block.settings.grid_gap }}px;
+    margin-bottom: {{ block.settings.cta_spacing }}px;
+  }
+
+  .ai-trust-item-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: {{ block.settings.item_padding }}px;
+    background-color: {{ block.settings.item_background }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ai-trust-item-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-trust-icon-{{ ai_gen_id }} {
+    font-size: {{ block.settings.icon_size }}px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .ai-trust-content-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-trust-item-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_title_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .ai-trust-item-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_text_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  .ai-trust-cta-wrapper-{{ ai_gen_id }} {
+    text-align: center;
+  }
+
+  .ai-trust-cta-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.cta_padding_vertical }}px {{ block.settings.cta_padding_horizontal }}px;
+    background-color: {{ block.settings.cta_background }};
+    color: {{ block.settings.cta_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.cta_border_radius }}px;
+    font-size: {{ block.settings.cta_font_size }}px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s ease;
+  }
+
+  .ai-trust-cta-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.cta_hover_background }};
+    color: {{ block.settings.cta_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-trust-section-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top_desktop }}px 40px {{ block.settings.padding_bottom_desktop }}px;
+    }
+
+    .ai-trust-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    }
+
+    .ai-trust-grid-{{ ai_gen_id }} .ai-trust-item-{{ ai_gen_id }}:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      max-width: calc(50% - {{ block.settings.grid_gap | divided_by: 2.0 }}px);
+      margin: 0 auto;
+    }
+
+    .ai-trust-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+    }
+
+    .ai-trust-subtitle-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subtitle_size_desktop }}px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-trust-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .ai-trust-grid-{{ ai_gen_id }} .ai-trust-item-{{ ai_gen_id }}:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      max-width: calc(50% - 5px);
+      margin: 0 auto;
+    }
+
+    .ai-trust-item-{{ ai_gen_id }} {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .ai-trust-icon-{{ ai_gen_id }} {
+      font-size: 20px;
+    }
+
+    .ai-trust-item-title-{{ ai_gen_id }} {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .ai-trust-item-text-{{ ai_gen_id }} {
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .ai-trust-title-{{ ai_gen_id }} {
+      font-size: 22px;
+    }
+
+    .ai-trust-subtitle-{{ ai_gen_id }} {
+      font-size: 13px;
+    }
+
+    .ai-trust-header-{{ ai_gen_id }} {
+      margin-bottom: 20px;
+    }
+  }
+{% endstyle %}
+
+<ai-trust-section-{{ ai_gen_id }} class="ai-trust-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-trust-container-{{ ai_gen_id }}">
+    <div class="ai-trust-header-{{ ai_gen_id }}">
+      {% if block.settings.title != blank %}
+        <h2 class="ai-trust-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+      {% endif %}
+      {% if block.settings.subtitle != blank %}
+        <p class="ai-trust-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <div class="ai-trust-grid-{{ ai_gen_id }}">
+      {% if block.settings.show_point_1 %}
+        <div class="ai-trust-item-{{ ai_gen_id }}">
+          <div class="ai-trust-icon-{{ ai_gen_id }}">{{ block.settings.point_1_icon }}</div>
+          <div class="ai-trust-content-{{ ai_gen_id }}">
+            <h3 class="ai-trust-item-title-{{ ai_gen_id }}">{{ block.settings.point_1_title }}</h3>
+            <p class="ai-trust-item-text-{{ ai_gen_id }}">{{ block.settings.point_1_text }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_point_2 %}
+        <div class="ai-trust-item-{{ ai_gen_id }}">
+          <div class="ai-trust-icon-{{ ai_gen_id }}">{{ block.settings.point_2_icon }}</div>
+          <div class="ai-trust-content-{{ ai_gen_id }}">
+            <h3 class="ai-trust-item-title-{{ ai_gen_id }}">{{ block.settings.point_2_title }}</h3>
+            <p class="ai-trust-item-text-{{ ai_gen_id }}">{{ block.settings.point_2_text }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_point_3 %}
+        <div class="ai-trust-item-{{ ai_gen_id }}">
+          <div class="ai-trust-icon-{{ ai_gen_id }}">{{ block.settings.point_3_icon }}</div>
+          <div class="ai-trust-content-{{ ai_gen_id }}">
+            <h3 class="ai-trust-item-title-{{ ai_gen_id }}">{{ block.settings.point_3_title }}</h3>
+            <p class="ai-trust-item-text-{{ ai_gen_id }}">{{ block.settings.point_3_text }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_point_4 %}
+        <div class="ai-trust-item-{{ ai_gen_id }}">
+          <div class="ai-trust-icon-{{ ai_gen_id }}">{{ block.settings.point_4_icon }}</div>
+          <div class="ai-trust-content-{{ ai_gen_id }}">
+            <h3 class="ai-trust-item-title-{{ ai_gen_id }}">{{ block.settings.point_4_title }}</h3>
+            <p class="ai-trust-item-text-{{ ai_gen_id }}">{{ block.settings.point_4_text }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_point_5 %}
+        <div class="ai-trust-item-{{ ai_gen_id }}">
+          <div class="ai-trust-icon-{{ ai_gen_id }}">{{ block.settings.point_5_icon }}</div>
+          <div class="ai-trust-content-{{ ai_gen_id }}">
+            <h3 class="ai-trust-item-title-{{ ai_gen_id }}">{{ block.settings.point_5_title }}</h3>
+            <p class="ai-trust-item-text-{{ ai_gen_id }}">{{ block.settings.point_5_text }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_cta and block.settings.cta_text != blank %}
+      <div class="ai-trust-cta-wrapper-{{ ai_gen_id }}">
+        <a href="#" class="ai-trust-cta-{{ ai_gen_id }}" data-greenside-signup-trigger>
+          {{ block.settings.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</ai-trust-section-{{ ai_gen_id }}>
+
+{% schema %}
+{
+  "name": "Why Greenside",
+  "settings": [
+    { "type": "header", "content": "Section header" },
+    { "type": "text", "id": "title", "label": "Title", "default": "WHY GREENSIDE?" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "A golf competition company built around great prizes, clear competitions and a community of golfers." },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 600, "max": 1400, "step": 50, "unit": "px", "default": 1000 },
+    { "type": "header", "content": "Trust point 1" },
+    { "type": "checkbox", "id": "show_point_1", "label": "Show trust point 1", "default": true },
+    { "type": "text", "id": "point_1_icon", "label": "Icon", "default": "🇬🇧" },
+    { "type": "text", "id": "point_1_title", "label": "Title", "default": "UK BASED" },
+    { "type": "textarea", "id": "point_1_text", "label": "Description", "default": "A UK-based golf competition business built for UK golfers." },
+    { "type": "header", "content": "Trust point 2" },
+    { "type": "checkbox", "id": "show_point_2", "label": "Show trust point 2", "default": true },
+    { "type": "text", "id": "point_2_icon", "label": "Icon", "default": "🏌️" },
+    { "type": "text", "id": "point_2_title", "label": "Title", "default": "GOLF FOCUSED" },
+    { "type": "textarea", "id": "point_2_text", "label": "Description", "default": "Greenside is dedicated to golf competitions and the equipment golfers actually want." },
+    { "type": "header", "content": "Trust point 3" },
+    { "type": "checkbox", "id": "show_point_3", "label": "Show trust point 3", "default": true },
+    { "type": "text", "id": "point_3_icon", "label": "Icon", "default": "🎁" },
+    { "type": "text", "id": "point_3_title", "label": "Title", "default": "REAL PRIZES" },
+    { "type": "textarea", "id": "point_3_text", "label": "Description", "default": "Competitions will feature clearly advertised prizes with the relevant competition details provided before entry." },
+    { "type": "header", "content": "Trust point 4" },
+    { "type": "checkbox", "id": "show_point_4", "label": "Show trust point 4", "default": true },
+    { "type": "text", "id": "point_4_icon", "label": "Icon", "default": "🔎" },
+    { "type": "text", "id": "point_4_title", "label": "Title", "default": "TRANSPARENT" },
+    { "type": "textarea", "id": "point_4_text", "label": "Description", "default": "Competition rules, entry conditions and winner selection processes will be clearly communicated." },
+    { "type": "header", "content": "Trust point 5" },
+    { "type": "checkbox", "id": "show_point_5", "label": "Show trust point 5", "default": true },
+    { "type": "text", "id": "point_5_icon", "label": "Icon", "default": "🔒" },
+    { "type": "text", "id": "point_5_title", "label": "Title", "default": "SECURE" },
+    { "type": "textarea", "id": "point_5_text", "label": "Description", "default": "Your information and future payments will be handled using secure Shopify infrastructure." },
+    { "type": "header", "content": "Call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show call to action", "default": true },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "item_background", "label": "Item background", "default": "rgba(255, 255, 255, 0.05)" },
+    { "type": "color", "id": "cta_background", "label": "Button background", "default": "#ffffff" },
+    { "type": "color", "id": "cta_text_color", "label": "Button text", "default": "#1B4332" },
+    { "type": "color", "id": "cta_hover_background", "label": "Button hover background", "default": "#1B4332" },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text", "default": "#ffffff" },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_size", "label": "Title size (mobile)", "min": 20, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size (desktop)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "subtitle_size", "label": "Subtitle size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "subtitle_size_desktop", "label": "Subtitle size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "item_title_size", "label": "Item title size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "item_text_size", "label": "Item text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 20, "max": 50, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "cta_font_size", "label": "Button font size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "header", "content": "Layout" },
+    { "type": "select", "id": "columns_desktop", "label": "Columns on desktop", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2" },
+    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 10, "max": 40, "step": 2, "unit": "px", "default": 20 },
+    { "type": "range", "id": "item_padding", "label": "Item padding", "min": 10, "max": 40, "step": 2, "unit": "px", "default": 20 },
+    { "type": "range", "id": "item_border_radius", "label": "Item border radius", "min": 0, "max": 20, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "header_spacing", "label": "Header spacing", "min": 20, "max": 80, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "title_spacing", "label": "Title spacing", "min": 8, "max": 40, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "cta_spacing", "label": "CTA spacing", "min": 20, "max": 80, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_top", "label": "Padding top (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom (mobile)", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 40, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "header", "content": "Button style" },
+    { "type": "range", "id": "cta_padding_vertical", "label": "Vertical padding", "min": 8, "max": 30, "step": 2, "unit": "px", "default": 14 },
+    { "type": "range", "id": "cta_padding_horizontal", "label": "Horizontal padding", "min": 20, "max": 60, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "cta_border_radius", "label": "Border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "Why Greenside" }]
+}
+{% endschema %}

@@ -1,0 +1,403 @@
+{% doc %}
+  Founding Member section. Mobile: 2-col compact benefits grid, no PC changes.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-founding-member-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_mobile }}px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_desktop }}px 40px;
+    }
+  }
+
+  .ai-founding-member-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ai-founding-member-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size_mobile }}px;
+    font-weight: 700;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 16px;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .ai-founding-member-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size_mobile }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 32px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_size_desktop }}px;
+      margin-bottom: 40px;
+    }
+  }
+
+  .ai-founding-member-benefits-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 0 0 32px;
+    list-style: none;
+    padding: 0;
+  }
+
+  @media screen and (min-width: 550px) {
+    .ai-founding-member-benefits-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .ai-founding-member-benefits-{{ ai_gen_id }} {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+  }
+
+  .ai-founding-member-benefit-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ai-founding-member-benefit-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-founding-member-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    background-color: {{ block.settings.icon_background }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ai-founding-member-icon-{{ ai_gen_id }} svg {
+    width: calc({{ block.settings.icon_size }}px * 0.5);
+    height: calc({{ block.settings.icon_size }}px * 0.5);
+    stroke: {{ block.settings.icon_color }};
+    fill: none;
+  }
+
+  .ai-founding-member-benefit-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.benefit_text_size }}px;
+    color: {{ block.settings.text_color }};
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .ai-founding-member-disclaimer-{{ ai_gen_id }} {
+    font-size: 11px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.7;
+    margin: 0 0 24px;
+    font-style: italic;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-disclaimer-{{ ai_gen_id }} {
+      font-size: 12px;
+      margin-bottom: 32px;
+    }
+  }
+
+  .ai-founding-member-emotive-{{ ai_gen_id }} {
+    font-size: {{ block.settings.emotive_size_mobile }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 32px;
+    line-height: 1.5;
+    font-style: italic;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-emotive-{{ ai_gen_id }} {
+      font-size: {{ block.settings.emotive_size_desktop }}px;
+      margin-bottom: 40px;
+    }
+  }
+
+  .ai-founding-member-cta-{{ ai_gen_id }} {
+    display: inline-block;
+    background-color: {{ block.settings.cta_background }};
+    color: {{ block.settings.cta_text_color }};
+    padding: 16px 32px;
+    border-radius: {{ block.settings.cta_border_radius }}px;
+    font-size: {{ block.settings.cta_text_size }}px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-founding-member-cta-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.cta_hover_background }};
+    color: {{ block.settings.cta_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-founding-member-cta-{{ ai_gen_id }} {
+      padding: 18px 40px;
+      font-size: {{ block.settings.cta_text_size | plus: 2 }}px;
+    }
+  }
+  @media screen and (max-width: 749px) {
+    .ai-founding-member-{{ ai_gen_id }} {
+      padding: 32px 16px;
+    }
+
+    .ai-founding-member-title-{{ ai_gen_id }} {
+      font-size: 22px;
+    }
+
+    .ai-founding-member-description-{{ ai_gen_id }} {
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .ai-founding-member-benefits-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px;
+      margin: 0 0 20px;
+    }
+
+    .ai-founding-member-benefits-{{ ai_gen_id }} .ai-founding-member-benefit-{{ ai_gen_id }}:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      max-width: calc(50% - 5px);
+      margin: 0 auto;
+    }
+
+    .ai-founding-member-benefit-{{ ai_gen_id }} {
+      padding: 14px 10px;
+      gap: 8px;
+    }
+
+    .ai-founding-member-icon-{{ ai_gen_id }} {
+      width: 40px;
+      height: 40px;
+    }
+
+    .ai-founding-member-icon-{{ ai_gen_id }} svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .ai-founding-member-benefit-text-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-founding-member-disclaimer-{{ ai_gen_id }} {
+      font-size: 10px;
+      margin-bottom: 16px;
+    }
+
+    .ai-founding-member-emotive-{{ ai_gen_id }} {
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .ai-founding-member-cta-{{ ai_gen_id }} {
+      padding: 14px 28px;
+      font-size: 14px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-founding-member-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-founding-member-container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank %}
+      <h2 class="ai-founding-member-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+    {% endif %}
+
+    {% if block.settings.description != blank %}
+      <div class="ai-founding-member-description-{{ ai_gen_id }}">
+        {{ block.settings.description }}
+      </div>
+    {% endif %}
+
+    <ul class="ai-founding-member-benefits-{{ ai_gen_id }}">
+      {% if block.settings.benefit_1_enabled %}
+        <li class="ai-founding-member-benefit-{{ ai_gen_id }}">
+          <div class="ai-founding-member-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <div class="ai-founding-member-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_1_text }}</div>
+        </li>
+      {% endif %}
+
+      {% if block.settings.benefit_2_enabled %}
+        <li class="ai-founding-member-benefit-{{ ai_gen_id }}">
+          <div class="ai-founding-member-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="ai-founding-member-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_2_text }}</div>
+        </li>
+      {% endif %}
+
+      {% if block.settings.benefit_3_enabled %}
+        <li class="ai-founding-member-benefit-{{ ai_gen_id }}">
+          <div class="ai-founding-member-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+          </div>
+          <div class="ai-founding-member-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_3_text }}</div>
+        </li>
+      {% endif %}
+
+      {% if block.settings.benefit_4_enabled %}
+        <li class="ai-founding-member-benefit-{{ ai_gen_id }}">
+          <div class="ai-founding-member-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+          </div>
+          <div class="ai-founding-member-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_4_text }}</div>
+        </li>
+      {% endif %}
+
+      {% if block.settings.benefit_5_enabled %}
+        <li class="ai-founding-member-benefit-{{ ai_gen_id }}">
+          <div class="ai-founding-member-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="ai-founding-member-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_5_text }}</div>
+        </li>
+      {% endif %}
+    </ul>
+
+    {% if block.settings.disclaimer != blank %}
+      <p class="ai-founding-member-disclaimer-{{ ai_gen_id }}">{{ block.settings.disclaimer }}</p>
+    {% endif %}
+
+    {% if block.settings.emotive_text != blank %}
+      <p class="ai-founding-member-emotive-{{ ai_gen_id }}">{{ block.settings.emotive_text }}</p>
+    {% endif %}
+
+    {% if block.settings.cta_text != blank %}
+      <a href="#" class="ai-founding-member-cta-{{ ai_gen_id }}" data-greenside-signup-trigger>
+        {{ block.settings.cta_text }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Founding member",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "title", "label": "Title", "default": "BE FIRST ON THE TEE" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Join Greenside before we launch and become one of the golfers shaping the future of golf competitions.</p>" },
+    { "type": "text", "id": "emotive_text", "label": "Emotive text", "default": "The first golfers through the door will always be part of the Greenside story." },
+    { "type": "text", "id": "disclaimer", "label": "Disclaimer", "default": "Planned benefits for joining before launch" },
+    { "type": "header", "content": "Call to action" },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "header", "content": "Benefit 1" },
+    { "type": "checkbox", "id": "benefit_1_enabled", "label": "Enable benefit 1", "default": true },
+    { "type": "text", "id": "benefit_1_text", "label": "Text", "default": "Double entries into your first competition" },
+    { "type": "header", "content": "Benefit 2" },
+    { "type": "checkbox", "id": "benefit_2_enabled", "label": "Enable benefit 2", "default": true },
+    { "type": "text", "id": "benefit_2_text", "label": "Text", "default": "Early access to new competitions" },
+    { "type": "header", "content": "Benefit 3" },
+    { "type": "checkbox", "id": "benefit_3_enabled", "label": "Enable benefit 3", "default": true },
+    { "type": "text", "id": "benefit_3_text", "label": "Text", "default": "Exclusive launch offers" },
+    { "type": "header", "content": "Benefit 4" },
+    { "type": "checkbox", "id": "benefit_4_enabled", "label": "Enable benefit 4", "default": true },
+    { "type": "text", "id": "benefit_4_text", "label": "Text", "default": "Referral rewards" },
+    { "type": "header", "content": "Benefit 5" },
+    { "type": "checkbox", "id": "benefit_5_enabled", "label": "Enable benefit 5", "default": true },
+    { "type": "text", "id": "benefit_5_text", "label": "Text", "default": "Founding Member status" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 600, "max": 1400, "step": 50, "unit": "px", "default": 1200 },
+    { "type": "range", "id": "padding_mobile", "label": "Padding mobile", "min": 20, "max": 80, "step": 5, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_desktop", "label": "Padding desktop", "min": 40, "max": 120, "step": 10, "unit": "px", "default": 60 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#e8f0ec" },
+    { "type": "color", "id": "title_color", "label": "Title", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#1B4332" },
+    { "type": "color", "id": "card_background", "label": "Card background", "default": "#ffffff" },
+    { "type": "color", "id": "card_border_color", "label": "Card border", "default": "#1B4332" },
+    { "type": "color", "id": "icon_background", "label": "Icon background", "default": "#1B4332" },
+    { "type": "color", "id": "icon_color", "label": "Icon", "default": "#ffffff" },
+    { "type": "color", "id": "cta_background", "label": "Button background", "default": "#ffffff" },
+    { "type": "color", "id": "cta_text_color", "label": "Button text", "default": "#1B4332" },
+    { "type": "color", "id": "cta_hover_background", "label": "Button hover background", "default": "#1B4332" },
+    { "type": "color", "id": "cta_hover_text_color", "label": "Button hover text", "default": "#ffffff" },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_size_mobile", "label": "Title size mobile", "min": 20, "max": 48, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size desktop", "min": 28, "max": 72, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "description_size_mobile", "label": "Description size mobile", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "description_size_desktop", "label": "Description size desktop", "min": 14, "max": 24, "step": 1, "unit": "px", "default": 17 },
+    { "type": "range", "id": "emotive_size_mobile", "label": "Emotive text size mobile", "min": 13, "max": 20, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "emotive_size_desktop", "label": "Emotive text size desktop", "min": 15, "max": 24, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "benefit_text_size", "label": "Benefit text size", "min": 12, "max": 18, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "cta_text_size", "label": "Button text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 15 },
+    { "type": "header", "content": "Card style" },
+    { "type": "range", "id": "card_border_width", "label": "Border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 2 },
+    { "type": "range", "id": "card_border_radius", "label": "Border radius", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 40, "max": 80, "step": 5, "unit": "px", "default": 60 },
+    { "type": "range", "id": "cta_border_radius", "label": "Button border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "Founding member" }]
+}
+{% endschema %}

@@ -1,0 +1,761 @@
+{% doc %}
+  @prompt
+    Rebuild the final CTA section for Greenside Competitions, a UK golf competition company. Brand colours: dark forest green (#1B4332) and white. This is the last section on the page — it must be a powerful conversion closer for visitors who have scrolled to the bottom. Large bold headline: "READY TO JOIN GREENSIDE?" Supporting copy: "Be one of the first golfers to access premium competitions, launch rewards and exclusive early access." Then a secondary bold headline: "JOIN BEFORE LAUNCH & GET DOUBLE ENTRIES". Below that, an email capture form with: a clearly labelled email input field "Email address" and a large, impossible-to-miss CTA button "GET MY DOUBLE ENTRIES" in white with dark green text — the button must be the most prominent element on the section. Below the form add: "Join the Greenside waitlist for free. We'll let you know when we're ready to launch." Below that add a small trust line: "🔒 Your information is kept secure and you can unsubscribe at any time." Use subtle golf imagery or a visual background element to make the section feel like a strong visual conclusion. No navigation links, no new offers, no distractions — pure conversion focus. Mobile-first, full-width, dark green background, white text. The visitor should feel: "I want to be one of the first people in."
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-final-cta-{{ ai_gen_id }} {
+    display: block;
+    position: relative;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.padding_top_mobile }}px 20px {{ block.settings.padding_bottom_mobile }}px;
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top }}px 40px {{ block.settings.padding_bottom }}px;
+    }
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: {{ block.settings.background_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-final-cta-background-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  }
+
+  .ai-final-cta-background-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+  }
+
+  .ai-final-cta-container-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 1;
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ai-final-cta-headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.headline_size_mobile }}px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 {{ block.settings.spacing_mobile }}px;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.headline_size }}px;
+      margin-bottom: {{ block.settings.spacing }}px;
+    }
+  }
+
+  .ai-final-cta-supporting-{{ ai_gen_id }} {
+    font-size: {{ block.settings.supporting_size_mobile }}px;
+    line-height: 1.5;
+    margin: 0 0 {{ block.settings.spacing_mobile }}px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-supporting-{{ ai_gen_id }} {
+      font-size: {{ block.settings.supporting_size }}px;
+      margin-bottom: {{ block.settings.spacing }}px;
+    }
+  }
+
+  .ai-final-cta-secondary-headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.secondary_headline_size_mobile }}px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 {{ block.settings.spacing_mobile }}px;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-secondary-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.secondary_headline_size }}px;
+      margin-bottom: {{ block.settings.spacing }}px;
+    }
+  }
+
+  .ai-final-cta-form-wrapper-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.spacing_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-form-wrapper-{{ ai_gen_id }} {
+      margin-bottom: {{ block.settings.spacing }}px;
+    }
+  }
+
+  .ai-final-cta-form-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-form-{{ ai_gen_id }} {
+      gap: 20px;
+    }
+  }
+
+  .ai-final-cta-input-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: {{ block.settings.input_size_mobile }}px;
+    border: 2px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background_color }};
+    color: {{ block.settings.input_text_color }};
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-input-{{ ai_gen_id }} {
+      padding: 18px 24px;
+      font-size: {{ block.settings.input_size }}px;
+    }
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.input_placeholder_color }};
+    opacity: 0.7;
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border_color }};
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 18px 32px;
+    font-size: {{ block.settings.button_size_mobile }}px;
+    font-weight: 700;
+    background-color: {{ block.settings.button_background_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-button-{{ ai_gen_id }} {
+      padding: 22px 40px;
+      font-size: {{ block.settings.button_size }}px;
+    }
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-final-cta-message-{{ ai_gen_id }} {
+    font-size: {{ block.settings.message_size_mobile }}px;
+    line-height: 1.5;
+    margin-bottom: {{ block.settings.spacing_mobile | divided_by: 2 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-message-{{ ai_gen_id }} {
+      font-size: {{ block.settings.message_size }}px;
+      margin-bottom: {{ block.settings.spacing | divided_by: 2 }}px;
+    }
+  }
+
+  .ai-final-cta-trust-{{ ai_gen_id }} {
+    font-size: {{ block.settings.trust_size_mobile }}px;
+    line-height: 1.4;
+    opacity: 0.8;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-trust-{{ ai_gen_id }} {
+      font-size: {{ block.settings.trust_size }}px;
+    }
+  }
+
+  .ai-final-cta-success-{{ ai_gen_id }} {
+    color: {{ block.settings.success_color }};
+    margin-top: 12px;
+    font-size: {{ block.settings.message_size_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-success-{{ ai_gen_id }} {
+      font-size: {{ block.settings.message_size }}px;
+    }
+  }
+
+  .ai-final-cta-error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+    margin-top: 12px;
+    font-size: {{ block.settings.message_size_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-error-{{ ai_gen_id }} {
+      font-size: {{ block.settings.message_size }}px;
+    }
+  }
+{% endstyle %}
+
+<final-cta-{{ ai_gen_id }} class="ai-final-cta-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-final-cta-background-{{ ai_gen_id }}">
+    {% if block.settings.background_image %}
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    {% else %}
+      <div class="ai-final-cta-background-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-final-cta-container-{{ ai_gen_id }}">
+    {% if block.settings.headline != blank %}
+      <h2 class="ai-final-cta-headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h2>
+    {% endif %}
+
+    {% if block.settings.supporting_copy != blank %}
+      <div class="ai-final-cta-supporting-{{ ai_gen_id }}">{{ block.settings.supporting_copy }}</div>
+    {% endif %}
+
+    {% if block.settings.secondary_headline != blank %}
+      <h3 class="ai-final-cta-secondary-headline-{{ ai_gen_id }}">{{ block.settings.secondary_headline }}</h3>
+    {% endif %}
+
+    <div class="ai-final-cta-form-wrapper-{{ ai_gen_id }}">
+      {%- form 'contact' -%}
+        <input type="hidden" name="contact[waitlist]" value="greenside_launch">
+        
+        <div class="ai-final-cta-form-{{ ai_gen_id }}">
+          <div class="ai-final-cta-input-wrapper-{{ ai_gen_id }}">
+            <input
+              type="email"
+              name="contact[email]"
+              class="ai-final-cta-input-{{ ai_gen_id }}"
+              value="{{ form.email }}"
+              aria-required="true"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="email"
+              {% if form.errors %}
+                aria-invalid="true"
+                aria-describedby="ai-final-cta-error-{{ ai_gen_id }}"
+              {% endif %}
+              {% if form.posted_successfully? %}
+                aria-describedby="ai-final-cta-success-{{ ai_gen_id }}"
+              {% endif %}
+              placeholder="{{ block.settings.input_placeholder }}"
+              required
+            >
+          </div>
+
+          <button type="submit" class="ai-final-cta-button-{{ ai_gen_id }}">
+            {{ block.settings.button_text }}
+          </button>
+
+          {%- if form.errors -%}
+            <div id="ai-final-cta-error-{{ ai_gen_id }}" class="ai-final-cta-error-{{ ai_gen_id }}">
+              <span>{{ form.errors.messages.email }}</span>
+            </div>
+          {%- endif -%}
+
+          {%- if form.posted_successfully? -%}
+            <div id="ai-final-cta-success-{{ ai_gen_id }}" class="ai-final-cta-success-{{ ai_gen_id }}">
+              <span>{{ block.settings.success_message }}</span>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endform -%}
+    </div>
+
+    {% if block.settings.waitlist_message != blank %}
+      <div class="ai-final-cta-message-{{ ai_gen_id }}">{{ block.settings.waitlist_message }}</div>
+    {% endif %}
+
+    {% if block.settings.trust_line != blank %}
+      <div class="ai-final-cta-trust-{{ ai_gen_id }}">{{ block.settings.trust_line }}</div>
+    {% endif %}
+  </div>
+</final-cta-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FinalCta{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        const form = this.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', this.handleSubmit.bind(this));
+        }
+      }
+
+      handleSubmit(event) {
+        const emailInput = this.querySelector('.ai-final-cta-input-{{ ai_gen_id }}');
+        if (emailInput && !emailInput.value.trim()) {
+          event.preventDefault();
+        }
+      }
+    }
+
+    customElements.define('final-cta-{{ ai_gen_id }}', FinalCta{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Final CTA",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Main headline",
+      "default": "READY TO JOIN GREENSIDE?"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "supporting_copy",
+      "label": "Supporting copy",
+      "default": "Be one of the first golfers to access premium competitions, launch rewards and exclusive early access."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "secondary_headline",
+      "label": "Secondary headline",
+      "default": "JOIN BEFORE LAUNCH & GET DOUBLE ENTRIES"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "input_placeholder",
+      "label": "Email placeholder",
+      "default": "Email address"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "GET MY DOUBLE ENTRIES"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "waitlist_message",
+      "label": "Waitlist message",
+      "default": "Join the Greenside waitlist for free. We'll let you know when we're ready to launch."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "trust_line",
+      "label": "Trust line",
+      "default": "🔒 Your information is kept secure and you can unsubscribe at any time."
+    },
+    {
+      "type": "richtext",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "<p>Thanks for joining! We'll be in touch soon with your double entry bonus.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "background_opacity",
+      "label": "Background opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#1B4332"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "label": "Main headline size (desktop)",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "headline_size_mobile",
+      "label": "Main headline size (mobile)",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "supporting_size",
+      "label": "Supporting copy size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "supporting_size_mobile",
+      "label": "Supporting copy size (mobile)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "secondary_headline_size",
+      "label": "Secondary headline size (desktop)",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "secondary_headline_size_mobile",
+      "label": "Secondary headline size (mobile)",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "message_size",
+      "label": "Message size (desktop)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "message_size_mobile",
+      "label": "Message size (mobile)",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "trust_size",
+      "label": "Trust line size (desktop)",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "trust_size_mobile",
+      "label": "Trust line size (mobile)",
+      "min": 10,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Form input"
+    },
+    {
+      "type": "color",
+      "id": "input_background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Text color",
+      "default": "#1B4332"
+    },
+    {
+      "type": "color",
+      "id": "input_placeholder_color",
+      "label": "Placeholder color",
+      "default": "#1B4332"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border_color",
+      "label": "Focus border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "input_size",
+      "label": "Font size (desktop)",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "input_size_mobile",
+      "label": "Font size (mobile)",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#1B4332"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Hover background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Font size (desktop)",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "button_size_mobile",
+      "label": "Font size (mobile)",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "color",
+      "id": "success_color",
+      "label": "Success color",
+      "default": "#4ade80"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Error color",
+      "default": "#ef4444"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 700
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding (desktop)",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding (desktop)",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding (mobile)",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding (mobile)",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Element spacing (desktop)",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "spacing_mobile",
+      "label": "Element spacing (mobile)",
+      "min": 12,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Final CTA"
+    }
+  ]
+}
+{% endschema %}

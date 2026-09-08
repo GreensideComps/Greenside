@@ -1,0 +1,336 @@
+{% doc %}
+  Coming Soon / Early Access hero section. Icons are hardcoded SVG circle badges
+  (matching Founding Member style) instead of emoji, for guaranteed cross-platform rendering.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-coming-soon-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: 60px 20px;
+    width: 100%;
+  }
+
+  .ai-coming-soon-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-coming-soon-header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .ai-coming-soon-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size_mobile }}px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0 0 20px;
+    line-height: 1.2;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-coming-soon-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size_mobile }}px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-coming-soon-benefits-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 50px;
+  }
+
+  .ai-coming-soon-benefit-{{ ai_gen_id }} {
+    background-color: {{ block.settings.benefit_background_color }};
+    padding: 24px;
+    border-radius: {{ block.settings.benefit_border_radius }}px;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ai-coming-soon-benefit-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-coming-soon-benefit-icon-{{ ai_gen_id }} {
+    width: 60px;
+    height: 60px;
+    background-color: {{ block.settings.icon_circle_background }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+
+  .ai-coming-soon-benefit-icon-{{ ai_gen_id }} svg {
+    width: 28px;
+    height: 28px;
+    stroke: {{ block.settings.icon_color }};
+    fill: none;
+  }
+
+  .ai-coming-soon-benefit-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.benefit_title_size_mobile }}px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+    color: {{ block.settings.benefit_text_color }};
+  }
+
+  .ai-coming-soon-benefit-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.benefit_text_size_mobile }}px;
+    line-height: 1.5;
+    margin: 0;
+    color: {{ block.settings.benefit_text_color }};
+  }
+
+  .ai-coming-soon-cta-{{ ai_gen_id }} {
+    text-align: center;
+  }
+
+  .ai-coming-soon-button-{{ ai_gen_id }} {
+    display: inline-block;
+    background-color: {{ block.settings.button_background_color }};
+    color: {{ block.settings.button_text_color }};
+    padding: 18px 40px;
+    font-size: {{ block.settings.button_text_size_mobile }}px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ai-coming-soon-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background_color }};
+    color: {{ block.settings.button_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-coming-soon-supporting-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.supporting_text_size_mobile }}px;
+    margin-top: 16px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.9;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-coming-soon-{{ ai_gen_id }} {
+      padding: 80px 40px;
+    }
+
+    .ai-coming-soon-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+    }
+
+    .ai-coming-soon-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_size_desktop }}px;
+    }
+
+    .ai-coming-soon-benefits-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .ai-coming-soon-benefit-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.benefit_title_size_desktop }}px;
+    }
+
+    .ai-coming-soon-benefit-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.benefit_text_size_desktop }}px;
+    }
+
+    .ai-coming-soon-button-{{ ai_gen_id }} {
+      font-size: {{ block.settings.button_text_size_desktop }}px;
+      padding: 20px 50px;
+    }
+
+    .ai-coming-soon-supporting-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.supporting_text_size_desktop }}px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .ai-coming-soon-{{ ai_gen_id }} {
+      padding: 100px 40px;
+    }
+
+    .ai-coming-soon-benefits-{{ ai_gen_id }} {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-coming-soon-benefit-icon-{{ ai_gen_id }} {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 10px;
+    }
+
+    .ai-coming-soon-benefit-icon-{{ ai_gen_id }} svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+{% endstyle %}
+
+<coming-soon-{{ ai_gen_id }} class="ai-coming-soon-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-coming-soon-container-{{ ai_gen_id }}">
+    <div class="ai-coming-soon-header-{{ ai_gen_id }}">
+      <h1 class="ai-coming-soon-title-{{ ai_gen_id }}">{{ block.settings.title }}</h1>
+      <p class="ai-coming-soon-description-{{ ai_gen_id }}">{{ block.settings.description }}</p>
+    </div>
+
+    <div class="ai-coming-soon-benefits-{{ ai_gen_id }}">
+      {% if block.settings.benefit_1_enabled %}
+        <div class="ai-coming-soon-benefit-{{ ai_gen_id }}">
+          <div class="ai-coming-soon-benefit-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 12 20 22 4 22 4 12"></polyline>
+              <rect x="2" y="7" width="20" height="5"></rect>
+              <line x1="12" y1="22" x2="12" y2="7"></line>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+          </div>
+          <h3 class="ai-coming-soon-benefit-title-{{ ai_gen_id }}">{{ block.settings.benefit_1_title }}</h3>
+          <p class="ai-coming-soon-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_1_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_2_enabled %}
+        <div class="ai-coming-soon-benefit-{{ ai_gen_id }}">
+          <div class="ai-coming-soon-benefit-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <h3 class="ai-coming-soon-benefit-title-{{ ai_gen_id }}">{{ block.settings.benefit_2_title }}</h3>
+          <p class="ai-coming-soon-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_2_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_3_enabled %}
+        <div class="ai-coming-soon-benefit-{{ ai_gen_id }}">
+          <div class="ai-coming-soon-benefit-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 22V4c0-.6.4-1 1-1h6l1 2h7c.6 0 1 .4 1 1v9c0 .6-.4 1-1 1h-6l-1-2H5"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="ai-coming-soon-benefit-title-{{ ai_gen_id }}">{{ block.settings.benefit_3_title }}</h3>
+          <p class="ai-coming-soon-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_3_text }}</p>
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_4_enabled %}
+        <div class="ai-coming-soon-benefit-{{ ai_gen_id }}">
+          <div class="ai-coming-soon-benefit-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="ai-coming-soon-benefit-title-{{ ai_gen_id }}">{{ block.settings.benefit_4_title }}</h3>
+          <p class="ai-coming-soon-benefit-text-{{ ai_gen_id }}">{{ block.settings.benefit_4_text }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-coming-soon-cta-{{ ai_gen_id }}">
+      <a href="#" class="ai-coming-soon-button-{{ ai_gen_id }}" data-greenside-signup-trigger>
+        {{ block.settings.button_text }}
+      </a>
+      <p class="ai-coming-soon-supporting-text-{{ ai_gen_id }}">{{ block.settings.supporting_text }}</p>
+    </div>
+  </div>
+</coming-soon-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ComingSoon{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+      }
+    }
+
+    customElements.define('coming-soon-{{ ai_gen_id }}', ComingSoon{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Coming soon early access",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Main content" },
+    { "type": "text", "id": "title", "label": "Title", "default": "SOMETHING BIG IS COMING TO THE GREEN" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "We're putting the finishing touches to Greenside Competitions. Join the waitlist now and be one of the first golfers through the door when we launch." },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_size_mobile", "label": "Title size (mobile)", "min": 20, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size (desktop)", "min": 30, "max": 100, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "description_size_mobile", "label": "Description size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "description_size_desktop", "label": "Description size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 18 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "icon_circle_background", "label": "Icon circle background", "default": "#4a8c2a" },
+    { "type": "color", "id": "icon_color", "label": "Icon", "default": "#ffffff" },
+    { "type": "header", "content": "Benefit 1" },
+    { "type": "checkbox", "id": "benefit_1_enabled", "label": "Enable benefit 1", "default": true },
+    { "type": "text", "id": "benefit_1_title", "label": "Title", "default": "DOUBLE YOUR FIRST ENTRY" },
+    { "type": "textarea", "id": "benefit_1_text", "label": "Text", "default": "Join before launch and receive double entries into your first competition." },
+    { "type": "header", "content": "Benefit 2" },
+    { "type": "checkbox", "id": "benefit_2_enabled", "label": "Enable benefit 2", "default": true },
+    { "type": "text", "id": "benefit_2_title", "label": "Title", "default": "EARLY ACCESS" },
+    { "type": "textarea", "id": "benefit_2_text", "label": "Text", "default": "Be among the first to access Greenside competitions when we go live." },
+    { "type": "header", "content": "Benefit 3" },
+    { "type": "checkbox", "id": "benefit_3_enabled", "label": "Enable benefit 3", "default": true },
+    { "type": "text", "id": "benefit_3_title", "label": "Title", "default": "PREMIUM GOLF PRIZES" },
+    { "type": "textarea", "id": "benefit_3_text", "label": "Text", "default": "Get access to competitions featuring the golf equipment you actually want to win." },
+    { "type": "header", "content": "Benefit 4" },
+    { "type": "checkbox", "id": "benefit_4_enabled", "label": "Enable benefit 4", "default": true },
+    { "type": "text", "id": "benefit_4_title", "label": "Title", "default": "REFERRAL REWARDS" },
+    { "type": "textarea", "id": "benefit_4_text", "label": "Text", "default": "Invite your golf mates and unlock additional rewards." },
+    { "type": "header", "content": "Benefit style" },
+    { "type": "color", "id": "benefit_background_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "benefit_text_color", "label": "Text", "default": "#1B4332" },
+    { "type": "range", "id": "benefit_border_radius", "label": "Border radius", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "benefit_title_size_mobile", "label": "Title size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "benefit_title_size_desktop", "label": "Title size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "benefit_text_size_mobile", "label": "Text size (mobile)", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "benefit_text_size_desktop", "label": "Text size (desktop)", "min": 12, "max": 22, "step": 1, "unit": "px", "default": 14 },
+    { "type": "header", "content": "Call to action" },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "supporting_text", "label": "Supporting text", "default": "Join the waitlist for free. We'll let you know when Greenside is ready to go." },
+    { "type": "color", "id": "button_background_color", "label": "Button background", "default": "#ffffff" },
+    { "type": "color", "id": "button_text_color", "label": "Button text", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_background_color", "label": "Button hover background", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_text_color", "label": "Button hover text", "default": "#ffffff" },
+    { "type": "range", "id": "button_border_radius", "label": "Button border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "button_text_size_mobile", "label": "Button text size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "button_text_size_desktop", "label": "Button text size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "supporting_text_size_mobile", "label": "Supporting text size (mobile)", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "supporting_text_size_desktop", "label": "Supporting text size (desktop)", "min": 12, "max": 22, "step": 1, "unit": "px", "default": 14 }
+  ],
+  "presets": [{ "name": "Coming soon early access" }]
+}
+{% endschema %}

@@ -1,0 +1,395 @@
+{% doc %}
+  Referral programme section for Greenside Competitions. 4 milestone tier cards with circular icon badges, CTA button. No separate steps section. Mobile: 2-col compact.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-referral-programme-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.padding_mobile }}px 20px;
+    width: 100%;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-referral-programme-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_desktop }}px 40px;
+    }
+  }
+
+  .ai-referral-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-referral-header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .ai-referral-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size_mobile }}px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0 0 16px;
+    line-height: 1.1;
+    color: {{ block.settings.text_color }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-referral-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+    }
+  }
+
+  .ai-referral-subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size_mobile }}px;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-referral-subtitle-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subtitle_size_desktop }}px;
+    }
+  }
+
+  .ai-referral-tiers-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-referral-tiers-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .ai-referral-tiers-{{ ai_gen_id }} {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+  }
+
+  .ai-referral-tier-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: 24px 20px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ai-referral-tier-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-referral-tier-number-{{ ai_gen_id }} {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 28px;
+    height: 28px;
+    background-color: {{ block.settings.tier_number_bg }};
+    color: {{ block.settings.tier_number_color }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .ai-referral-tier-icon-{{ ai_gen_id }} {
+    width: 60px;
+    height: 60px;
+    background-color: {{ block.settings.icon_circle_background }};
+    color: {{ block.settings.icon_color }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-referral-tier-{{ ai_gen_id }}:hover .ai-referral-tier-icon-{{ ai_gen_id }} {
+    transform: scale(1.1);
+  }
+
+  .ai-referral-tier-icon-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  .ai-referral-tier-label-{{ ai_gen_id }} {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    color: {{ block.settings.tier_label_color }};
+  }
+
+  .ai-referral-tier-reward-{{ ai_gen_id }} {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: {{ block.settings.card_text_color }};
+    margin: 0;
+  }
+
+  .ai-referral-tier-4-{{ ai_gen_id }} {
+    background: linear-gradient(135deg, {{ block.settings.tier_4_bg_start }} 0%, {{ block.settings.tier_4_bg_end }} 100%);
+    border-color: {{ block.settings.tier_4_border }};
+  }
+
+  .ai-referral-tier-4-{{ ai_gen_id }} .ai-referral-tier-icon-{{ ai_gen_id }} {
+    background-color: #ffffff;
+    color: {{ block.settings.tier_4_border }};
+  }
+
+  .ai-referral-tier-4-{{ ai_gen_id }} .ai-referral-tier-reward-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_4_text }};
+    font-size: 16px;
+  }
+
+  .ai-referral-tier-4-{{ ai_gen_id }} .ai-referral-tier-label-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_4_text }};
+  }
+
+  .ai-referral-cta-{{ ai_gen_id }} {
+    text-align: center;
+  }
+
+  .ai-referral-button-{{ ai_gen_id }} {
+    display: inline-block;
+    background-color: {{ block.settings.button_bg }};
+    color: {{ block.settings.button_text }};
+    padding: 16px 40px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ai-referral-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg }};
+    color: {{ block.settings.button_hover_text }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-referral-button-{{ ai_gen_id }} {
+      font-size: 18px;
+      padding: 18px 48px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-referral-programme-{{ ai_gen_id }} {
+      padding: 32px 16px;
+    }
+
+    .ai-referral-title-{{ ai_gen_id }} {
+      font-size: 22px;
+    }
+
+    .ai-referral-subtitle-{{ ai_gen_id }} {
+      font-size: 13px;
+    }
+
+    .ai-referral-header-{{ ai_gen_id }} {
+      margin-bottom: 20px;
+    }
+
+    .ai-referral-tiers-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .ai-referral-tier-{{ ai_gen_id }} {
+      padding: 16px 10px;
+    }
+
+    .ai-referral-tier-number-{{ ai_gen_id }} {
+      width: 22px;
+      height: 22px;
+      font-size: 11px;
+      top: 8px;
+      left: 8px;
+    }
+
+    .ai-referral-tier-icon-{{ ai_gen_id }} {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+    }
+
+    .ai-referral-tier-label-{{ ai_gen_id }} {
+      font-size: 10px;
+      margin-bottom: 6px;
+    }
+
+    .ai-referral-tier-reward-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-referral-tier-4-{{ ai_gen_id }} .ai-referral-tier-reward-{{ ai_gen_id }} {
+      font-size: 13px;
+    }
+
+    .ai-referral-button-{{ ai_gen_id }} {
+      padding: 14px 28px;
+      font-size: 14px;
+    }
+  }
+{% endstyle %}
+
+<greenside-referral-{{ ai_gen_id }} class="ai-referral-programme-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-referral-container-{{ ai_gen_id }}">
+    <div class="ai-referral-header-{{ ai_gen_id }}">
+      <h2 class="ai-referral-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+      <p class="ai-referral-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+    </div>
+
+    <div class="ai-referral-tiers-{{ ai_gen_id }}">
+      <div class="ai-referral-tier-{{ ai_gen_id }}">
+        <div class="ai-referral-tier-number-{{ ai_gen_id }}">1</div>
+        <div class="ai-referral-tier-icon-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <line x1="19" y1="8" x2="19" y2="14"></line>
+            <line x1="22" y1="11" x2="16" y2="11"></line>
+          </svg>
+        </div>
+        <div class="ai-referral-tier-label-{{ ai_gen_id }}">{{ block.settings.tier_1_label }}</div>
+        <p class="ai-referral-tier-reward-{{ ai_gen_id }}">{{ block.settings.tier_1_reward }}</p>
+      </div>
+
+      <div class="ai-referral-tier-{{ ai_gen_id }}">
+        <div class="ai-referral-tier-number-{{ ai_gen_id }}">2</div>
+        <div class="ai-referral-tier-icon-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="ai-referral-tier-label-{{ ai_gen_id }}">{{ block.settings.tier_2_label }}</div>
+        <p class="ai-referral-tier-reward-{{ ai_gen_id }}">{{ block.settings.tier_2_reward }}</p>
+      </div>
+
+      <div class="ai-referral-tier-{{ ai_gen_id }}">
+        <div class="ai-referral-tier-number-{{ ai_gen_id }}">3</div>
+        <div class="ai-referral-tier-icon-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div class="ai-referral-tier-label-{{ ai_gen_id }}">{{ block.settings.tier_3_label }}</div>
+        <p class="ai-referral-tier-reward-{{ ai_gen_id }}">{{ block.settings.tier_3_reward }}</p>
+      </div>
+
+      <div class="ai-referral-tier-{{ ai_gen_id }} ai-referral-tier-4-{{ ai_gen_id }}">
+        <div class="ai-referral-tier-number-{{ ai_gen_id }}">4</div>
+        <div class="ai-referral-tier-icon-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+          </svg>
+        </div>
+        <div class="ai-referral-tier-label-{{ ai_gen_id }}">{{ block.settings.tier_4_label }}</div>
+        <p class="ai-referral-tier-reward-{{ ai_gen_id }}">{{ block.settings.tier_4_reward }}</p>
+      </div>
+    </div>
+
+    <div class="ai-referral-cta-{{ ai_gen_id }}">
+      <a href="#" class="ai-referral-button-{{ ai_gen_id }}" data-greenside-signup-trigger>
+        {{ block.settings.cta_text }}
+      </a>
+    </div>
+  </div>
+</greenside-referral-{{ ai_gen_id }}>
+
+{% schema %}
+{
+  "name": "Referral programme",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Header" },
+    { "type": "text", "id": "title", "label": "Title", "default": "INVITE YOUR FOURBALL. EARN MORE." },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "Your friends want to win too. Invite them to Greenside and unlock bonus rewards before we launch." },
+    { "type": "range", "id": "title_size_mobile", "label": "Title size (mobile)", "min": 20, "max": 48, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size (desktop)", "min": 24, "max": 72, "step": 2, "unit": "px", "default": 42 },
+    { "type": "range", "id": "subtitle_size_mobile", "label": "Subtitle size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "subtitle_size_desktop", "label": "Subtitle size (desktop)", "min": 14, "max": 28, "step": 1, "unit": "px", "default": 17 },
+    { "type": "header", "content": "Tier 1" },
+    { "type": "text", "id": "tier_1_label", "label": "Label", "default": "1 FRIEND JOINS" },
+    { "type": "text", "id": "tier_1_reward", "label": "Reward", "default": "Earn bonus entries" },
+    { "type": "header", "content": "Tier 2" },
+    { "type": "text", "id": "tier_2_label", "label": "Label", "default": "3 FRIENDS JOIN" },
+    { "type": "text", "id": "tier_2_reward", "label": "Reward", "default": "Unlock more bonus entries" },
+    { "type": "header", "content": "Tier 3" },
+    { "type": "text", "id": "tier_3_label", "label": "Label", "default": "5 FRIENDS JOIN" },
+    { "type": "text", "id": "tier_3_reward", "label": "Reward", "default": "Unlock an enhanced launch reward" },
+    { "type": "header", "content": "Tier 4" },
+    { "type": "text", "id": "tier_4_label", "label": "Label", "default": "10 FRIENDS JOIN" },
+    { "type": "text", "id": "tier_4_reward", "label": "Reward", "default": "Become a GREENSIDE FOUNDING MEMBER" },
+    { "type": "header", "content": "Call to action" },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "card_background", "label": "Card background", "default": "#ffffff" },
+    { "type": "color", "id": "card_text_color", "label": "Card text", "default": "#1B4332" },
+    { "type": "color", "id": "card_border_color", "label": "Card border", "default": "#e0e0e0" },
+    { "type": "color", "id": "tier_number_bg", "label": "Tier number background", "default": "#1B4332" },
+    { "type": "color", "id": "tier_number_color", "label": "Tier number text", "default": "#ffffff" },
+    { "type": "color", "id": "tier_label_color", "label": "Tier label", "default": "#1B4332" },
+    { "type": "color", "id": "icon_circle_background", "label": "Icon circle background", "default": "#4a8c2a" },
+    { "type": "color", "id": "icon_color", "label": "Icon", "default": "#ffffff" },
+    { "type": "color", "id": "tier_4_bg_start", "label": "Tier 4 gradient start", "default": "#1B4332" },
+    { "type": "color", "id": "tier_4_bg_end", "label": "Tier 4 gradient end", "default": "#2D6A4F" },
+    { "type": "color", "id": "tier_4_border", "label": "Tier 4 border", "default": "#1B4332" },
+    { "type": "color", "id": "tier_4_text", "label": "Tier 4 text", "default": "#ffffff" },
+    { "type": "color", "id": "button_bg", "label": "Button background", "default": "#ffffff" },
+    { "type": "color", "id": "button_text", "label": "Button text", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_bg", "label": "Button hover background", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_text", "label": "Button hover text", "default": "#ffffff" },
+    { "type": "header", "content": "Style" },
+    { "type": "range", "id": "padding_mobile", "label": "Padding (mobile)", "min": 20, "max": 80, "step": 5, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_desktop", "label": "Padding (desktop)", "min": 40, "max": 120, "step": 5, "unit": "px", "default": 60 },
+    { "type": "range", "id": "card_border_radius", "label": "Card border radius", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "card_border_width", "label": "Card border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 2 },
+    { "type": "range", "id": "button_border_radius", "label": "Button border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "Referral programme" }]
+}
+{% endschema %}

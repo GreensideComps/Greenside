@@ -1,0 +1,239 @@
+{% doc %}
+  @prompt
+    Bold final call-to-action section for Greenside Competitions. Headline, subheadline, prominent CTA button, reassurance line.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-final-cta-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    position: relative;
+    overflow: hidden;
+    padding: {{ block.settings.padding_mobile }}px 20px;
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: {{ block.settings.pattern_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-final-cta-content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: {{ block.settings.content_gap_mobile }}px;
+  }
+
+  .ai-final-cta-headline-{{ ai_gen_id }} {
+    color: {{ block.settings.headline_color }};
+    font-size: {{ block.settings.headline_size_mobile }}px;
+    font-weight: {{ block.settings.headline_weight }};
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: {{ block.settings.headline_letter_spacing }}px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .ai-final-cta-subheadline-{{ ai_gen_id }} {
+    color: {{ block.settings.subheadline_color }};
+    font-size: {{ block.settings.subheadline_size_mobile }}px;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 600px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    font-weight: {{ block.settings.button_font_weight }};
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: {{ block.settings.button_letter_spacing }}px;
+    text-transform: {% if block.settings.button_uppercase %}uppercase{% else %}none{% endif %};
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+    color: {{ block.settings.button_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-final-cta-reassurance-{{ ai_gen_id }} {
+    color: {{ block.settings.reassurance_color }};
+    font-size: {{ block.settings.reassurance_size }}px;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-final-cta-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_desktop }}px 40px;
+    }
+
+    .ai-final-cta-content-{{ ai_gen_id }} {
+      gap: {{ block.settings.content_gap_desktop }}px;
+    }
+
+    .ai-final-cta-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.headline_size_desktop }}px;
+    }
+
+    .ai-final-cta-subheadline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheadline_size_desktop }}px;
+    }
+  }
+{% endstyle %}
+
+<final-cta-{{ ai_gen_id }} class="ai-final-cta-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.show_background_pattern %}
+    <div class="ai-final-cta-background-{{ ai_gen_id }}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="golf-pattern-{{ ai_gen_id }}" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+            <circle cx="60" cy="60" r="2" fill="{{ block.settings.pattern_color }}" opacity="0.3"/>
+            <circle cx="20" cy="20" r="1.5" fill="{{ block.settings.pattern_color }}" opacity="0.2"/>
+            <circle cx="100" cy="40" r="1.5" fill="{{ block.settings.pattern_color }}" opacity="0.2"/>
+            <circle cx="40" cy="100" r="1.5" fill="{{ block.settings.pattern_color }}" opacity="0.2"/>
+            <path d="M 80 80 Q 85 75 90 80 T 100 80" stroke="{{ block.settings.pattern_color }}" stroke-width="0.5" fill="none" opacity="0.15"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="800" fill="url(#golf-pattern-{{ ai_gen_id }})"/>
+      </svg>
+    </div>
+  {% endif %}
+
+  <div class="ai-final-cta-content-{{ ai_gen_id }}">
+    {% if block.settings.headline != blank %}
+      <h2 class="ai-final-cta-headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h2>
+    {% endif %}
+
+    {% if block.settings.subheadline != blank %}
+      <p class="ai-final-cta-subheadline-{{ ai_gen_id }}">{{ block.settings.subheadline }}</p>
+    {% endif %}
+
+    {% if block.settings.button_text != blank %}
+      <a href="#" class="ai-final-cta-button-{{ ai_gen_id }}" data-greenside-signup-trigger>
+        {{ block.settings.button_text }}
+      </a>
+    {% endif %}
+
+    {% if block.settings.reassurance_text != blank %}
+      <p class="ai-final-cta-reassurance-{{ ai_gen_id }}">{{ block.settings.reassurance_text }}</p>
+    {% endif %}
+  </div>
+</final-cta-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FinalCta{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.setupIntersectionObserver();
+      }
+
+      setupIntersectionObserver() {
+        const options = {
+          threshold: 0.2,
+          rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              this.classList.add('visible');
+            }
+          });
+        }, options);
+
+        observer.observe(this);
+      }
+    }
+
+    customElements.define('final-cta-{{ ai_gen_id }}', FinalCta{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Final CTA",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "headline", "label": "Headline", "default": "READY TO JOIN GREENSIDE?" },
+    { "type": "textarea", "id": "subheadline", "label": "Subheadline", "default": "Be among the first golfers to access premium competitions and exclusive launch rewards." },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "reassurance_text", "label": "Reassurance text", "default": "Free to join. No spam. Unsubscribe anytime." },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_max_width", "label": "Content max width", "min": 600, "max": 1200, "step": 50, "unit": "px", "default": 900 },
+    { "type": "range", "id": "padding_mobile", "label": "Padding mobile", "min": 40, "max": 120, "step": 10, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_desktop", "label": "Padding desktop", "min": 60, "max": 200, "step": 10, "unit": "px", "default": 100 },
+    { "type": "range", "id": "content_gap_mobile", "label": "Content gap mobile", "min": 16, "max": 48, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "content_gap_desktop", "label": "Content gap desktop", "min": 20, "max": 60, "step": 4, "unit": "px", "default": 32 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "headline_color", "label": "Headline", "default": "#ffffff" },
+    { "type": "color", "id": "subheadline_color", "label": "Subheadline", "default": "#ffffff" },
+    { "type": "color", "id": "reassurance_color", "label": "Reassurance text", "default": "#ffffff" },
+    { "type": "header", "content": "Headline style" },
+    { "type": "range", "id": "headline_size_mobile", "label": "Size mobile", "min": 28, "max": 64, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "headline_size_desktop", "label": "Size desktop", "min": 40, "max": 120, "step": 4, "unit": "px", "default": 72 },
+    { "type": "range", "id": "headline_weight", "label": "Font weight", "min": 400, "max": 900, "step": 100, "default": 800 },
+    { "type": "range", "id": "headline_letter_spacing", "label": "Letter spacing", "min": -2, "max": 4, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "header", "content": "Subheadline style" },
+    { "type": "range", "id": "subheadline_size_mobile", "label": "Size mobile", "min": 14, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "subheadline_size_desktop", "label": "Size desktop", "min": 16, "max": 32, "step": 2, "unit": "px", "default": 20 },
+    { "type": "header", "content": "Button style" },
+    { "type": "color", "id": "button_background", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "button_text_color", "label": "Text", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_background", "label": "Hover background", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_text_color", "label": "Hover text", "default": "#ffffff" },
+    { "type": "range", "id": "button_font_size", "label": "Font size", "min": 14, "max": 24, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "button_font_weight", "label": "Font weight", "min": 400, "max": 900, "step": 100, "default": 700 },
+    { "type": "range", "id": "button_padding_vertical", "label": "Padding vertical", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 18 },
+    { "type": "range", "id": "button_padding_horizontal", "label": "Padding horizontal", "min": 24, "max": 80, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "button_border_radius", "label": "Border radius", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 8 },
+    { "type": "checkbox", "id": "button_uppercase", "label": "Uppercase text", "default": true },
+    { "type": "range", "id": "button_letter_spacing", "label": "Letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 1 },
+    { "type": "header", "content": "Reassurance style" },
+    { "type": "range", "id": "reassurance_size", "label": "Font size", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 13 },
+    { "type": "header", "content": "Background pattern" },
+    { "type": "checkbox", "id": "show_background_pattern", "label": "Show pattern", "default": true },
+    { "type": "color", "id": "pattern_color", "label": "Pattern color", "default": "#ffffff" },
+    { "type": "range", "id": "pattern_opacity", "label": "Pattern opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 10 }
+  ],
+  "presets": [{ "name": "Final CTA" }]
+}
+{% endschema %}

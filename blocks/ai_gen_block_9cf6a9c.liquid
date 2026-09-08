@@ -1,0 +1,340 @@
+{% doc %}
+  Prize Showcase - 3-col grid desktop, 2-col compact mobile.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-prize-showcase-{{ ai_gen_id }} {
+    display: block;
+    position: relative;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+  }
+
+  .ai-prize-showcase-bg-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .ai-prize-showcase-bg-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: {{ block.settings.background_image_opacity | divided_by: 100.0 }};
+  }
+
+  .ai-prize-showcase-container-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 1;
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-prize-showcase-header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-prize-showcase-title-{{ ai_gen_id }} {
+    color: {{ block.settings.title_color }};
+    font-size: {{ block.settings.title_size }}px;
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
+
+  .ai-prize-showcase-subtitle-{{ ai_gen_id }} {
+    color: {{ block.settings.subtitle_color }};
+    font-size: {{ block.settings.subtitle_size }}px;
+    margin: 0;
+  }
+
+  .ai-prize-showcase-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+    margin: 0 auto;
+  }
+
+ .ai-prize-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+
+  .ai-prize-card-{{ ai_gen_id }}:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .ai-prize-card-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background-color: #f4f4f4;
+    overflow: hidden;
+  }
+
+  .ai-prize-card-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-prize-card-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-prize-card-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-prize-card-badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: {{ block.settings.badge_background }};
+    color: {{ block.settings.badge_text_color }};
+    padding: 6px 12px;
+    border-radius: {{ block.settings.badge_border_radius }}px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-prize-card-content-{{ ai_gen_id }} {
+    padding: {{ block.settings.card_padding }}px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-prize-card-title-{{ ai_gen_id }} {
+    color: {{ block.settings.card_title_color }};
+    font-size: {{ block.settings.card_title_size }}px;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+
+  .ai-prize-card-description-{{ ai_gen_id }} {
+    color: {{ block.settings.card_description_color }};
+    font-size: {{ block.settings.card_description_size }}px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-prize-showcase-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .ai-prize-card-content-{{ ai_gen_id }} {
+      padding: 12px;
+    }
+
+    .ai-prize-card-title-{{ ai_gen_id }} {
+      font-size: 14px;
+      margin: 0 0 6px;
+    }
+
+    .ai-prize-card-description-{{ ai_gen_id }} {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .ai-prize-card-badge-{{ ai_gen_id }} {
+      padding: 4px 8px;
+      font-size: 9px;
+      top: 8px;
+      right: 8px;
+    }
+
+    .ai-prize-showcase-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.7 }}px;
+    }
+
+    .ai-prize-showcase-subtitle-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subtitle_size | times: 0.85 }}px;
+    }
+  }
+{% endstyle %}
+
+<prize-showcase-{{ ai_gen_id }} class="ai-prize-showcase-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.background_image %}
+    <div class="ai-prize-showcase-bg-{{ ai_gen_id }}">
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    </div>
+  {% endif %}
+
+  <div class="ai-prize-showcase-container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank or block.settings.subtitle != blank %}
+      <div class="ai-prize-showcase-header-{{ ai_gen_id }}">
+        {% if block.settings.title != blank %}
+          <h2 class="ai-prize-showcase-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+        {% endif %}
+        {% if block.settings.subtitle != blank %}
+          <p class="ai-prize-showcase-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-prize-showcase-grid-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign image_key = 'card_' | append: i | append: '_image'
+          assign badge_key = 'card_' | append: i | append: '_badge'
+          assign title_key = 'card_' | append: i | append: '_title'
+          assign description_key = 'card_' | append: i | append: '_description'
+
+          assign card_image = block.settings[image_key]
+          assign card_badge = block.settings[badge_key]
+          assign card_title = block.settings[title_key]
+          assign card_description = block.settings[description_key]
+        %}
+
+        <div class="ai-prize-card-{{ ai_gen_id }}">
+          <div class="ai-prize-card-image-wrapper-{{ ai_gen_id }}">
+            {% if card_image %}
+              <img
+                src="{{ card_image | image_url: width: 600 }}"
+                alt="{{ card_image.alt | escape }}"
+                loading="lazy"
+                width="600"
+                height="600"
+                class="ai-prize-card-image-{{ ai_gen_id }}"
+              >
+            {% else %}
+              <div class="ai-prize-card-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+            {% if card_badge != blank %}
+              <div class="ai-prize-card-badge-{{ ai_gen_id }}">{{ card_badge }}</div>
+            {% endif %}
+          </div>
+          <div class="ai-prize-card-content-{{ ai_gen_id }}">
+            {% if card_title != blank %}
+              <h3 class="ai-prize-card-title-{{ ai_gen_id }}">{{ card_title }}</h3>
+            {% endif %}
+            {% if card_description != blank %}
+              <p class="ai-prize-card-description-{{ ai_gen_id }}">{{ card_description }}</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</prize-showcase-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PrizeShowcase{{ai_gen_id}} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+      }
+    }
+
+    customElements.define('prize-showcase-{{ ai_gen_id }}', PrizeShowcase{{ai_gen_id}});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Prize showcase",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Section header" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Premium Golf Prizes" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Win incredible prizes from the world's leading golf brands" },
+    { "type": "range", "id": "title_size", "label": "Title size", "min": 20, "max": 80, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "subtitle_size", "label": "Subtitle size", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 18 },
+    { "type": "color", "id": "title_color", "label": "Title color", "default": "#ffffff" },
+    { "type": "color", "id": "subtitle_color", "label": "Subtitle color", "default": "#ffffff" },
+    { "type": "range", "id": "header_spacing", "label": "Header spacing", "min": 20, "max": 100, "step": 5, "unit": "px", "default": 50 },
+    { "type": "header", "content": "Background" },
+    { "type": "image_picker", "id": "background_image", "label": "Background image" },
+    { "type": "range", "id": "background_image_opacity", "label": "Image opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 30 },
+    { "type": "color", "id": "background_color", "label": "Background color", "default": "#1b4332" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "container_width", "label": "Container width", "min": 800, "max": 1600, "step": 50, "unit": "px", "default": 1200 },
+    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 10, "max": 60, "step": 5, "unit": "px", "default": 30 },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 80 },
+    { "type": "header", "content": "Card style" },
+    { "type": "color", "id": "card_background", "label": "Card background", "default": "#ffffff" },
+    { "type": "range", "id": "card_border_radius", "label": "Card border radius", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "card_padding", "label": "Card padding", "min": 10, "max": 50, "step": 2, "unit": "px", "default": 24 },
+    { "type": "color", "id": "card_title_color", "label": "Title color", "default": "#1b4332" },
+    { "type": "range", "id": "card_title_size", "label": "Title size", "min": 14, "max": 32, "step": 2, "unit": "px", "default": 20 },
+    { "type": "color", "id": "card_description_color", "label": "Description color", "default": "#333333" },
+    { "type": "range", "id": "card_description_size", "label": "Description size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "header", "content": "Badge style" },
+    { "type": "color", "id": "badge_background", "label": "Badge background", "default": "#1b4332" },
+    { "type": "color", "id": "badge_text_color", "label": "Badge text color", "default": "#ffffff" },
+    { "type": "range", "id": "badge_border_radius", "label": "Badge border radius", "min": 0, "max": 20, "step": 2, "unit": "px", "default": 4 },
+    { "type": "header", "content": "Card 1" },
+    { "type": "image_picker", "id": "card_1_image", "label": "Image" },
+    { "type": "text", "id": "card_1_badge", "label": "Badge text", "default": "Planned prize" },
+    { "type": "text", "id": "card_1_title", "label": "Title", "default": "Premium Drivers" },
+    { "type": "textarea", "id": "card_1_description", "label": "Description", "default": "Top of the range drivers from the world's leading brands." },
+    { "type": "header", "content": "Card 2" },
+    { "type": "image_picker", "id": "card_2_image", "label": "Image" },
+    { "type": "text", "id": "card_2_badge", "label": "Badge text", "default": "Planned prize" },
+    { "type": "text", "id": "card_2_title", "label": "Title", "default": "Scotty Cameron Putters" },
+    { "type": "textarea", "id": "card_2_description", "label": "Description", "default": "Iconic putters used by the world's best golfers." },
+    { "type": "header", "content": "Card 3" },
+    { "type": "image_picker", "id": "card_3_image", "label": "Image" },
+    { "type": "text", "id": "card_3_badge", "label": "Badge text", "default": "Planned prize" },
+    { "type": "text", "id": "card_3_title", "label": "Title", "default": "TaylorMade Irons" },
+    { "type": "textarea", "id": "card_3_description", "label": "Description", "default": "Precision irons to elevate your game." },
+    { "type": "header", "content": "Card 4" },
+    { "type": "image_picker", "id": "card_4_image", "label": "Image" },
+    { "type": "text", "id": "card_4_badge", "label": "Badge text", "default": "Planned prize" },
+    { "type": "text", "id": "card_4_title", "label": "Title", "default": "Garmin Golf Watches" },
+    { "type": "textarea", "id": "card_4_description", "label": "Description", "default": "Track every shot with cutting-edge golf technology." },
+    { "type": "header", "content": "Card 5" },
+    { "type": "image_picker", "id": "card_5_image", "label": "Image" },
+    { "type": "text", "id": "card_5_badge", "label": "Badge text", "default": "Planned prize" },
+    { "type": "text", "id": "card_5_title", "label": "Title", "default": "Premium Golf Bags" },
+    { "type": "textarea", "id": "card_5_description", "label": "Description", "default": "Carry your clubs in style with a top-spec golf bag." },
+    { "type": "header", "content": "Card 6" },
+    { "type": "image_picker", "id": "card_6_image", "label": "Image" },
+    { "type": "text", "id": "card_6_badge", "label": "Badge text", "default": "Coming soon" },
+    { "type": "text", "id": "card_6_title", "label": "Title", "default": "And More!" },
+    { "type": "textarea", "id": "card_6_description", "label": "Description", "default": "More premium golf prizes to be revealed at launch." }
+  ],
+  "presets": [{ "name": "Prize showcase" }]
+}
+{% endschema %}

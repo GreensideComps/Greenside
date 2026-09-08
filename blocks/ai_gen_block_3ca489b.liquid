@@ -1,0 +1,336 @@
+{% doc %}
+  @prompt
+    FAQ accordion section for Greenside Competitions. 9 items plus closing CTA. Section title white on dark bg, question text dark on white cards.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-faq-section-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+  }
+
+  .ai-faq-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-faq-title-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.title_size_mobile }}px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 {{ block.settings.title_spacing }}px;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-faq-accordion-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.item_spacing }}px;
+  }
+
+  .ai-faq-item-{{ ai_gen_id }} {
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.item_background }};
+  }
+
+  .ai-faq-question-{{ ai_gen_id }} {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: {{ block.settings.question_padding }}px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    color: {{ block.settings.question_text_color }};
+    font-size: {{ block.settings.question_size_mobile }}px;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: background-color 0.2s ease;
+  }
+
+  .ai-faq-question-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.question_hover_bg }};
+  }
+
+  .ai-faq-question-text-{{ ai_gen_id }} {
+    flex: 1;
+    padding-right: 16px;
+  }
+
+  .ai-faq-icon-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-faq-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: {{ block.settings.question_text_color }};
+    stroke-width: 2;
+  }
+
+  .ai-faq-item-{{ ai_gen_id }}.active .ai-faq-icon-{{ ai_gen_id }} {
+    transform: rotate(180deg);
+  }
+
+  .ai-faq-answer-{{ ai_gen_id }} {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  .ai-faq-answer-content-{{ ai_gen_id }} {
+    padding: 0 {{ block.settings.question_padding }}px {{ block.settings.question_padding }}px;
+    color: {{ block.settings.answer_color }};
+    font-size: {{ block.settings.answer_size_mobile }}px;
+    line-height: 1.6;
+  }
+
+  .ai-faq-item-{{ ai_gen_id }}.active .ai-faq-answer-{{ ai_gen_id }} {
+    max-height: 500px;
+  }
+
+  .ai-faq-cta-section-{{ ai_gen_id }} {
+    margin-top: {{ block.settings.cta_spacing }}px;
+    text-align: center;
+  }
+
+  .ai-faq-cta-text-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.cta_text_size_mobile }}px;
+    font-weight: 500;
+    margin: 0 0 {{ block.settings.cta_text_spacing }}px;
+  }
+
+  .ai-faq-cta-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    font-size: {{ block.settings.button_text_size_mobile }}px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-faq-cta-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg }};
+    color: {{ block.settings.button_hover_text_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-faq-section-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top_desktop }}px 40px {{ block.settings.padding_bottom_desktop }}px;
+    }
+
+    .ai-faq-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_desktop }}px;
+    }
+
+    .ai-faq-question-{{ ai_gen_id }} {
+      font-size: {{ block.settings.question_size_desktop }}px;
+    }
+
+    .ai-faq-answer-content-{{ ai_gen_id }} {
+      font-size: {{ block.settings.answer_size_desktop }}px;
+    }
+
+    .ai-faq-cta-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.cta_text_size_desktop }}px;
+    }
+
+    .ai-faq-cta-button-{{ ai_gen_id }} {
+      font-size: {{ block.settings.button_text_size_desktop }}px;
+    }
+  }
+{% endstyle %}
+
+<greenside-faq-{{ ai_gen_id }} class="ai-faq-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-faq-container-{{ ai_gen_id }}">
+    {% if block.settings.section_title != blank %}
+      <h2 class="ai-faq-title-{{ ai_gen_id }}">{{ block.settings.section_title }}</h2>
+    {% endif %}
+
+    <div class="ai-faq-accordion-{{ ai_gen_id }}">
+      {% for i in (1..9) %}
+        {% liquid
+          assign question_key = 'question_' | append: i
+          assign answer_key = 'answer_' | append: i
+          assign question = block.settings[question_key]
+          assign answer = block.settings[answer_key]
+        %}
+
+        {% if question != blank and answer != blank %}
+          <div class="ai-faq-item-{{ ai_gen_id }}" data-faq-item>
+            <button class="ai-faq-question-{{ ai_gen_id }}" aria-expanded="false">
+              <span class="ai-faq-question-text-{{ ai_gen_id }}">{{ question }}</span>
+              <span class="ai-faq-icon-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="ai-faq-answer-{{ ai_gen_id }}">
+              <div class="ai-faq-answer-content-{{ ai_gen_id }}">{{ answer }}</div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if block.settings.show_cta %}
+      <div class="ai-faq-cta-section-{{ ai_gen_id }}">
+        {% if block.settings.cta_text != blank %}
+          <p class="ai-faq-cta-text-{{ ai_gen_id }}">{{ block.settings.cta_text }}</p>
+        {% endif %}
+        {% if block.settings.cta_button_text != blank %}
+          <a href="#" class="ai-faq-cta-button-{{ ai_gen_id }}" data-greenside-signup-trigger>
+            {{ block.settings.cta_button_text }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</greenside-faq-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class GreensideFaq{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.items = this.querySelectorAll('[data-faq-item]');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.items.forEach((item) => {
+          const button = item.querySelector('.ai-faq-question-{{ ai_gen_id }}');
+          const answer = item.querySelector('.ai-faq-answer-{{ ai_gen_id }}');
+
+          button.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            this.items.forEach((otherItem) => {
+              if (otherItem !== item) {
+                otherItem.classList.remove('active');
+                const otherButton = otherItem.querySelector('.ai-faq-question-{{ ai_gen_id }}');
+                otherButton.setAttribute('aria-expanded', 'false');
+              }
+            });
+
+            if (isActive) {
+              item.classList.remove('active');
+              button.setAttribute('aria-expanded', 'false');
+            } else {
+              item.classList.add('active');
+              button.setAttribute('aria-expanded', 'true');
+            }
+          });
+        });
+      }
+    }
+
+    customElements.define('greenside-faq-{{ ai_gen_id }}', GreensideFaq{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Greenside FAQ",
+  "settings": [
+    { "type": "header", "content": "Section" },
+    { "type": "text", "id": "section_title", "label": "Section title", "default": "GOT QUESTIONS? WE'VE GOT ANSWERS." },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 600, "max": 1200, "step": 50, "unit": "px", "default": 800 },
+    { "type": "range", "id": "title_spacing", "label": "Title bottom spacing", "min": 20, "max": 80, "step": 5, "unit": "px", "default": 40 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#1B4332" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "item_background", "label": "Item background", "default": "#1B4332" },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#2d5a45" },
+    { "type": "color", "id": "question_hover_bg", "label": "Question hover background", "default": "#234d3a" },
+    { "type": "color", "id": "question_text_color", "label": "Question text", "default": "#1a3d1f" },
+    { "type": "color", "id": "answer_color", "label": "Answer text", "default": "#e8f0ed" },
+    { "type": "header", "content": "Accordion style" },
+    { "type": "range", "id": "item_spacing", "label": "Item spacing", "min": 8, "max": 24, "step": 2, "unit": "px", "default": 12 },
+    { "type": "range", "id": "border_radius", "label": "Border radius", "min": 0, "max": 20, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "question_padding", "label": "Question padding", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 18 },
+    { "type": "header", "content": "Typography - Mobile" },
+    { "type": "range", "id": "title_size_mobile", "label": "Title size", "min": 20, "max": 40, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "question_size_mobile", "label": "Question size", "min": 14, "max": 20, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "answer_size_mobile", "label": "Answer size", "min": 13, "max": 18, "step": 1, "unit": "px", "default": 14 },
+    { "type": "header", "content": "Typography - Desktop" },
+    { "type": "range", "id": "title_size_desktop", "label": "Title size", "min": 28, "max": 56, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "question_size_desktop", "label": "Question size", "min": 16, "max": 24, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "answer_size_desktop", "label": "Answer size", "min": 14, "max": 20, "step": 1, "unit": "px", "default": 16 },
+    { "type": "header", "content": "Spacing - Mobile" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 30, "max": 100, "step": 5, "unit": "px", "default": 50 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 30, "max": 100, "step": 5, "unit": "px", "default": 50 },
+    { "type": "header", "content": "Spacing - Desktop" },
+    { "type": "range", "id": "padding_top_desktop", "label": "Top padding", "min": 40, "max": 120, "step": 10, "unit": "px", "default": 70 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Bottom padding", "min": 40, "max": 120, "step": 10, "unit": "px", "default": 70 },
+    { "type": "header", "content": "FAQ items" },
+    { "type": "text", "id": "question_1", "label": "Question 1", "default": "Is joining the waitlist free?" },
+    { "type": "textarea", "id": "answer_1", "label": "Answer 1", "default": "Yes. Joining the Greenside waitlist is completely free. You'll receive launch updates and information about your early-access benefits." },
+    { "type": "text", "id": "question_2", "label": "Question 2", "default": "Do I have to buy anything to join?" },
+    { "type": "textarea", "id": "answer_2", "label": "Answer 2", "default": "No. You don't need to purchase anything to join the waitlist." },
+    { "type": "text", "id": "question_3", "label": "Question 3", "default": "When are you launching?" },
+    { "type": "textarea", "id": "answer_3", "label": "Answer 3", "default": "We're currently preparing Greenside for launch. We haven't announced a specific launch date yet, but waitlist members will be among the first to know when we're ready." },
+    { "type": "text", "id": "question_4", "label": "Question 4", "default": "How do Greenside competitions work?" },
+    { "type": "textarea", "id": "answer_4", "label": "Answer 4", "default": "Greenside will offer competitions to win premium golf equipment. Full competition details, entry conditions and rules will be clearly displayed for each competition." },
+    { "type": "text", "id": "question_5", "label": "Question 5", "default": "How much will entries cost?" },
+    { "type": "textarea", "id": "answer_5", "label": "Answer 5", "default": "Our competitions are planned to offer low-cost entries, with some competitions starting from as little as 99p. The exact entry price will be clearly displayed for each competition." },
+    { "type": "text", "id": "question_6", "label": "Question 6", "default": "How will winners be chosen?" },
+    { "type": "textarea", "id": "answer_6", "label": "Answer 6", "default": "Each competition will clearly explain how its winner is determined before entries are made. Full competition rules will be available when competitions go live." },
+    { "type": "text", "id": "question_7", "label": "Question 7", "default": "How do referral rewards work?" },
+    { "type": "textarea", "id": "answer_7", "label": "Answer 7", "default": "Waitlist members will be able to share their unique referral link and earn rewards when friends join. The exact referral reward structure will be clearly explained when the programme goes live." },
+    { "type": "text", "id": "question_8", "label": "Question 8", "default": "Where can I find the competition terms and conditions?" },
+    { "type": "textarea", "id": "answer_8", "label": "Answer 8", "default": "Full competition terms, conditions and relevant information will be made available before competitions launch." },
+    { "type": "text", "id": "question_9", "label": "Question 9", "default": "How will I know when Greenside launches?" },
+    { "type": "textarea", "id": "answer_9", "label": "Answer 9", "default": "We'll contact everyone on the waitlist when Greenside is ready to launch." },
+    { "type": "header", "content": "Call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show CTA section", "default": true },
+    { "type": "text", "id": "cta_text", "label": "CTA text", "default": "Still want to be first in line?" },
+    { "type": "text", "id": "cta_button_text", "label": "Button text", "default": "GET MY DOUBLE ENTRIES" },
+    { "type": "url", "id": "cta_button_link", "label": "Button link" },
+    { "type": "range", "id": "cta_spacing", "label": "CTA top spacing", "min": 30, "max": 80, "step": 5, "unit": "px", "default": 50 },
+    { "type": "range", "id": "cta_text_spacing", "label": "CTA text bottom spacing", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 20 },
+    { "type": "header", "content": "CTA typography - Mobile" },
+    { "type": "range", "id": "cta_text_size_mobile", "label": "CTA text size", "min": 14, "max": 22, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "button_text_size_mobile", "label": "Button text size", "min": 14, "max": 20, "step": 1, "unit": "px", "default": 16 },
+    { "type": "header", "content": "CTA typography - Desktop" },
+    { "type": "range", "id": "cta_text_size_desktop", "label": "CTA text size", "min": 16, "max": 28, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "button_text_size_desktop", "label": "Button text size", "min": 16, "max": 22, "step": 1, "unit": "px", "default": 18 },
+    { "type": "header", "content": "Button style" },
+    { "type": "color", "id": "button_bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "button_text_color", "label": "Text", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_bg", "label": "Hover background", "default": "#1B4332" },
+    { "type": "color", "id": "button_hover_text_color", "label": "Hover text", "default": "#ffffff" },
+    { "type": "range", "id": "button_padding_vertical", "label": "Vertical padding", "min": 12, "max": 24, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "button_padding_horizontal", "label": "Horizontal padding", "min": 24, "max": 60, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "button_border_radius", "label": "Border radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "presets": [{ "name": "Greenside FAQ" }]
+}
+{% endschema %}

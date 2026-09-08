@@ -1,0 +1,55 @@
+{% doc %}
+  Header Actions Component
+
+  Renders the header actions.
+
+  @param {object} [section] - The section object providing settings such as actions_font.
+  @param {block} [block] - The block object, used for Shopify editor attributes.
+  @param {string} [display_style] - Controls display mode for header actions: 'icon' or 'text'.
+  @param {string} [customer_account_menu] - The menu handle passed to the shopify-account component.
+
+  @example
+  {% render 'header-actions', section: section %}
+{% enddoc %}
+
+<header-actions
+  {% if display_style == 'text' %}
+    class="header-actions--text"
+  {% endif %}
+  {{- block.shopify_attributes -}}
+>
+  <span
+    ref="liveRegion"
+    class="visually-hidden"
+    role="status"
+    data-testid="cart-count-live-region"
+  ></span>
+</header-actions>
+
+{% stylesheet %}
+  .header {
+    --account-offset-top: calc(
+      var(--header-group-height) + (var(--header-height) * var(--transparent-header-offset-boolean))
+    );
+
+    &[data-sticky-state='active'] {
+      --account-offset-top: calc(var(--header-height) - 1px);
+    }
+  }
+
+  header-actions {
+    display: flex;
+
+    @media screen and (max-width: 749px) {
+      justify-self: flex-end;
+    }
+  }
+
+  #header-component[data-menu-style='drawer'] header-actions {
+    justify-self: flex-end;
+  }
+
+  .header__column--right header-actions {
+    margin-inline-start: calc(var(--gap-md) * -1);
+  }
+{% endstylesheet %}

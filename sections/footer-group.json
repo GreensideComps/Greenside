@@ -1,0 +1,29 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:names.footer",
+  "sections": {
+    "custom_liquid_8jKPXt": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<div style=\"background:#1b4332;color:#ffffff;padding:48px 20px 24px;\"><div style=\"max-width:1100px;margin:0 auto;\"><div style=\"display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;margin-bottom:32px;\">{% if settings.logo %}<img src=\"{{ settings.logo | image_url: width: 240 }}\" alt=\"Greenside Competitions\" style=\"max-width:200px;height:auto;\">{% else %}<div style=\"font-size:20px;font-weight:800;letter-spacing:0.5px;\">GREENSIDE COMPETITIONS</div>{% endif %}<p style=\"margin:0;font-size:14px;color:#c9d8ce;max-width:420px;line-height:1.5;\">Real prizes. Transparent odds. No gimmicks. Coming soon to UK golfers.</p><div style=\"display:flex;gap:18px;margin-top:4px;\"><a href=\"https://www.instagram.com/greenside_competitions\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" style=\"color:#ffffff;display:inline-flex;\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><rect x=\"2\" y=\"2\" width=\"20\" height=\"20\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4.2\"/><circle cx=\"17.3\" cy=\"6.7\" r=\"1\" fill=\"currentColor\" stroke=\"none\"/></svg></a><a href=\"https://www.tiktok.com/@greenside_competitions\" target=\"_blank\" rel=\"noopener\" aria-label=\"TikTok\" style=\"color:#ffffff;display:inline-flex;\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M16.5 2c.3 2.1 1.6 3.7 3.8 4v2.9c-1.4.1-2.7-.3-3.8-1v6.9c0 3.4-2.8 6.2-6.2 6.2S4.1 17.2 4.1 13.8c0-3.3 2.6-6 5.9-6.2v3.1c-1.6.2-2.8 1.5-2.8 3.1 0 1.7 1.4 3.1 3.1 3.1s3.1-1.4 3.1-3.1V2h3.1z\"/></svg></a></div></div><nav aria-label=\"Footer\" style=\"border-top:1px solid rgba(255,255,255,0.15);padding-top:20px;\"><div style=\"display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-bottom:16px;\"><a href=\"shopify://pages/privacy-notice\" style=\"color:#ffffff;text-decoration:none;font-size:13px;padding:6px 4px;\">Privacy Notice</a><a href=\"shopify://pages/terms-conditions\" style=\"color:#ffffff;text-decoration:none;font-size:13px;padding:6px 4px;\">Terms &amp; Conditions</a><a href=\"shopify://pages/contact\" style=\"color:#ffffff;text-decoration:none;font-size:13px;padding:6px 4px;\">Contact</a></div><p style=\"text-align:center;margin:0;font-size:12px;color:#a8c2b3;\">&copy; {{ 'now' | date: '%Y' }} Greenside Competitions Ltd. All rights reserved.</p></nav></div></div>",
+        "background_color": "#1b4332",
+        "section_width": "page-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "custom_liquid_8jKPXt"
+  ]
+}

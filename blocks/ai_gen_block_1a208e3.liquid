@@ -1,0 +1,514 @@
+{% doc %}
+  @prompt
+    Create a Final CTA section for a golf competition waitlist website called Greenside Competitions. The section must have a full-width background image of a golf course (golf hole with flag at sunrise, dewy grass, warm light) with NO coloured overlay — the image should be fully visible behind the content. On top of the image display: a bold headline "READY TO JOIN GREENSIDE?", supporting text "Be among the first golfers to access Greenside competitions and early-access benefits.", a secondary headline "JOIN BEFORE LAUNCH & GET DOUBLE ENTRIES", an email input field with placeholder "Email address" and a button "GET MY DOUBLE ENTRIES" linking to #email-capture, a trust line "🔒 Your information is kept secure and you can unsubscribe at any time.", and a success message "Thanks for joining! We'll be in touch soon with your double entry bonus." All text should be white and clearly readable over the image. No green or coloured background overlay.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-final-cta-{{ ai_gen_id }} {
+    display: block;
+    position: relative;
+    width: 100%;
+    min-height: 600px;
+    overflow: hidden;
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .ai-final-cta-background-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-final-cta-background-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2d5016 0%, #52b788 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-final-cta-background-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 600px;
+    opacity: 0.3;
+  }
+
+  .ai-final-cta-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+  }
+
+  .ai-final-cta-content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 600px;
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+    text-align: center;
+  }
+
+  .ai-final-cta-headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.headline_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 16px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+  }
+
+  .ai-final-cta-supporting-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.supporting_text_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 32px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  .ai-final-cta-secondary-headline-{{ ai_gen_id }} {
+    font-size: {{ block.settings.secondary_headline_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 24px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    max-width: 700px;
+  }
+
+  .ai-final-cta-form-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 16px;
+  }
+
+  .ai-final-cta-form-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }} {
+    flex: 1;
+    min-width: 250px;
+    padding: 16px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #000000;
+    font-size: 16px;
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }}::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .ai-final-cta-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    background: #ffffff;
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }} {
+    padding: 16px 32px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .ai-final-cta-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .ai-final-cta-trust-line-{{ ai_gen_id }} {
+    font-size: {{ block.settings.trust_line_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+  }
+
+  .ai-final-cta-success-{{ ai_gen_id }} {
+    font-size: 16px;
+    color: {{ block.settings.text_color }};
+    background: rgba(0, 128, 96, 0.9);
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-top: 16px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-final-cta-error-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: #ffffff;
+    background: rgba(216, 44, 13, 0.9);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 12px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-final-cta-content-{{ ai_gen_id }} {
+      min-height: 500px;
+      padding: {{ block.settings.padding_top | times: 0.7 }}px 16px {{ block.settings.padding_bottom | times: 0.7 }}px;
+    }
+
+    .ai-final-cta-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.headline_size | times: 0.6 }}px;
+    }
+
+    .ai-final-cta-supporting-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.supporting_text_size | times: 0.9 }}px;
+    }
+
+    .ai-final-cta-secondary-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.secondary_headline_size | times: 0.7 }}px;
+    }
+
+    .ai-final-cta-form-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ai-final-cta-input-{{ ai_gen_id }} {
+      min-width: 100%;
+    }
+
+    .ai-final-cta-button-{{ ai_gen_id }} {
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<final-cta-{{ ai_gen_id }} class="ai-final-cta-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-final-cta-background-{{ ai_gen_id }}">
+    {% if block.settings.background_image %}
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    {% else %}
+      <div class="ai-final-cta-background-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        <div class="ai-final-cta-empty-state-{{ ai_gen_id }}">
+          Next, add a golf course background image
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-final-cta-content-{{ ai_gen_id }}">
+    {%- if block.settings.headline != blank -%}
+      <h2 class="ai-final-cta-headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h2>
+    {%- endif -%}
+
+    {%- if block.settings.supporting_text != blank -%}
+      <p class="ai-final-cta-supporting-text-{{ ai_gen_id }}">{{ block.settings.supporting_text }}</p>
+    {%- endif -%}
+
+    {%- if block.settings.secondary_headline != blank -%}
+      <h3 class="ai-final-cta-secondary-headline-{{ ai_gen_id }}">{{ block.settings.secondary_headline }}</h3>
+    {%- endif -%}
+
+    <div class="ai-final-cta-form-wrapper-{{ ai_gen_id }}">
+      {%- form 'contact' -%}
+        <input type="hidden" name="contact[greenside_waitlist]" value="true">
+        
+        <div class="ai-final-cta-form-{{ ai_gen_id }}">
+          <input
+            type="email"
+            name="contact[email]"
+            class="ai-final-cta-input-{{ ai_gen_id }}"
+            value="{{ form.email }}"
+            aria-required="true"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="ai-final-cta-error-{{ ai_gen_id }}"
+            {% endif %}
+            {% if form.posted_successfully? %}
+              aria-describedby="ai-final-cta-success-{{ ai_gen_id }}"
+            {% endif %}
+            placeholder="{{ block.settings.email_placeholder }}"
+            required
+          >
+          <button
+            type="submit"
+            class="ai-final-cta-button-{{ ai_gen_id }}"
+          >
+            {{ block.settings.button_text }}
+          </button>
+        </div>
+
+        {%- if form.errors -%}
+          <div
+            id="ai-final-cta-error-{{ ai_gen_id }}"
+            class="ai-final-cta-error-{{ ai_gen_id }}"
+          >
+            <span>{{ form.errors.messages.email }}</span>
+          </div>
+        {%- endif -%}
+
+        {%- if form.posted_successfully? -%}
+          <div
+            id="ai-final-cta-success-{{ ai_gen_id }}"
+            class="ai-final-cta-success-{{ ai_gen_id }}"
+          >
+            <span>{{ block.settings.success_message }}</span>
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    {%- if block.settings.trust_line != blank -%}
+      <p class="ai-final-cta-trust-line-{{ ai_gen_id }}">{{ block.settings.trust_line }}</p>
+    {%- endif -%}
+  </div>
+</final-cta-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FinalCta{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.form = this.querySelector('form');
+        if (this.form) {
+          this.form.addEventListener('submit', this.handleSubmit.bind(this));
+        }
+      }
+
+      handleSubmit(event) {
+        const emailInput = this.querySelector('.ai-final-cta-input-{{ ai_gen_id }}');
+        if (emailInput && !emailInput.value) {
+          event.preventDefault();
+        }
+      }
+    }
+
+    customElements.define('final-cta-{{ ai_gen_id }}', FinalCta{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Final CTA waitlist",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Main headline",
+      "default": "READY TO JOIN GREENSIDE?"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "label": "Main headline size",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "textarea",
+      "id": "supporting_text",
+      "label": "Supporting text",
+      "default": "Be among the first golfers to access Greenside competitions and early-access benefits."
+    },
+    {
+      "type": "range",
+      "id": "supporting_text_size",
+      "label": "Supporting text size",
+      "min": 14,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "text",
+      "id": "secondary_headline",
+      "label": "Secondary headline",
+      "default": "JOIN BEFORE LAUNCH & GET DOUBLE ENTRIES"
+    },
+    {
+      "type": "range",
+      "id": "secondary_headline_size",
+      "label": "Secondary headline size",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Email address"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Input border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "GET MY DOUBLE ENTRIES"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#1b4332"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for joining! We'll be in touch soon with your double entry bonus."
+    },
+    {
+      "type": "header",
+      "content": "Trust line"
+    },
+    {
+      "type": "text",
+      "id": "trust_line",
+      "label": "Trust line text",
+      "default": "🔒 Your information is kept secure and you can unsubscribe at any time."
+    },
+    {
+      "type": "range",
+      "id": "trust_line_size",
+      "label": "Trust line size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    }
+  ],
+  "presets": [
+    {
+      "name": "Final CTA waitlist"
+    }
+  ]
+}
+{% endschema %}

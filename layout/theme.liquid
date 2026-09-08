@@ -1,0 +1,155 @@
+<!doctype html>
+<html
+  {% if request.design_mode %}
+    class="shopify-design-mode"
+  {% endif %}
+  lang="{{ request.locale.iso_code }}"
+>
+  <head>
+    {%- if settings.favicon != blank -%}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {%- endif -%}
+
+    {% comment %}
+      Opt into cross-document (MPA) view transitions and hold first paint until #MainContent
+      parses, so the transition runs consistently.
+      Both are gated on the same settings as the view-transitions.js opt-out switch (see snippets/scripts.liquid).
+    {% endcomment %}
+    {% if settings.transition_to_main_product or settings.page_transition_enabled %}
+      {% style %}
+        @media (prefers-reduced-motion: no-preference) {
+          @view-transition {
+            navigation: auto;
+          }
+        }
+      {% endstyle %}
+      <link
+        rel="expect"
+        href="#MainContent"
+        blocking="render"
+        id="view-transition-render-blocker"
+      >
+    {% endif %}
+
+    {%- render 'meta-tags' -%}
+    {%- render 'stylesheets' -%}
+    {%- render 'card-hover-effect-styles' -%}
+    {%- render 'fonts' -%}
+    {%- render 'scripts' -%}
+    {%- render 'theme-styles-variables' -%}
+    {%- render 'color-palette' -%}
+
+    {% if request.design_mode %}
+      {%- render 'theme-editor' -%}
+    {% endif %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+    {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
+
+    {% render 'chat-drawer' %}
+
+    <div class="page-wrapper">
+      <div id="header-group">
+        {% sections 'header-group' %}
+      </div>
+
+      <script>
+        window.measureHeaderHeights = (function () {
+          let measured = false;
+
+          return function measureHeaderHeights() {
+            if (measured) return;
+
+            const header = document.querySelector('#header-component');
+            const headerGroup = document.querySelector('#header-group');
+
+            if (!header || !headerGroup) return;
+            measured = true;
+
+            const headerHeight = header.offsetHeight;
+
+            let headerGroupHeight = 0;
+            for (const element of headerGroup.children) {
+              if (element instanceof HTMLElement) headerGroupHeight += element.offsetHeight;
+            }
+
+            if (header.hasAttribute('transparent') && header.parentElement?.nextElementSibling) {
+              headerGroupHeight += headerHeight;
+            }
+
+            document.body.style.setProperty('--header-height', `${headerHeight}px`);
+            document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
+          };
+        })();
+
+        if (document.querySelector('#header-component')?.hasAttribute('transparent')) {
+          measureHeaderHeights();
+        }
+
+        (function setTopRowHeight() {
+          const header = document.querySelector('#header-component');
+          const headerTopRow = header?.querySelector('.header__row--top');
+          if (!headerTopRow) return;
+
+          window.requestAnimationFrame(function () {
+            header.style.setProperty('--top-row-height', `${headerTopRow.offsetHeight}px`);
+          });
+        })();
+
+        (function updateTransparentHeaderOffset() {
+          const header = document.querySelector('#header-component');
+          const headerSection = document.querySelector('#header-group .header-section');
+          if (!headerSection || !header?.hasAttribute('transparent')) return;
+
+          const hasImmediateSection = headerSection.nextElementSibling?.classList.contains('shopify-section');
+          if (!hasImmediateSection) {
+            document.body.style.setProperty('--transparent-header-offset-boolean', '1');
+          }
+        })();
+
+        (function setHeaderMenuStyle() {
+          const headerComponent = document.querySelector('#header-component');
+          if (headerComponent) {
+            const isTouchDevice = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
+            const overflowList = headerComponent.querySelector('overflow-list');
+            const hasReachedMinimum = overflowList && overflowList.hasAttribute('minimum-reached');
+            headerComponent.dataset.menuStyle = isTouchDevice || hasReachedMinimum ? 'drawer' : 'menu';
+          }
+        })();
+      </script>
+
+      <main
+        id="MainContent"
+        class="content-for-layout"
+        role="main"
+        data-page-transition-enabled="{{ settings.page_transition_enabled }}"
+        data-product-transition="{{ settings.transition_to_main_product }}"
+        data-template="{{ template }}"
+      >
+        {{ content_for_layout }}
+      </main>
+
+      <footer>
+        {% sections 'footer-group' %}
+      </footer>
+    </div>
+
+    {% render 'cart-drawer', render_wrapper: true %}
+    {% render 'theme-drawer' %}
+
+    {% render 'search-modal' %}
+
+    {% if settings.quick_add or settings.mobile_quick_add %}
+      {% render 'quick-add-modal' %}
+    {% endif %}
+
+    {% render 'greenside-signup-modal' %}
+  </body>
+</html>
