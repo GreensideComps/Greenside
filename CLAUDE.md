@@ -47,6 +47,24 @@ Phone is captured and normalised to E.164 but SMS consent is deliberately **not*
 (`SMS_SENDER_CONFIGURED = false`) because no SMS sender is verified in Klaviyo. Don't flip that flag
 until one is.
 
+Signup also writes `greenside_*` properties to the Klaviyo profile. These are not decoration —
+they are how the promises made on the homepage get settled:
+
+| Property | Why it exists |
+|---|---|
+| `greenside_founding_member`, `greenside_double_entry_promised`, `greenside_signup_stage` | Identify who joined before launch, so the double-entry and Founding Member promises can be honoured |
+| `greenside_referral_code` | The golfer's own code (deterministic from their email), shown as a copyable link on the success screen |
+| `greenside_referred_by` | Who referred them, from `?ref=` on the landing URL. Count these per code to settle the referral tiers |
+| `greenside_signup_source`, `greenside_utm_*`, `greenside_referrer_host`, `greenside_landing_path` | First-touch attribution — answers "where did this signup come from" without any analytics vendor |
+| `greenside_first_seen_at`, `greenside_signup_at` | First visit vs. conversion time |
+
+Attribution is first-touch and kept in `localStorage`; a later `?ref=` is still captured, but never
+overwrites the original source. Every storage access is guarded — a browser that blocks storage
+still signs up normally.
+
+Run `python3 tests/test_signup_modal.py` after changing anything in the modal. It drives the real
+modal in Chromium with Klaviyo intercepted, so no live profiles are created.
+
 Klaviyo's client API response is often unreadable by the browser even though the write succeeds, so a
 network-level failure intentionally shows success. That's empirically correct, not a bug.
 
@@ -61,8 +79,13 @@ network-level failure intentionally shows success. That's empirically correct, n
   Those IDs change if a section is recreated in the theme editor, silently breaking the nav. The
   default `main-menu` (with its empty "Catalog" link) is not displayed.
 - Klaviyo MCP: `filter` on list/flow `id` only supports `any(...)`, not `equals(...)`.
+- Shopify's theme file API normalises `\uXXXX` escapes in uploaded files to the character
+  itself, so a file containing them will not round-trip byte-for-byte. Write the character
+  directly, and verify uploads by comparing `checksumMd5` against a local `md5sum`.
+- The sending-domain registration call is blocked by the agent permission classifier as a
+  DNS change. It needs explicit approval, or doing by hand in the Klaviyo UI.
 
-## Current state (verified 2026-09-12)
+## Current state (verified 2026-09-14)
 
 Live and publicly reachable — **password protection is off**. It is a waitlist landing page:
 0 products, 1 collection, 0 orders, 2 Klaviyo subscribers.
@@ -84,14 +107,19 @@ winners, or subscriber counts. There are no customers yet, so there is no social
    checkout journey do not exist and have never been tested.
 3. **Competition mechanics undecided** — skill question / free entry route, winner selection,
    closing dates, per-competition T&Cs. UK prize-competition law question, not a design one.
-4. **Promises with no mechanism.** The live page commits signups to "double entries", "referral
-   rewards" and Founding Member tiers. Nothing records or honours these yet.
-5. **No conversion tracking.** Shopify's built-in analytics covers sessions and source; Klaviyo
-   counts signups. Everything downstream of checkout is unmeasurable until products exist.
+4. ~~Promises with no mechanism.~~ **Resolved.** Signup now records founding-member and
+   double-entry flags, a referral code per golfer, and who referred whom — see the property
+   table above. The referral loop actually closes: the success screen hands the golfer a
+   copyable link. Settling the tiers is a Klaviyo segment, not a build.
+5. **Conversion tracking — partially resolved.** First-touch attribution now lands on every
+   Klaviyo profile, so "where did signups come from" and "how many joined" are both answerable
+   without an analytics vendor. Everything downstream of checkout (checkout starts, purchases,
+   which competitions convert, email revenue) stays unmeasurable until products exist.
 
 ### Deliberately deferred
 
-GA4/pixels (revisit when actively driving traffic), Klaviyo onsite JS and browse abandonment,
+GA4/pixels (first-touch attribution now covers the pre-launch questions; revisit when actively
+driving paid traffic or once checkout exists), Klaviyo onsite JS and browse abandonment,
 abandoned-checkout and order-confirmation flows (impossible without products), removing the unused
 Judge.me app, replacing the fragile nav anchors.
 
