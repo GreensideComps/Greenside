@@ -1,0 +1,4 @@
+# Repo-only files. These are not theme assets and must never be pushed to Shopify.
+CLAUDE.md
+tests/
+.github/

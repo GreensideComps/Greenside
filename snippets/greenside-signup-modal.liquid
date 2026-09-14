@@ -15,6 +15,21 @@
     the write completes server-side even when the fetch() promise itself rejects). Fixed below: a genuine
     HTTP error response still shows the error message, but a network-level failure (the actual symptom
     seen in testing) now shows success, since that's what's empirically true.
+
+  Attribution and promises:
+  - First-touch attribution (UTMs, referrer, ?ref=) is captured on page load and kept in
+    localStorage, then written to the Klaviyo profile as greenside_* properties on signup.
+    That is what answers "where did this signup come from?" without any analytics vendor.
+  - The homepage promises pre-launch joiners double entries, referral rewards and Founding
+    Member status. greenside_founding_member / greenside_double_entry_promised /
+    greenside_referred_by exist so those commitments can actually be settled later. Removing
+    them silently breaks promises already made to real people.
+  - Each golfer gets a deterministic referral code derived from their email, so the link is
+    stable forever with nothing stored server-side. Joins via that link land in
+    greenside_referred_by; count them in Klaviyo to settle the referral tiers.
+
+  Covered by tests/test_signup_modal.py (real Chromium, Klaviyo intercepted). Run it after
+  changing anything in here.
 {% enddoc %}
 
 <dialog id="greenside-signup-modal" class="greenside-modal">
@@ -69,6 +84,25 @@
         Thanks for joining the Greenside waitlist. Check your inbox for a confirmation, and we'll
         be in touch the moment entries open.
       </p>
+
+      <div class="greenside-modal__referral" data-greenside-referral hidden>
+        <p class="greenside-modal__referral-title">Invite your fourball</p>
+        <p class="greenside-modal__referral-help">
+          Share your link. We'll credit every golfer who joins through it.
+        </p>
+        <div class="greenside-modal__referral-row">
+          <input
+            type="text"
+            class="greenside-modal__referral-input"
+            data-greenside-referral-link
+            readonly
+            aria-label="Your referral link"
+          >
+          <button type="button" class="greenside-modal__referral-copy" data-greenside-referral-copy>
+            Copy
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </dialog>
@@ -230,6 +264,63 @@
     margin: 12px 0 0;
     text-align: center;
   }
+
+  .greenside-modal__referral {
+    margin: 24px 0 0;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #f6f9f7;
+  }
+
+  .greenside-modal__referral-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1B4332;
+    letter-spacing: 0.3px;
+  }
+
+  .greenside-modal__referral-help {
+    margin: 4px 0 12px;
+    font-size: 12px;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .greenside-modal__referral-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .greenside-modal__referral-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #1B2420;
+  }
+
+  .greenside-modal__referral-copy {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    background-color: #4a8c2a;
+    color: #ffffff;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  .greenside-modal__referral-copy:hover {
+    background-color: #1B4332;
+  }
 </style>
 
 <script>
@@ -237,6 +328,149 @@
     var KLAVIYO_COMPANY_ID = 'VLkYWr'; // confirmed via Klaviyo:get_account_details
     var KLAVIYO_LIST_ID = 'Uh2nHm'; // Email List
     var SMS_SENDER_CONFIGURED = false; // flip to true once a Klaviyo SMS sender is verified
+    var ATTRIBUTION_KEY = 'greenside_attribution_v1';
+
+    // Storage can throw outright in private browsing or with site data blocked,
+    // so every read and write is guarded. Attribution is a nice-to-have: it must
+    // never be able to stop someone signing up.
+    function storageGet(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function storageSet(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (e) {
+        /* no-op */
+      }
+    }
+
+    function parseQuery(search) {
+      var out = {};
+      var qs = String(search || '').replace(/^\?/, '');
+      if (!qs) return out;
+
+      qs.split('&').forEach(function (pair) {
+        if (!pair) return;
+        var idx = pair.indexOf('=');
+        var rawKey = idx === -1 ? pair : pair.slice(0, idx);
+        var rawVal = idx === -1 ? '' : pair.slice(idx + 1);
+        try {
+          var key = decodeURIComponent(rawKey.replace(/\+/g, ' ')).toLowerCase();
+          if (key) out[key] = decodeURIComponent(rawVal.replace(/\+/g, ' '));
+        } catch (e) {
+          /* skip malformed pairs rather than losing the whole query string */
+        }
+      });
+      return out;
+    }
+
+    // Only counts as a referrer if it came from another site. Internal navigation
+    // would otherwise overwrite the real source with our own domain.
+    function externalReferrerHost(referrer, currentHost) {
+      if (!referrer) return '';
+      try {
+        var host = new URL(referrer).hostname.replace(/^www\./, '');
+        var self = String(currentHost || '').replace(/^www\./, '');
+        return host && host !== self ? host : '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    // Collapses the various signals into one human-readable answer to
+    // "where did this signup come from?", readable at a glance in Klaviyo.
+    function deriveSource(params, referrerHost) {
+      if (params.utm_source) return String(params.utm_source).toLowerCase();
+      if (params.ref) return 'referral';
+
+      if (referrerHost) {
+        if (/instagram\./.test(referrerHost)) return 'instagram';
+        if (/tiktok\./.test(referrerHost)) return 'tiktok';
+        if (/(facebook\.|fb\.me)/.test(referrerHost)) return 'facebook';
+        if (/google\./.test(referrerHost)) return 'google';
+        if (/bing\./.test(referrerHost)) return 'bing';
+        if (/(youtube\.|youtu\.be)/.test(referrerHost)) return 'youtube';
+        if (/(twitter\.|x\.com)/.test(referrerHost)) return 'twitter';
+        if (/reddit\./.test(referrerHost)) return 'reddit';
+        return referrerHost;
+      }
+
+      return 'direct';
+    }
+
+    function buildAttribution(location, referrer) {
+      var params = parseQuery(location.search);
+      var referrerHost = externalReferrerHost(referrer, location.hostname);
+
+      return {
+        source: deriveSource(params, referrerHost),
+        utm_source: params.utm_source || '',
+        utm_medium: params.utm_medium || '',
+        utm_campaign: params.utm_campaign || '',
+        utm_content: params.utm_content || '',
+        utm_term: params.utm_term || '',
+        referrer_host: referrerHost,
+        referred_by: params.ref || '',
+        landing_path: location.pathname || '/',
+        first_seen_at: new Date().toISOString()
+      };
+    }
+
+    // First-touch wins: the channel that discovered someone keeps the credit even
+    // if they come back directly later. The one exception is a referral code
+    // arriving on a later visit, which would otherwise be lost entirely.
+    function captureAttribution() {
+      var existingRaw = storageGet(ATTRIBUTION_KEY);
+      var fresh = buildAttribution(window.location, document.referrer);
+
+      if (!existingRaw) {
+        storageSet(ATTRIBUTION_KEY, JSON.stringify(fresh));
+        return;
+      }
+
+      try {
+        var existing = JSON.parse(existingRaw);
+        if (fresh.referred_by && !existing.referred_by) {
+          existing.referred_by = fresh.referred_by;
+          storageSet(ATTRIBUTION_KEY, JSON.stringify(existing));
+        }
+      } catch (e) {
+        storageSet(ATTRIBUTION_KEY, JSON.stringify(fresh));
+      }
+    }
+
+    function getAttribution() {
+      var raw = storageGet(ATTRIBUTION_KEY);
+      if (raw) {
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          /* fall through to a fresh read below */
+        }
+      }
+      return buildAttribution(window.location, document.referrer);
+    }
+
+    // FNV-1a, then base36. Deterministic so a golfer's link is stable forever
+    // without us needing to store anything server-side.
+    function referralCodeFor(email) {
+      var normalised = String(email || '').trim().toLowerCase();
+      if (!normalised) return '';
+
+      var hash = 0x811c9dc5;
+      for (var i = 0; i < normalised.length; i++) {
+        hash ^= normalised.charCodeAt(i);
+        hash = (hash + ((hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24))) >>> 0;
+      }
+      return ('GS' + hash.toString(36).toUpperCase()).slice(0, 9);
+    }
+
+    captureAttribution();
 
     document.addEventListener('click', function (e) {
       var trigger = e.target.closest('[data-greenside-signup-trigger]');
@@ -248,7 +482,55 @@
       if (e.target.closest('[data-greenside-modal-close]')) {
         closeModal();
       }
+
+      if (e.target.closest('[data-greenside-referral-copy]')) {
+        copyReferralLink(e.target.closest('[data-greenside-referral-copy]'));
+      }
     });
+
+    function showReferralLink(email) {
+      var wrap = document.querySelector('[data-greenside-referral]');
+      var input = document.querySelector('[data-greenside-referral-link]');
+      var code = referralCodeFor(email);
+      if (!wrap || !input || !code) return;
+
+      input.value = window.location.origin + '/?ref=' + code;
+      wrap.hidden = false;
+    }
+
+    function copyReferralLink(button) {
+      var input = document.querySelector('[data-greenside-referral-link]');
+      if (!input || !input.value) return;
+
+      function confirmCopied() {
+        var original = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(function () {
+          button.textContent = original;
+        }, 2000);
+      }
+
+      // The async clipboard API needs a secure context and can still be refused,
+      // so fall back to the old selection-based copy rather than failing silently.
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value).then(confirmCopied, function () {
+          legacyCopy(input, confirmCopied);
+        });
+        return;
+      }
+
+      legacyCopy(input, confirmCopied);
+    }
+
+    function legacyCopy(input, onDone) {
+      try {
+        input.select();
+        input.setSelectionRange(0, 99999);
+        if (document.execCommand('copy')) onDone();
+      } catch (e) {
+        /* leave the link selected so it can be copied by hand */
+      }
+    }
 
     function openModal() {
       var modal = document.getElementById('greenside-signup-modal');
@@ -319,8 +601,30 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'JOINING...';
 
+        var attribution = getAttribution();
+
+        // These properties are what make the promises on the page honourable later:
+        // who joined before launch, who referred them, and where they came from.
+        // Without them the double-entry and referral commitments cannot be settled.
         var profileAttributes = {
           email: email,
+          properties: {
+            greenside_signup_stage: 'pre_launch_waitlist',
+            greenside_founding_member: true,
+            greenside_double_entry_promised: true,
+            greenside_referral_code: referralCodeFor(email),
+            greenside_referred_by: attribution.referred_by || '',
+            greenside_signup_source: attribution.source || '',
+            greenside_utm_source: attribution.utm_source || '',
+            greenside_utm_medium: attribution.utm_medium || '',
+            greenside_utm_campaign: attribution.utm_campaign || '',
+            greenside_utm_content: attribution.utm_content || '',
+            greenside_utm_term: attribution.utm_term || '',
+            greenside_referrer_host: attribution.referrer_host || '',
+            greenside_landing_path: attribution.landing_path || '',
+            greenside_first_seen_at: attribution.first_seen_at || '',
+            greenside_signup_at: new Date().toISOString()
+          },
           subscriptions: {
             email: { marketing: { consent: 'SUBSCRIBED' } }
           }
@@ -364,6 +668,7 @@
             // A real response came back from Klaviyo. Only a genuine error status
             // (not 2xx/202) should be treated as a failure here.
             if (res.ok || res.status === 202) {
+              showReferralLink(email);
               showView('success');
             } else {
               errorEl.textContent = "Something went wrong. Please try again, or email us directly.";
@@ -375,6 +680,7 @@
             // browser). Confirmed via live testing that Klaviyo still creates the
             // profile in this case — so we show success rather than a false error.
             console.warn('Greenside signup: response unreadable client-side, but the record still reaches Klaviyo.', err);
+            showReferralLink(email);
             showView('success');
           })
           .finally(function () {
