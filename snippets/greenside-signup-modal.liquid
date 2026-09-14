@@ -591,7 +591,7 @@
         if (rawPhone) {
           formattedPhone = formatUkPhoneToE164(rawPhone);
           if (!formattedPhone) {
-            errorEl.textContent = 'That phone number doesn\'t look right \u2014 please check it or leave it blank.';
+            errorEl.textContent = 'That phone number doesn\'t look right — please check it or leave it blank.';
             errorEl.hidden = false;
             return;
           }
