@@ -58,12 +58,19 @@
   assign body_font = settings.font_body
   assign body_font_bold = body_font | font_modify: 'weight', 'bolder'
   assign body_font_italic = body_font | font_modify: 'style', 'italic'
+  comment
+    Several components set font-weight 800 on headings. Loading the bolder
+    variant means the browser uses a real cut rather than synthesising one,
+    which is what makes faux-bold text look cheap.
+  endcomment
+  assign heading_font_bold = heading_font | font_modify: 'weight', 'bolder'
 -%}
 
 {{ heading_font | font_face: font_display: 'swap' }}
+{%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
 {{ body_font | font_face: font_display: 'swap' }}
-{{ body_font_bold | font_face: font_display: 'swap' }}
-{{ body_font_italic | font_face: font_display: 'swap' }}
+{%- if body_font_bold -%}{{ body_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+{%- if body_font_italic -%}{{ body_font_italic | font_face: font_display: 'swap' }}{%- endif -%}
 
 :root {
   /* Brand */

@@ -2026,3 +2026,5 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
 .referral__link { display: flex; gap: 0.5rem; align-items: stretch; flex-wrap: wrap; }
 .referral__link .field__input { flex: 1 1 200px; font-size: var(--text-sm); }
 .referral__link gs-copy { position: relative; display: flex; }
+
+.flexible-content > * + * { margin-top: 1rem; }

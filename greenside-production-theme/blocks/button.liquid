@@ -1,0 +1,32 @@
+{%- if block.settings.label != blank -%}
+  <div {{ block.shopify_attributes }}>
+    <a
+      class="button button--{{ block.settings.style }}"
+      {% if block.settings.link != blank %}href="{{ block.settings.link }}"{% else %}role="link" aria-disabled="true"{% endif %}
+    >
+      {{- block.settings.label | escape -}}
+    </a>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:blocks.all.button",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "label", "label": "t:sections.all.link_label", "default": "Browse competitions" },
+    { "type": "url", "id": "link", "label": "t:sections.all.link" },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" }
+      ],
+      "default": "primary"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.all.button" }]
+}
+{% endschema %}

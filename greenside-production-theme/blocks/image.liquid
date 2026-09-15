@@ -1,0 +1,33 @@
+{%- liquid
+  assign block_image = block.settings.image
+  assign block_alt = block_image.alt | default: block.settings.alt_fallback
+-%}
+<div {{ block.shopify_attributes }}>
+  {%- if block_image != blank -%}
+    {%- render 'responsive-image',
+      image: block_image,
+      alt: block_alt,
+      sizes: '(min-width: 990px) 900px, 100vw',
+      widths: '420,640,900,1200,1600'
+    -%}
+  {%- else -%}
+    {%- render 'placeholder', name: 'lifestyle-1' -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.all.image",
+  "tag": null,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "t:sections.all.image" },
+    {
+      "type": "text",
+      "id": "alt_fallback",
+      "label": "Alt text",
+      "info": "Used when the image has no alt text of its own. Describe what is in the picture."
+    }
+  ],
+  "presets": [{ "name": "t:blocks.all.image" }]
+}
+{% endschema %}

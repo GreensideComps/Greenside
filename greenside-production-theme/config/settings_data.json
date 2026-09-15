@@ -1,0 +1,111 @@
+{
+  "current": {
+    "logo_width": 180,
+    "logo_width_mobile": 130,
+    "brand_tagline": "Premium Prizes. Affordable Entries.",
+
+    "color_brand": "#1b4332",
+    "color_brand_deep": "#102a20",
+    "color_accent": "#4a8c2a",
+    "color_highlight": "#c9a961",
+    "color_page_background": "#f7f6f2",
+    "color_surface": "#ffffff",
+    "color_surface_muted": "#eef1ea",
+    "color_text": "#14261f",
+    "color_text_muted": "#5b6b63",
+    "color_border": "#dfe4de",
+    "color_success": "#2d6a4f",
+    "color_error": "#a6262c",
+
+    "font_heading": "archivo_n7",
+    "heading_case": "uppercase",
+    "heading_letter_spacing": -1,
+    "heading_scale": 100,
+    "font_body": "inter_n4",
+    "body_scale": 100,
+
+    "page_width": "1320",
+    "section_spacing": 72,
+    "card_radius": 14,
+    "media_radius": 10,
+    "card_shadow": "soft",
+    "enable_motion": true,
+
+    "button_radius": 10,
+    "button_case": "uppercase",
+    "button_letter_spacing": 6,
+    "button_weight": 700,
+
+    "card_image_ratio": "landscape",
+    "card_show_prize_value": true,
+    "card_show_progress": true,
+    "card_show_closing": true,
+    "card_show_badges": true,
+    "card_max_badges": 2,
+    "progress_style": "both",
+    "entry_word_singular": "entry",
+    "entry_word_plural": "entries",
+    "entry_cta_label": "Enter now",
+
+    "cart_behaviour": "drawer",
+    "cart_show_note": false,
+    "cart_show_recommendations": true,
+    "cart_reassurance": "<p>Secure checkout. Entries confirmed by email straight after purchase.</p>",
+
+    "predictive_search_enabled": true,
+    "predictive_search_show_pages": true,
+    "predictive_search_show_articles": true,
+
+    "analytics_enabled": true,
+    "analytics_debug": false,
+    "entry_progress_endpoint": "",
+    "referral_base_url": "",
+    "referral_query_param": "ref",
+
+    "legal_min_age": "18",
+
+    "sections": {}
+  },
+  "presets": {
+    "Greenside": {
+      "color_brand": "#1b4332",
+      "color_brand_deep": "#102a20",
+      "color_accent": "#4a8c2a",
+      "color_highlight": "#c9a961",
+      "color_page_background": "#f7f6f2",
+      "color_surface": "#ffffff",
+      "color_surface_muted": "#eef1ea",
+      "color_text": "#14261f",
+      "color_text_muted": "#5b6b63",
+      "color_border": "#dfe4de",
+      "font_heading": "archivo_n7",
+      "font_body": "inter_n4",
+      "heading_case": "uppercase",
+      "card_shadow": "soft",
+      "card_radius": 14,
+      "button_radius": 10,
+      "button_case": "uppercase",
+      "page_width": "1320"
+    },
+    "Greenside Mono": {
+      "color_brand": "#14261f",
+      "color_brand_deep": "#0c1f18",
+      "color_accent": "#1b4332",
+      "color_highlight": "#c9a961",
+      "color_page_background": "#ffffff",
+      "color_surface": "#ffffff",
+      "color_surface_muted": "#f2f4f1",
+      "color_text": "#14261f",
+      "color_text_muted": "#63706a",
+      "color_border": "#e3e7e3",
+      "font_heading": "archivo_n7",
+      "font_body": "inter_n4",
+      "heading_case": "none",
+      "card_shadow": "none",
+      "card_radius": 4,
+      "button_radius": 4,
+      "button_case": "uppercase",
+      "page_width": "1320"
+    }
+  }
+}

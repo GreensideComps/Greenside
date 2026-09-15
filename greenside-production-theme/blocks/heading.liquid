@@ -1,0 +1,30 @@
+{%- comment -%}
+  Theme block: heading. Usable in any section that accepts @theme blocks.
+{%- endcomment -%}
+{%- if block.settings.text != blank -%}
+  <h2 class="{{ block.settings.size }}" {{ block.shopify_attributes }}>
+    {{- block.settings.text | escape -}}
+  </h2>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:blocks.all.heading",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "text", "label": "t:sections.all.heading", "default": "Heading" },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "t:sections.all.heading_size",
+      "options": [
+        { "value": "h4", "label": "t:sections.all.size_small" },
+        { "value": "h3", "label": "t:sections.all.size_medium" },
+        { "value": "h2", "label": "t:sections.all.size_large" }
+      ],
+      "default": "h2"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.all.heading" }]
+}
+{% endschema %}

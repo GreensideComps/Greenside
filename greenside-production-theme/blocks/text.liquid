@@ -1,0 +1,17 @@
+{%- if block.settings.text != blank -%}
+  <div class="rte{% if block.settings.large %} text-lead{% endif %}" {{ block.shopify_attributes }}>
+    {{ block.settings.text }}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:blocks.all.text",
+  "tag": null,
+  "settings": [
+    { "type": "richtext", "id": "text", "label": "t:sections.all.content", "default": "<p>Text</p>" },
+    { "type": "checkbox", "id": "large", "label": "Larger text", "default": false }
+  ],
+  "presets": [{ "name": "t:blocks.all.text" }]
+}
+{% endschema %}
