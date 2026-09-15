@@ -1,0 +1,174 @@
+{%- comment -%}
+  Turns theme settings into CSS custom properties.
+
+  Colours are emitted as space separated RGB channels ("27 67 50") so any rule
+  can apply an alpha with `rgb(var(--color-brand) / 0.4)`.
+
+  The "on-*" colours are chosen by brightness, so text stays legible even if a
+  merchant swaps the brand colour for something pale.
+{%- endcomment -%}
+
+{%- liquid
+  assign brand = settings.color_brand | default: '#1b4332'
+  assign brand_deep = settings.color_brand_deep | default: '#102a20'
+  assign accent = settings.color_accent | default: '#4a8c2a'
+  assign highlight = settings.color_highlight | default: '#c9a961'
+  assign page_bg = settings.color_page_background | default: '#f7f6f2'
+  assign surface = settings.color_surface | default: '#ffffff'
+  assign surface_muted = settings.color_surface_muted | default: '#eef1ea'
+  assign text = settings.color_text | default: '#14261f'
+  assign text_muted = settings.color_text_muted | default: '#5b6b63'
+  assign border = settings.color_border | default: '#dfe4de'
+  assign success = settings.color_success | default: '#2d6a4f'
+  assign error = settings.color_error | default: '#a6262c'
+
+  assign accent_dark = accent | color_darken: 8
+  assign brand_tint = brand | color_lighten: 6
+
+  comment
+    color_brightness returns 0-255. 145 sits near the point where white text
+    stops meeting AA contrast, so anything brighter gets dark text instead.
+  endcomment
+  assign brand_brightness = brand | color_brightness
+  assign accent_brightness = accent | color_brightness
+  assign highlight_brightness = highlight | color_brightness
+
+  assign on_brand = '#ffffff'
+  if brand_brightness > 145
+    assign on_brand = '#0c1f18'
+  endif
+
+  assign on_accent = '#ffffff'
+  if accent_brightness > 145
+    assign on_accent = '#0c1f18'
+  endif
+
+  assign on_highlight = '#ffffff'
+  if highlight_brightness > 145
+    assign on_highlight = '#1f1705'
+  endif
+
+  assign page_width = settings.page_width | default: '1320'
+  assign heading_scale = settings.heading_scale | default: 100 | divided_by: 100.0
+  assign body_scale = settings.body_scale | default: 100 | divided_by: 100.0
+  assign heading_tracking = settings.heading_letter_spacing | default: -1 | divided_by: 100.0
+  assign button_tracking = settings.button_letter_spacing | default: 6 | divided_by: 100.0
+
+  assign heading_font = settings.font_heading
+  assign body_font = settings.font_body
+  assign body_font_bold = body_font | font_modify: 'weight', 'bolder'
+  assign body_font_italic = body_font | font_modify: 'style', 'italic'
+-%}
+
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ body_font | font_face: font_display: 'swap' }}
+{{ body_font_bold | font_face: font_display: 'swap' }}
+{{ body_font_italic | font_face: font_display: 'swap' }}
+
+:root {
+  /* Brand */
+  --color-brand: {{ brand | color_extract: 'red' }} {{ brand | color_extract: 'green' }} {{ brand | color_extract: 'blue' }};
+  --color-brand-deep: {{ brand_deep | color_extract: 'red' }} {{ brand_deep | color_extract: 'green' }} {{ brand_deep | color_extract: 'blue' }};
+  --color-brand-tint: {{ brand_tint | color_extract: 'red' }} {{ brand_tint | color_extract: 'green' }} {{ brand_tint | color_extract: 'blue' }};
+  --color-accent: {{ accent | color_extract: 'red' }} {{ accent | color_extract: 'green' }} {{ accent | color_extract: 'blue' }};
+  --color-accent-dark: {{ accent_dark | color_extract: 'red' }} {{ accent_dark | color_extract: 'green' }} {{ accent_dark | color_extract: 'blue' }};
+  --color-highlight: {{ highlight | color_extract: 'red' }} {{ highlight | color_extract: 'green' }} {{ highlight | color_extract: 'blue' }};
+
+  /* Text on strong colours */
+  --color-on-brand: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }};
+  --color-on-brand-muted: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }} / 0.74;
+  --color-on-brand-border: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }} / 0.22;
+  --color-on-accent: {{ on_accent | color_extract: 'red' }} {{ on_accent | color_extract: 'green' }} {{ on_accent | color_extract: 'blue' }};
+  --color-on-highlight: {{ on_highlight | color_extract: 'red' }} {{ on_highlight | color_extract: 'green' }} {{ on_highlight | color_extract: 'blue' }};
+
+  /* Surfaces */
+  --color-page-background: {{ page_bg | color_extract: 'red' }} {{ page_bg | color_extract: 'green' }} {{ page_bg | color_extract: 'blue' }};
+  --color-surface: {{ surface | color_extract: 'red' }} {{ surface | color_extract: 'green' }} {{ surface | color_extract: 'blue' }};
+  --color-surface-muted: {{ surface_muted | color_extract: 'red' }} {{ surface_muted | color_extract: 'green' }} {{ surface_muted | color_extract: 'blue' }};
+  --color-text: {{ text | color_extract: 'red' }} {{ text | color_extract: 'green' }} {{ text | color_extract: 'blue' }};
+  --color-text-muted: {{ text_muted | color_extract: 'red' }} {{ text_muted | color_extract: 'green' }} {{ text_muted | color_extract: 'blue' }};
+  --color-border: {{ border | color_extract: 'red' }} {{ border | color_extract: 'green' }} {{ border | color_extract: 'blue' }};
+
+  /* Status */
+  --color-success: {{ success | color_extract: 'red' }} {{ success | color_extract: 'green' }} {{ success | color_extract: 'blue' }};
+  --color-error: {{ error | color_extract: 'red' }} {{ error | color_extract: 'green' }} {{ error | color_extract: 'blue' }};
+  --color-focus: {{ accent | color_extract: 'red' }} {{ accent | color_extract: 'green' }} {{ accent | color_extract: 'blue' }};
+
+  /* Type */
+  --font-body-family: {{ body_font.family }}, {{ body_font.fallback_families }};
+  --font-body-style: {{ body_font.style }};
+  --font-body-weight: {{ body_font.weight }};
+  --font-heading-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+  --font-heading-style: {{ heading_font.style }};
+  --font-heading-weight: {{ heading_font.weight }};
+
+  --heading-scale: {{ heading_scale }};
+  --body-scale: {{ body_scale }};
+  --heading-tracking: {{ heading_tracking }}em;
+  --heading-case: {{ settings.heading_case | default: 'uppercase' }};
+
+  --text-h0: calc(clamp(2.5rem, 6.5vw, 4.75rem) * var(--heading-scale));
+  --text-h1: calc(clamp(2.125rem, 4.6vw, 3.5rem) * var(--heading-scale));
+  --text-h2: calc(clamp(1.75rem, 3.4vw, 2.5rem) * var(--heading-scale));
+  --text-h3: calc(clamp(1.375rem, 2.2vw, 1.75rem) * var(--heading-scale));
+  --text-h4: calc(1.25rem * var(--heading-scale));
+  --text-h5: calc(1.0625rem * var(--heading-scale));
+  --text-h6: calc(0.9375rem * var(--heading-scale));
+  --text-lead: calc(clamp(1.0625rem, 1.4vw, 1.1875rem) * var(--body-scale));
+  --text-base: calc(1rem * var(--body-scale));
+  --text-sm: calc(0.875rem * var(--body-scale));
+  --text-xs: calc(0.75rem * var(--body-scale));
+
+  /* Layout */
+  --page-width: {{ page_width }}px;
+  --gutter: 1rem;
+  --section-spacing: {{ settings.section_spacing | default: 72 }}px;
+  --section-padding-block-start: var(--section-spacing);
+  --section-padding-block-end: var(--section-spacing);
+
+  /* Shape */
+  --card-radius: {{ settings.card_radius | default: 14 }}px;
+  --media-radius: {{ settings.media_radius | default: 10 }}px;
+  --button-radius: {{ settings.button_radius | default: 10 }}px;
+  --input-radius: {{ settings.button_radius | default: 10 }}px;
+  --button-case: {{ settings.button_case | default: 'uppercase' }};
+  --button-tracking: {{ button_tracking }}em;
+  --button-weight: {{ settings.button_weight | default: 700 }};
+
+  /* Elevation */
+  {%- case settings.card_shadow -%}
+    {%- when 'none' -%}
+      --card-shadow: none;
+      --card-shadow-hover: none;
+    {%- when 'lifted' -%}
+      --card-shadow: 0 4px 16px rgb(var(--color-brand) / 0.1), 0 1px 3px rgb(var(--color-brand) / 0.06);
+      --card-shadow-hover: 0 12px 32px rgb(var(--color-brand) / 0.16), 0 2px 6px rgb(var(--color-brand) / 0.08);
+    {%- else -%}
+      --card-shadow: 0 1px 2px rgb(var(--color-brand) / 0.05);
+      --card-shadow-hover: 0 6px 20px rgb(var(--color-brand) / 0.1);
+  {%- endcase -%}
+
+  --overlay-shadow: 0 24px 60px rgb(var(--color-brand) / 0.22);
+
+  /* Select arrow, tinted to the body text colour. */
+  --icon-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='rgb({{ text | color_extract: 'red' }},{{ text | color_extract: 'green' }},{{ text | color_extract: 'blue' }})' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Chrome */
+  --header-height: 72px;
+  --z-header: 40;
+  --z-drawer: 60;
+  --z-modal: 70;
+}
+
+@media screen and (min-width: 750px) {
+  :root {
+    --gutter: 2rem;
+    --section-padding-block-start: calc(var(--section-spacing) * 1.25);
+    --section-padding-block-end: calc(var(--section-spacing) * 1.25);
+    --header-height: 84px;
+  }
+}
+
+{%- unless settings.enable_motion -%}
+  .card, .button, .link, .competition-card { transition: none !important; }
+{%- endunless -%}

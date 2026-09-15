@@ -1,0 +1,469 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "accessibility": {
+      "skip_to_content": "Skip to content",
+      "close": "Close",
+      "menu": "Menu",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu",
+      "previous": "Previous",
+      "next": "Next",
+      "loading": "Loading",
+      "new_window": "Opens in a new window",
+      "breadcrumbs": "Breadcrumbs",
+      "pagination": "Pagination",
+      "go_to_slide": "Go to slide {{ index }}",
+      "carousel": "Carousel",
+      "error": "Error",
+      "required": "Required"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search competitions",
+      "submit": "Search",
+      "clear": "Clear search",
+      "results_for": "Results for \"{{ terms }}\"",
+      "results_count": {
+        "one": "{{ count }} result",
+        "other": "{{ count }} results"
+      },
+      "no_results_title": "No results for \"{{ terms }}\"",
+      "no_results_body": "Check the spelling, or try a shorter search. You can also browse everything that is open right now.",
+      "suggestions": "Suggestions",
+      "shortcuts": "Popular right now",
+      "competitions": "Competitions",
+      "pages": "Pages",
+      "articles": "Articles",
+      "view_all_results": "View all results for \"{{ terms }}\"",
+      "results_available": "{{ count }} results available. Use the up and down arrow keys to review.",
+      "no_predictive_results": "Nothing matched that. Press enter to search the whole store."
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{ number }}",
+      "current_page": "Page {{ number }} of {{ total }}",
+      "load_more": "Load more",
+      "loading": "Loading…",
+      "showing": "Showing {{ count }} of {{ total }}"
+    },
+    "newsletter": {
+      "email_label": "Email address",
+      "email_placeholder": "you@email.com",
+      "first_name_label": "First name",
+      "submit": "Join",
+      "success": "You're in. Check your inbox to confirm.",
+      "error": "That didn't go through. Please check the address and try again.",
+      "already_subscribed": "You're already on the list."
+    },
+    "share": {
+      "label": "Share",
+      "copy_link": "Copy link",
+      "copied": "Link copied",
+      "whatsapp": "Share on WhatsApp",
+      "facebook": "Share on Facebook",
+      "x": "Share on X",
+      "email": "Share by email"
+    },
+    "social": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "x": "X",
+      "whatsapp": "WhatsApp",
+      "follow_on": "Follow Greenside on {{ platform }}"
+    },
+    "errors": {
+      "network": "We couldn't reach the store. Check your connection and try again.",
+      "generic": "Something went wrong. Please try again.",
+      "reload": "Reload the page"
+    },
+    "continue_shopping": "Browse competitions",
+    "view_all": "View all",
+    "learn_more": "Learn more",
+    "read_more": "Read more",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "back": "Back",
+    "home": "Home"
+  },
+  "header": {
+    "account": "Account",
+    "log_in": "Log in",
+    "cart": "Basket",
+    "cart_count": {
+      "one": "{{ count }} item in basket",
+      "other": "{{ count }} items in basket"
+    },
+    "search": "Search",
+    "menu": "Menu",
+    "announcement": "Announcement"
+  },
+  "footer": {
+    "newsletter_heading": "The Greenside Club",
+    "back_to_top": "Back to top",
+    "payment_methods": "Payment methods we accept",
+    "copyright": "© {{ year }} {{ shop }}."
+  },
+  "products": {
+    "competition": {
+      "entry_price": "Entry price",
+      "per_entry": "per entry",
+      "prize_value": "Prize value",
+      "cash_alternative": "Cash alternative",
+      "closes": "Closes",
+      "closed": "Closed",
+      "closing_today": "Closing today",
+      "closing_tomorrow": "Closing tomorrow",
+      "draw_date": "Draw",
+      "draw_today": "Draw today",
+      "draw_tomorrow": "Draw tomorrow",
+      "entries_sold": "{{ sold }} of {{ total }} {{ entry_word }}",
+      "entries_percent": "{{ percent }}% entered",
+      "entries_remaining": {
+        "one": "{{ count }} entry left",
+        "other": "{{ count }} entries left"
+      },
+      "progress_label": "Entry progress",
+      "max_per_person": "Max {{ count }} per person",
+      "choose_entries": "Choose your entries",
+      "entries": {
+        "one": "{{ count }} entry",
+        "other": "{{ count }} entries"
+      },
+      "custom_amount": "Another amount",
+      "quantity_label": "Number of entries",
+      "increase": "Add an entry",
+      "decrease": "Remove an entry",
+      "total_label": "Total",
+      "best_value": "Best value",
+      "most_popular": "Most popular",
+      "badge_new": "New",
+      "badge_featured": "Featured",
+      "badge_instant_win": "Instant win",
+      "badge_closing_soon": "Closing soon",
+      "badge_sold_out": "Fully entered",
+      "badge_closed": "Closed",
+      "badge_free_entry": "Free entry route",
+      "sold_out_title": "This competition is fully entered",
+      "sold_out_body": "Every entry has been taken. The draw takes place as published — winners are posted on our winners page.",
+      "closed_title": "This competition has closed",
+      "closed_body": "Entries are no longer open. Results are published on our winners page once the draw has taken place.",
+      "unavailable_title": "This competition isn't open yet",
+      "unavailable_body": "It isn't taking entries at the moment. Browse what's open now, or join the Club to hear first when it opens.",
+      "question_heading": "Skill question",
+      "question_help": "Answered at checkout.",
+      "free_entry_link": "Free entry route",
+      "rules_link": "Competition rules",
+      "details_heading": "Competition details",
+      "prize_heading": "The prize",
+      "included_heading": "What's included",
+      "how_drawn_heading": "How the winner is drawn",
+      "terms_heading": "Terms and eligibility",
+      "min_age": "Entrants must be {{ age }} or over and resident in the UK.",
+      "view_competition": "View competition"
+    },
+    "product": {
+      "add_to_cart": "Add to basket",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "vendor": "Brand",
+      "sku": "SKU",
+      "from_price": "From {{ price }}",
+      "sale_price": "Sale price",
+      "regular_price": "Regular price",
+      "unit_price": "Unit price",
+      "gallery_thumbnail": "Go to image {{ index }}",
+      "open_media": "Open image in full screen",
+      "media_of": "Image {{ index }} of {{ total }}",
+      "adding": "Adding…",
+      "added": "Added",
+      "view_basket": "View basket",
+      "share": "Share this competition",
+      "choose_option": "Choose {{ option }}",
+      "variant_unavailable": "That option isn't available",
+      "description_heading": "Description",
+      "recently_viewed": "Recently viewed",
+      "you_may_also_like": "More competitions",
+      "related_heading": "Other competitions you can enter"
+    },
+    "facets": {
+      "title": "Filter",
+      "apply": "Show results",
+      "clear": "Clear",
+      "clear_all": "Clear all",
+      "filter_by": "Filter by {{ name }}",
+      "sort_by": "Sort by",
+      "filters_selected": {
+        "one": "{{ count }} filter applied",
+        "other": "{{ count }} filters applied"
+      },
+      "showing": {
+        "one": "{{ count }} competition",
+        "other": "{{ count }} competitions"
+      },
+      "from": "From",
+      "to": "To",
+      "max_price": "The highest price is {{ price }}",
+      "open_filters": "Open filters",
+      "close_filters": "Close filters",
+      "no_results_title": "No competitions match those filters",
+      "no_results_body": "Try removing a filter, or clear them all to see everything that's open."
+    },
+    "empty": {
+      "collection_title": "Nothing open here yet",
+      "collection_body": "New competitions go live regularly. Join the Greenside Club and we'll tell you the moment this category has something in it.",
+      "browse_all": "Browse all competitions"
+    }
+  },
+  "cart": {
+    "title": "Your basket",
+    "drawer_title": "Your basket",
+    "empty_title": "Your basket is empty",
+    "empty_body": "Pick a competition, choose your entries, and you're in the draw.",
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "entry_count": {
+      "one": "{{ count }} entry",
+      "other": "{{ count }} entries"
+    },
+    "product": "Competition",
+    "price": "Price",
+    "quantity": "Entries",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "remove": "Remove",
+    "remove_item": "Remove {{ title }} from your basket",
+    "update": "Update basket",
+    "checkout": "Secure checkout",
+    "note": "Order note",
+    "note_placeholder": "Anything we should know?",
+    "taxes_and_shipping": "Taxes and any delivery costs are calculated at checkout.",
+    "discount": "Discount",
+    "discounts_applied": "Discounts applied",
+    "quantity_error": "You can only add {{ quantity }} of this to your basket.",
+    "quantity_error_generic": "That quantity isn't available.",
+    "updating": "Updating…",
+    "recommendations_heading": "Add another competition",
+    "continue": "Keep browsing",
+    "view_cart": "View basket",
+    "added_to_cart": "Added to your basket"
+  },
+  "customer": {
+    "account": {
+      "title": "Your account",
+      "welcome": "Hello {{ name }}",
+      "log_out": "Log out",
+      "details": "Account details",
+      "view_addresses": "Manage addresses",
+      "orders": "Your orders",
+      "entries": "Your entries",
+      "no_orders_title": "No orders yet",
+      "no_orders_body": "Once you enter a competition it'll show up here, with your entry numbers.",
+      "order_number": "Order",
+      "date": "Date",
+      "payment_status": "Payment",
+      "fulfillment_status": "Status",
+      "total": "Total",
+      "entries_note": "Entry numbers are emailed to you and listed on each order."
+    },
+    "login": {
+      "title": "Log in",
+      "subtitle": "Your entries, orders and account details.",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Forgot your password?",
+      "submit": "Log in",
+      "no_account": "New to Greenside?",
+      "create_account": "Create an account",
+      "guest_title": "Continue as a guest",
+      "guest_submit": "Continue"
+    },
+    "recover_password": {
+      "title": "Reset your password",
+      "subtitle": "We'll email you a link to set a new one.",
+      "submit": "Send reset link",
+      "success": "If that address has an account, a reset link is on its way.",
+      "cancel": "Back to log in"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "It takes a minute, and keeps every entry in one place.",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create account",
+      "has_account": "Already have an account?",
+      "log_in": "Log in",
+      "marketing_opt_in": "Email me new competitions and Club news. Unsubscribe any time."
+    },
+    "activate_account": {
+      "title": "Activate your account",
+      "subtitle": "Set a password to finish setting up.",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "submit": "Activate",
+      "decline": "Decline invitation"
+    },
+    "reset_password": {
+      "title": "Set a new password",
+      "password": "New password",
+      "password_confirm": "Confirm password",
+      "submit": "Save password"
+    },
+    "addresses": {
+      "title": "Your addresses",
+      "add_new": "Add an address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "delete_confirm": "Delete this address?",
+      "default": "Default address",
+      "set_default": "Use as my default address",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "company": "Company",
+      "address1": "Address",
+      "address2": "Address line 2",
+      "city": "Town or city",
+      "country": "Country",
+      "province": "County",
+      "zip": "Postcode",
+      "phone": "Phone",
+      "submit": "Save address",
+      "cancel": "Cancel",
+      "none": "You haven't saved an address yet."
+    },
+    "order": {
+      "title": "Order {{ name }}",
+      "date": "Placed on {{ date }}",
+      "cancelled": "Cancelled on {{ date }}",
+      "cancelled_reason": "Reason: {{ reason }}",
+      "product": "Competition",
+      "sku": "SKU",
+      "price": "Price",
+      "quantity": "Entries",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "shipping": "Delivery",
+      "tax": "Tax",
+      "discount": "Discount",
+      "billing_address": "Billing address",
+      "shipping_address": "Delivery address",
+      "payment_status": "Payment",
+      "fulfillment_status": "Status",
+      "back": "Back to your orders",
+      "entry_numbers": "Entry numbers"
+    }
+  },
+  "blogs": {
+    "article": {
+      "back_to_blog": "Back to {{ title }}",
+      "posted_on": "Posted on",
+      "by_author": "by {{ author }}",
+      "read_time": "{{ minutes }} min read",
+      "share": "Share this",
+      "tags": "Tags",
+      "comments": {
+        "one": "{{ count }} comment",
+        "other": "{{ count }} comments"
+      },
+      "comment_form_title": "Leave a comment",
+      "name": "Name",
+      "email": "Email",
+      "message": "Comment",
+      "submit": "Post comment",
+      "moderated": "Comments are reviewed before they appear.",
+      "success": "Thanks — your comment is posted.",
+      "success_moderated": "Thanks — your comment will appear once it's approved."
+    },
+    "empty": {
+      "title": "Nothing posted yet",
+      "body": "Check back soon."
+    }
+  },
+  "winners": {
+    "title": "Winners",
+    "eyebrow": "Real people. Real prizes.",
+    "filter_all": "All winners",
+    "prize_label": "Won",
+    "competition_label": "Competition",
+    "date_label": "Drawn",
+    "location_label": "From",
+    "watch": "Watch the call",
+    "read_story": "Read their story",
+    "empty_title": "Winners appear here after the first draw",
+    "empty_body": "Every winner is published with the competition they entered and the date of the draw.",
+    "count": {
+      "one": "{{ count }} winner",
+      "other": "{{ count }} winners"
+    }
+  },
+  "club": {
+    "title": "The Greenside Club",
+    "join": "Join the Club",
+    "member": "Member",
+    "not_connected": "Club accounts open soon."
+  },
+  "referral": {
+    "title": "Invite your fourball",
+    "your_link": "Your invite link",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "share_whatsapp": "Send on WhatsApp",
+    "share_message": "I'm entering competitions on Greenside — premium golf prizes, proper entry prices. Have a look:",
+    "sign_in_prompt": "Log in to get your invite link.",
+    "not_connected": "Invites open soon."
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "submit": "Send message",
+    "success": "Thanks — we'll come back to you shortly.",
+    "error": "Please check the highlighted fields and try again."
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Here's your {{ value }} gift card for {{ shop }}",
+      "subtext": "Your gift card",
+      "code": "Gift card code",
+      "shop_link": "Start browsing",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "qr_image_alt": "QR code — scan to redeem this gift card",
+      "print": "Print",
+      "remaining_html": "{{ balance }} left",
+      "expires": "Expires {{ date }}"
+    }
+  },
+  "page": {
+    "error_404": {
+      "title": "We can't find that page",
+      "body": "The link may be out of date, or the competition may have closed. Here's where to go next.",
+      "cta": "Browse competitions"
+    },
+    "password": {
+      "title": "Opening soon",
+      "login_prompt": "Enter the store password",
+      "password": "Password",
+      "submit": "Enter",
+      "error": "Wrong password — try again.",
+      "powered_by": "This store is password protected."
+    }
+  },
+  "shopify": {
+    "links": {
+      "powered_by_shopify": "Powered by Shopify"
+    }
+  }
+}
