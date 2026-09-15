@@ -1,0 +1,24 @@
+{%- comment -%}
+  Per-section spacing, emitted as a scoped style block.
+
+  Sections expose padding_top / padding_bottom as percentages of the global
+  section spacing setting, so a merchant changing the global rhythm moves every
+  section together while keeping their per-section adjustments.
+
+  Parameters:
+    id              section id
+    padding_top     0-200 (percent of the global spacing)
+    padding_bottom  0-200
+    extra           additional declarations for this section
+{%- endcomment -%}
+{%- liquid
+  assign top = padding_top | default: 100
+  assign bottom = padding_bottom | default: 100
+-%}
+{% style %}
+  #shopify-section-{{ id }} {
+    --section-padding-block-start: calc(var(--section-spacing) * {{ top | divided_by: 100.0 }});
+    --section-padding-block-end: calc(var(--section-spacing) * {{ bottom | divided_by: 100.0 }});
+    {{ extra }}
+  }
+{% endstyle %}

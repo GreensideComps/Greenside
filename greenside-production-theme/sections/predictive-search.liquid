@@ -1,0 +1,140 @@
+{%- comment -%}
+  Rendered by Shopify's predictive search endpoint:
+  /search/suggest?q=…&section_id=predictive-search
+
+  Every result is an <li role="option"> so the input can point
+  aria-activedescendant at it.
+{%- endcomment -%}
+{%- liquid
+  assign products = predictive_search.resources.products
+  assign pages = predictive_search.resources.pages
+  assign articles = predictive_search.resources.articles
+  assign queries = predictive_search.resources.queries
+  assign total = products.size | plus: pages.size | plus: articles.size | plus: queries.size
+-%}
+
+{%- if predictive_search.performed -%}
+  {%- if total == 0 -%}
+    <div class="predictive__empty" data-search-empty>
+      <p>{{ 'general.search.no_predictive_results' | t }}</p>
+    </div>
+    <span class="visually-hidden" data-search-count>0</span>
+  {%- else -%}
+    <div data-search-listbox role="listbox" aria-label="{{ 'general.search.suggestions' | t }}">
+      {%- if queries.size > 0 -%}
+        <div class="predictive__group">
+          <p class="predictive__heading" id="PredictiveQueries">{{ 'general.search.suggestions' | t }}</p>
+          <ul class="predictive__list" aria-labelledby="PredictiveQueries">
+            {%- for query in queries -%}
+              <li class="predictive__item" id="PredictiveOption-query-{{ forloop.index }}" role="option" aria-selected="false">
+                <a href="{{ routes.search_url }}?q={{ query.text | url_encode }}" tabindex="-1">
+                  {%- render 'icon', icon: 'search', size: 16 -%}
+                  <span class="predictive__text">
+                    <span class="predictive__title">{{ query.styled_text }}</span>
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if products.size > 0 -%}
+        <div class="predictive__group">
+          <p class="predictive__heading" id="PredictiveProducts">{{ 'general.search.competitions' | t }}</p>
+          <ul class="predictive__list" aria-labelledby="PredictiveProducts">
+            {%- for product in products -%}
+              <li class="predictive__item" id="PredictiveOption-product-{{ forloop.index }}" role="option" aria-selected="false">
+                <a href="{{ product.url }}" tabindex="-1">
+                  {%- if product.featured_media -%}
+                    <img
+                      class="predictive__thumb"
+                      src="{{ product.featured_media | image_url: width: 112, height: 112, crop: 'center' }}"
+                      alt=""
+                      width="56"
+                      height="56"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    {%- render 'placeholder', name: 'product-1', class: 'predictive__thumb' -%}
+                  {%- endif -%}
+                  <span class="predictive__text">
+                    <span class="predictive__title">{{ product.title | escape }}</span>
+                    <span class="predictive__meta">
+                      {%- if product.available -%}
+                        {{ product.price | money }} {{ 'products.competition.per_entry' | t }}
+                      {%- else -%}
+                        {{ 'products.competition.badge_sold_out' | t }}
+                      {%- endif -%}
+                    </span>
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if pages.size > 0 -%}
+        <div class="predictive__group">
+          <p class="predictive__heading" id="PredictivePages">{{ 'general.search.pages' | t }}</p>
+          <ul class="predictive__list" aria-labelledby="PredictivePages">
+            {%- for page in pages -%}
+              <li class="predictive__item" id="PredictiveOption-page-{{ forloop.index }}" role="option" aria-selected="false">
+                <a href="{{ page.url }}" tabindex="-1">
+                  {%- render 'icon', icon: 'info', size: 18 -%}
+                  <span class="predictive__text">
+                    <span class="predictive__title">{{ page.title | escape }}</span>
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if articles.size > 0 -%}
+        <div class="predictive__group">
+          <p class="predictive__heading" id="PredictiveArticles">{{ 'general.search.articles' | t }}</p>
+          <ul class="predictive__list" aria-labelledby="PredictiveArticles">
+            {%- for article in articles -%}
+              <li class="predictive__item" id="PredictiveOption-article-{{ forloop.index }}" role="option" aria-selected="false">
+                <a href="{{ article.url }}" tabindex="-1">
+                  {%- if article.image -%}
+                    <img
+                      class="predictive__thumb"
+                      src="{{ article.image | image_url: width: 112, height: 112, crop: 'center' }}"
+                      alt=""
+                      width="56"
+                      height="56"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    {%- render 'icon', icon: 'info', size: 18 -%}
+                  {%- endif -%}
+                  <span class="predictive__text">
+                    <span class="predictive__title">{{ article.title | escape }}</span>
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <p class="predictive__all">
+        <a class="link" href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}">
+          {{- 'general.search.view_all_results' | t: terms: predictive_search.terms -}}
+        </a>
+      </p>
+    </div>
+    <span class="visually-hidden" data-search-count>{{ total }}</span>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Predictive search",
+  "settings": []
+}
+{% endschema %}

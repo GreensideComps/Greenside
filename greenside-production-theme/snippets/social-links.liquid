@@ -1,0 +1,56 @@
+{%- comment -%}
+  Social account links. Each one is skipped unless the merchant has set a URL,
+  so the row never shows dead icons.
+{%- endcomment -%}
+{%- liquid
+  assign has_social = false
+  if settings.social_instagram_link != blank or settings.social_facebook_link != blank or settings.social_tiktok_link != blank or settings.social_youtube_link != blank or settings.social_x_link != blank or settings.social_whatsapp_link != blank
+    assign has_social = true
+  endif
+-%}
+{%- if has_social -%}
+  <ul class="footer__social {{ class }}">
+    {%- if settings.social_instagram_link != blank -%}
+      <li>
+        <a href="{{ settings.social_instagram_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'instagram', size: 18, label: 'Instagram' -%}
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_facebook_link != blank -%}
+      <li>
+        <a href="{{ settings.social_facebook_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'facebook', size: 18, label: 'Facebook' -%}
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_tiktok_link != blank -%}
+      <li>
+        <a href="{{ settings.social_tiktok_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'tiktok', size: 18, label: 'TikTok' -%}
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_youtube_link != blank -%}
+      <li>
+        <a href="{{ settings.social_youtube_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'youtube', size: 18, label: 'YouTube' -%}
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_x_link != blank -%}
+      <li>
+        <a href="{{ settings.social_x_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'x', size: 18, label: 'X' -%}
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_whatsapp_link != blank -%}
+      <li>
+        <a href="{{ settings.social_whatsapp_link }}" rel="noopener" target="_blank">
+          {%- render 'icon', icon: 'whatsapp', size: 18, label: 'WhatsApp' -%}
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+{%- endif -%}

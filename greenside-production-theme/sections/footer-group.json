@@ -1,0 +1,38 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "club-signup": {
+      "type": "email-signup",
+      "settings": {
+        "eyebrow": "The Greenside Club",
+        "heading": "Be first on the tee",
+        "text": "<p>New competitions, draw results and early access, straight to your inbox. One email when it matters, not five when it doesn't.</p>",
+        "colour_scheme": "brand",
+        "layout": "split",
+        "show_name": true,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "menu-competitions": {
+          "type": "menu",
+          "settings": { "heading": "Competitions", "menu": "footer" }
+        },
+        "menu-help": {
+          "type": "menu",
+          "settings": { "heading": "Help", "menu": "footer" }
+        }
+      },
+      "block_order": ["menu-competitions", "menu-help"],
+      "settings": {
+        "show_policy_links": true,
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": ["club-signup", "footer"]
+}

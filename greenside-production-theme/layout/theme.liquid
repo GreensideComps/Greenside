@@ -34,7 +34,16 @@
       document.documentElement.classList.add('js');
     </script>
 
+    {%- comment -%}
+      Deferred scripts run in document order, so theme.js always defines the
+      shared custom elements before the files that extend them.
+    {%- endcomment -%}
     <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'header.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+    {%- if settings.predictive_search_enabled -%}
+      <script src="{{ 'search.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
 
     {{ content_for_header }}
   </head>

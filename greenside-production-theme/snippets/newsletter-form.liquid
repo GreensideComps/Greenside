@@ -1,0 +1,80 @@
+{%- comment -%}
+  Email capture.
+
+  Posts to Shopify's customer form, which every major CRM (Klaviyo included)
+  syncs from, so the UI never has to be rebuilt when a provider is connected.
+  An `email_signup` analytics event fires on the success render.
+
+  Parameters:
+    id             unique suffix for input ids
+    location       label recorded with the analytics event
+    compact        true for a single-row layout
+    button_label   override the submit label
+    show_name      ask for a first name too (progressive profiling)
+{%- endcomment -%}
+
+<gs-newsletter class="newsletter" data-location="{{ location | default: 'unknown' }}">
+  {%- form 'customer', class: 'signup__form' -%}
+    <input type="hidden" name="contact[tags]" value="newsletter,greenside-club{% if location != blank %},signup-{{ location }}{% endif %}">
+    <input type="hidden" name="contact[accepts_marketing]" value="true">
+
+    {%- if form.posted_successfully? -%}
+      <div class="form-status form-status--success" data-newsletter-success role="status">
+        {%- render 'icon', icon: 'check-circle', size: 18 -%}
+        <span>{{ 'general.newsletter.success' | t }}</span>
+      </div>
+    {%- else -%}
+      {%- if show_name -%}
+        <div class="field">
+          <label class="visually-hidden" for="NewsletterName-{{ id }}">
+            {{ 'general.newsletter.first_name_label' | t }}
+          </label>
+          <input
+            id="NewsletterName-{{ id }}"
+            class="field__input"
+            type="text"
+            name="contact[first_name]"
+            autocomplete="given-name"
+            placeholder="{{ 'general.newsletter.first_name_label' | t }}"
+          >
+        </div>
+      {%- endif -%}
+
+      <div class="field{% if form.errors %} field--error{% endif %}">
+        <label class="visually-hidden" for="NewsletterEmail-{{ id }}">
+          {{ 'general.newsletter.email_label' | t }}
+        </label>
+        <input
+          id="NewsletterEmail-{{ id }}"
+          class="field__input"
+          type="email"
+          name="contact[email]"
+          value="{{ form.email }}"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+          placeholder="{{ 'general.newsletter.email_placeholder' | t }}"
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="NewsletterError-{{ id }}"
+          {% endif %}
+        >
+      </div>
+
+      <button type="submit" class="button button--primary">
+        <span class="button__label">
+          {{- button_label | default: 'general.newsletter.submit' | t -}}
+        </span>
+      </button>
+
+      {%- if form.errors -%}
+        <p class="field__error" id="NewsletterError-{{ id }}" role="alert">
+          {%- render 'icon', icon: 'warning', size: 14 -%}
+          {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+        </p>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endform -%}
+</gs-newsletter>

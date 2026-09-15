@@ -1,0 +1,70 @@
+{%- comment -%}
+  Responsive image with a generated srcset.
+
+  Widths are capped at the source image's real width so Shopify is never asked
+  to upscale. `sizes` should describe the slot the image occupies so the browser
+  can pick the smallest file that still looks sharp.
+
+  Parameters:
+    image      (required) a Shopify image or media object
+    alt        override the image's own alt text
+    sizes      CSS sizes attribute — default assumes a full-width slot
+    widths     comma separated candidate widths
+    loading    'lazy' (default) or 'eager'
+    fetchpriority 'high' for the LCP image
+    class      class attribute for the <img>
+    ratio      crop ratio, e.g. '4/3'. Omit for the natural ratio.
+{%- endcomment -%}
+
+{%- liquid
+  assign candidate_widths = widths | default: '320,420,540,720,900,1080,1296,1600,2000' | split: ','
+  assign sizes_attr = sizes | default: '100vw'
+  assign loading_attr = loading | default: 'lazy'
+  assign alt_text = alt | default: image.alt | escape
+
+  assign source_width = image.width | default: 2000
+
+  assign srcset = ''
+  for width_string in candidate_widths
+    assign width = width_string | strip | times: 1
+    if width <= source_width
+      assign url = image | image_url: width: width
+      assign srcset = srcset | append: url | append: ' ' | append: width | append: 'w, '
+    endif
+  endfor
+  comment
+    If every candidate is wider than the source, still offer the source itself.
+  endcomment
+  if srcset == ''
+    assign url = image | image_url: width: source_width
+    assign srcset = url | append: ' ' | append: source_width | append: 'w, '
+  endif
+  assign srcset = srcset | split: ', ' | join: ', '
+
+  assign render_width = 1600
+  if source_width < 1600
+    assign render_width = source_width
+  endif
+  assign height_attr = image.height
+  if ratio != blank
+    assign ratio_parts = ratio | split: '/'
+    assign ratio_w = ratio_parts[0] | times: 1
+    assign ratio_h = ratio_parts[1] | times: 1
+    assign height_attr = render_width | times: ratio_h | divided_by: ratio_w
+  else
+    assign height_attr = render_width | times: image.height | divided_by: image.width
+  endif
+-%}
+
+<img
+  src="{{ image | image_url: width: render_width }}"
+  srcset="{{ srcset }}"
+  sizes="{{ sizes_attr }}"
+  alt="{{ alt_text }}"
+  width="{{ render_width }}"
+  height="{{ height_attr }}"
+  loading="{{ loading_attr }}"
+  decoding="async"
+  {% if fetchpriority %}fetchpriority="{{ fetchpriority }}"{% endif %}
+  {% if class != blank %}class="{{ class }}"{% endif %}
+>

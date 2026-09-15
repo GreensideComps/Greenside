@@ -1,0 +1,55 @@
+{%- comment -%}
+  Page context for the analytics layer.
+
+  Emitted as JSON rather than as executable JavaScript so nothing from the
+  catalogue is ever interpolated into a script body. theme.js reads it once on
+  load and emits page_view plus, where relevant, competition_view or search.
+{%- endcomment -%}
+<script type="application/json" id="GsPageMeta">
+  {
+    "pageType": {{ request.page_type | json }},
+    "template": {{ template.name | json }},
+    "templateSuffix": {{ template.suffix | default: '' | json }}
+    {%- if request.page_type == 'product' -%},
+    "product": {
+      "id": {{ product.id | json }},
+      "handle": {{ product.handle | json }},
+      "title": {{ product.title | json }},
+      "vendor": {{ product.vendor | json }},
+      "type": {{ product.type | json }},
+      "price": {{ product.price | json }},
+      "currency": {{ cart.currency.iso_code | json }},
+      "available": {{ product.available | json }}
+      {%- if product.metafields.custom.prize_value != blank -%},
+      "prize_value": {{ product.metafields.custom.prize_value.value | json }}
+      {%- endif -%}
+      {%- if collection != blank -%},
+      "collection": {{ collection.handle | json }}
+      {%- endif -%}
+    }
+    {%- endif -%}
+    {%- if request.page_type == 'collection' -%},
+    "collection": {
+      "handle": {{ collection.handle | json }},
+      "title": {{ collection.title | json }},
+      "products_count": {{ collection.products_count | json }}
+    }
+    {%- endif -%}
+    {%- if request.page_type == 'search' -%},
+    "search": {
+      "search_term": {{ search.terms | json }},
+      "results": {{ search.results_count | json }}
+    }
+    {%- endif -%}
+    {%- if request.page_type == 'cart' -%},
+    "cartTotal": {{ cart.total_price | json }},
+    "cartCount": {{ cart.item_count | json }}
+    {%- endif -%}
+    {%- if request.page_type == 'article' -%},
+    "article": {
+      "handle": {{ article.handle | json }},
+      "title": {{ article.title | json }}
+    }
+    {%- endif -%}
+  }
+</script>

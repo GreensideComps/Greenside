@@ -1,0 +1,15 @@
+{%- comment -%}
+  Recommendations inside the cart.
+
+  Uses Shopify's own recommendation engine, seeded with the first line item.
+  The rail renders nothing when the engine has no suggestions, which is what
+  happens on a brand new store, so the cart never shows an empty heading.
+{%- endcomment -%}
+{%- if cart.items.size > 0 -%}
+  <gs-cart-recommendations
+    class="cart-recommendations"
+    data-url="{{ routes.product_recommendations_url }}?section_id=cart-recommendations&product_id={{ cart.items.first.product_id }}&limit=4&intent=related"
+  >
+    <div data-recommendations-target></div>
+  </gs-cart-recommendations>
+{%- endif -%}

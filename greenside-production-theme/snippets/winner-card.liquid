@@ -1,0 +1,73 @@
+{%- comment -%}
+  One winner, from the `winner` metaobject.
+
+  Every field is optional and each is skipped when empty, so a winner published
+  with only a name and a prize still renders cleanly.
+
+  Fields: name, prize, competition (product reference), drawn_on (date),
+          photo (file reference), story (multi-line text), video_url, location
+{%- endcomment -%}
+{%- liquid
+  assign photo = winner.photo.value
+  assign competition = winner.competition.value
+  assign story = winner.story.value
+  assign video_url = winner.video_url.value
+  assign winner_name = winner.name.value
+  assign photo_alt = winner_name | default: 'winners.title' | t
+-%}
+<article class="winner-card">
+  {%- if photo != blank -%}
+    <div class="winner-card__media">
+      {%- render 'responsive-image',
+        image: photo,
+        alt: photo_alt,
+        sizes: '(min-width: 990px) 300px, 70vw',
+        widths: '280,400,560,720'
+      -%}
+      {%- if video_url != blank -%}
+        <a
+          class="winner-card__play"
+          href="{{ video_url }}"
+          target="_blank"
+          rel="noopener"
+          aria-label="{{ 'winners.watch' | t }}"
+          data-track="winner_view"
+        >
+          {%- render 'icon', icon: 'play', size: 18 -%}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="winner-card__body">
+    {%- if winner_name != blank -%}
+      <h3 class="winner-card__name">{{ winner_name | escape }}</h3>
+    {%- endif -%}
+
+    {%- if winner.prize.value != blank -%}
+      <p class="winner-card__prize">
+        {{- 'winners.prize_label' | t }} {{ winner.prize.value | escape -}}
+      </p>
+    {%- endif -%}
+
+    <p class="winner-card__meta">
+      {%- if winner.location.value != blank -%}
+        {{ winner.location.value | escape }}
+      {%- endif -%}
+      {%- if winner.drawn_on.value != blank -%}
+        {%- if winner.location.value != blank %} &middot; {% endif -%}
+        {{ 'winners.date_label' | t }} {{ winner.drawn_on.value | date: '%-d %b %Y' }}
+      {%- endif -%}
+    </p>
+
+    {%- if competition != blank -%}
+      <p class="winner-card__meta">
+        <a class="link" href="{{ competition.url }}">{{ competition.title | escape }}</a>
+      </p>
+    {%- endif -%}
+
+    {%- if story != blank and show_story -%}
+      <p class="winner-card__story">{{ story | escape | truncate: 180 }}</p>
+    {%- endif -%}
+  </div>
+</article>

@@ -1,0 +1,85 @@
+{%- comment -%}
+  Predictive search sheet.
+
+  Implements the combobox pattern: the input owns aria-expanded and
+  aria-activedescendant, and the results list is the listbox. Arrow keys move a
+  virtual cursor without stealing focus from the input, so typing continues to
+  work while browsing results.
+{%- endcomment -%}
+
+<gs-search-modal id="SearchModal" class="search-modal" aria-label="{{ 'general.search.title' | t }}">
+  <div class="overlay__scrim" data-overlay-scrim></div>
+  <div class="overlay__panel overlay__panel--top" data-overlay-panel>
+    <form
+      class="search-modal__form"
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      data-search-form
+    >
+      <div class="search-modal__field">
+        {%- render 'icon', icon: 'search', size: 20 -%}
+        <label class="visually-hidden" for="SearchModalInput">{{ 'general.search.title' | t }}</label>
+        <input
+          id="SearchModalInput"
+          class="search-modal__input"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="SearchResults"
+          aria-autocomplete="list"
+          aria-haspopup="listbox"
+          data-search-input
+          data-overlay-initial-focus
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+        <button
+          type="button"
+          class="icon-button"
+          data-search-clear
+          aria-label="{{ 'general.search.clear' | t }}"
+          hidden
+        >
+          {%- render 'icon', icon: 'close', size: 16 -%}
+        </button>
+      </div>
+
+      <button type="submit" class="button button--primary hide-mobile">
+        {{ 'general.search.submit' | t }}
+      </button>
+
+      <button
+        type="button"
+        class="icon-button"
+        data-overlay-close
+        aria-label="{{ 'general.accessibility.close' | t }}"
+      >
+        {%- render 'icon', icon: 'close' -%}
+      </button>
+    </form>
+
+    <div class="search-modal__results" id="SearchResults" data-search-results>
+      {%- if settings.search_shortcuts_menu != blank -%}
+        {%- assign shortcuts = linklists[settings.search_shortcuts_menu] -%}
+        {%- if shortcuts.links.size > 0 -%}
+          <div class="predictive__group" data-search-default>
+            <p class="predictive__heading">{{ 'general.search.shortcuts' | t }}</p>
+            <ul class="search-shortcuts">
+              {%- for link in shortcuts.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <div class="visually-hidden" role="status" aria-live="polite" data-search-status></div>
+  </div>
+</gs-search-modal>

@@ -1,0 +1,108 @@
+{%- comment -%}
+  Mobile navigation drawer.
+
+  Nested levels use <details>/<summary> so the whole thing works without
+  JavaScript and is keyboard operable by default.
+{%- endcomment -%}
+
+<gs-overlay id="MobileMenu" class="mobile-menu" aria-label="{{ 'header.menu' | t }}">
+  <div class="overlay__scrim" data-overlay-scrim></div>
+  <div class="overlay__panel overlay__panel--start" data-overlay-panel>
+    <div class="overlay__header">
+      <span class="overlay__title h5">{{ 'header.menu' | t }}</span>
+      <button
+        type="button"
+        class="icon-button"
+        data-overlay-close
+        aria-label="{{ 'general.accessibility.close_menu' | t }}"
+      >
+        {%- render 'icon', icon: 'close' -%}
+      </button>
+    </div>
+
+    <div class="overlay__body">
+      {%- if menu.links.size > 0 -%}
+        <ul class="mobile-menu__list">
+          {%- for link in menu.links -%}
+            <li class="mobile-menu__item">
+              {%- if link.links.size > 0 -%}
+                <details class="mobile-menu__details">
+                  <summary class="mobile-menu__summary">
+                    {{ link.title | escape }}
+                    {%- render 'icon', icon: 'chevron-down', size: 16 -%}
+                  </summary>
+                  <ul class="mobile-menu__sub">
+                    <li>
+                      <a class="mobile-menu__sub-link" href="{{ link.url }}">
+                        {{- 'general.view_all' | t }} &mdash; {{ link.title | escape -}}
+                      </a>
+                    </li>
+                    {%- for child in link.links -%}
+                      <li>
+                        {%- if child.links.size > 0 -%}
+                          <details class="mobile-menu__details">
+                            <summary class="mobile-menu__sub-link mobile-menu__summary">
+                              {{ child.title | escape }}
+                              {%- render 'icon', icon: 'chevron-down', size: 14 -%}
+                            </summary>
+                            <ul class="mobile-menu__sub">
+                              {%- for grandchild in child.links -%}
+                                <li>
+                                  <a
+                                    class="mobile-menu__sub-link"
+                                    href="{{ grandchild.url }}"
+                                    {% if grandchild.current %}aria-current="page"{% endif %}
+                                  >
+                                    {{- grandchild.title | escape -}}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          </details>
+                        {%- else -%}
+                          <a
+                            class="mobile-menu__sub-link"
+                            href="{{ child.url }}"
+                            {% if child.current %}aria-current="page"{% endif %}
+                          >
+                            {{- child.title | escape -}}
+                          </a>
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </details>
+              {%- else -%}
+                <a
+                  class="mobile-menu__link"
+                  href="{{ link.url }}"
+                  {% if link.current %}aria-current="page"{% endif %}
+                >
+                  {{- link.title | escape -}}
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div class="mobile-menu__footer">
+        {%- if shop.customer_accounts_enabled -%}
+          {%- if customer -%}
+            <a class="button button--secondary button--full" href="{{ routes.account_url }}">
+              {%- render 'icon', icon: 'account', size: 18 -%}
+              {{ 'header.account' | t }}
+            </a>
+          {%- else -%}
+            <a class="button button--secondary button--full" href="{{ routes.account_login_url }}">
+              {%- render 'icon', icon: 'account', size: 18 -%}
+              {{ 'header.log_in' | t }}
+            </a>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- render 'social-links' -%}
+      </div>
+    </div>
+  </div>
+</gs-overlay>

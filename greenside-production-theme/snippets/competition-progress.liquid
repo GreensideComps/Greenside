@@ -1,0 +1,80 @@
+{%- comment -%}
+  Entry progress bar.
+
+  Renders ONLY when both custom.entries_total and custom.entries_sold hold real
+  values and the total is greater than zero. There is deliberately no fallback:
+  a competition with no entry data shows no progress bar rather than an invented
+  one.
+
+  When settings.entry_progress_endpoint is set, the element is also given the
+  attributes the live updater in progress.js looks for, so counts can refresh
+  from a real backend. Without an endpoint it stays a static, accurate snapshot
+  of the metafield values.
+
+  Parameters:
+    product  (required)
+    size     'small' (default) or 'large'
+    style    override for settings.progress_style
+{%- endcomment -%}
+
+{%- liquid
+  assign total = product.metafields.custom.entries_total.value
+  assign sold = product.metafields.custom.entries_sold.value
+  assign has_data = false
+  if total != blank and sold != blank and total > 0
+    assign has_data = true
+  endif
+-%}
+
+{%- if has_data -%}
+  {%- liquid
+    assign safe_sold = sold
+    if safe_sold > total
+      assign safe_sold = total
+    endif
+    if safe_sold < 0
+      assign safe_sold = 0
+    endif
+
+    assign percent = safe_sold | times: 100 | divided_by: total
+    assign remaining = total | minus: safe_sold
+    assign display = style | default: settings.progress_style | default: 'both'
+    assign entry_word = settings.entry_word_plural | default: 'entries'
+    assign bar_class = ''
+    if percent >= 80
+      assign bar_class = ' progress__fill--high'
+    endif
+  -%}
+  <div
+    class="progress{% if size == 'large' %} progress--large{% endif %}"
+    data-entry-progress
+    data-product-id="{{ product.id }}"
+    data-entries-total="{{ total }}"
+    data-entries-sold="{{ safe_sold }}"
+  >
+    <div
+      class="progress__track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="{{ total }}"
+      aria-valuenow="{{ safe_sold }}"
+      aria-valuetext="{{ 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word }}"
+      aria-label="{{ 'products.competition.progress_label' | t }}"
+    >
+      <span class="progress__fill{{ bar_class }}" style="width: {{ percent }}%" data-progress-fill></span>
+    </div>
+    <div class="progress__labels">
+      {%- if display == 'count' or display == 'both' -%}
+        <span class="progress__count" data-progress-count>
+          {{- 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word -}}
+        </span>
+      {%- endif -%}
+      {%- if display == 'percent' or display == 'both' -%}
+        <span data-progress-percent>{{ 'products.competition.entries_percent' | t: percent: percent }}</span>
+      {%- endif -%}
+      {%- if display == 'count' and remaining > 0 -%}
+        <span data-progress-remaining>{{ 'products.competition.entries_remaining' | t: count: remaining }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

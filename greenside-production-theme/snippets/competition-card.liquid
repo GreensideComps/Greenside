@@ -1,0 +1,144 @@
+{%- comment -%}
+  The competition card. Used on the homepage, collections, search, the cart and
+  related-competition rails.
+
+  Hierarchy is fixed and deliberate: prize, then price, then the action. Badges
+  sit on the image so they never push the price around, and the theme setting
+  caps how many appear so a card cannot turn into badge soup.
+
+  Parameters:
+    product          (required)
+    variant          'default' or 'compact'
+    image_ratio      override the theme setting
+    loading          'lazy' (default) or 'eager'
+    sizes            sizes attribute for the image
+    show_progress    override the theme setting
+    show_prize_value override the theme setting
+    show_closing     override the theme setting
+    show_badges      override the theme setting
+    heading_tag      'h3' (default)
+    index            position in the list, used for analytics
+{%- endcomment -%}
+
+{%- liquid
+  assign ratio = image_ratio | default: settings.card_image_ratio | default: 'landscape'
+  assign heading = heading_tag | default: 'h3'
+  assign img_loading = loading | default: 'lazy'
+  assign img_sizes = sizes | default: '(min-width: 990px) 320px, (min-width: 600px) 45vw, 78vw'
+
+  assign with_progress = show_progress
+  if with_progress == nil
+    assign with_progress = settings.card_show_progress
+  endif
+  assign with_prize_value = show_prize_value
+  if with_prize_value == nil
+    assign with_prize_value = settings.card_show_prize_value
+  endif
+  assign with_closing = show_closing
+  if with_closing == nil
+    assign with_closing = settings.card_show_closing
+  endif
+  assign with_badges = show_badges
+  if with_badges == nil
+    assign with_badges = settings.card_show_badges
+  endif
+
+  assign prize_value = product.metafields.custom.prize_value
+  assign closing_at = product.metafields.custom.closing_at.value
+
+  assign is_closed = false
+  if closing_at != blank
+    assign now_stamp = 'now' | date: '%s' | times: 1
+    assign close_stamp = closing_at | date: '%s' | times: 1
+    if close_stamp <= now_stamp
+      assign is_closed = true
+    endif
+  endif
+
+  assign can_enter = product.available
+  if is_closed
+    assign can_enter = false
+  endif
+
+  assign cta_label = settings.entry_cta_label | default: 'Enter now'
+  unless can_enter
+    assign cta_label = 'products.competition.view_competition' | t
+  endunless
+
+  assign card_alt = product.featured_media.alt | default: product.title
+-%}
+
+<article
+  class="competition-card{% if variant == 'compact' %} competition-card--compact{% endif %}{% unless can_enter %} competition-card--unavailable{% endunless %}"
+  data-competition-card
+  data-product-id="{{ product.id }}"
+>
+  <div class="competition-card__media media media--{{ ratio }}">
+    {%- if product.featured_media -%}
+      {%- render 'responsive-image',
+        image: product.featured_media,
+        alt: card_alt,
+        sizes: img_sizes,
+        loading: img_loading,
+        widths: '320,420,540,720,900,1080'
+      -%}
+    {%- else -%}
+      {%- render 'placeholder', name: 'product-1' -%}
+    {%- endif -%}
+
+    {%- if with_badges -%}
+      {%- render 'competition-badges', product: product -%}
+    {%- endif -%}
+  </div>
+
+  <div class="competition-card__body">
+    {%- if with_prize_value and prize_value != blank -%}
+      <p class="competition-card__value">
+        {{- 'products.competition.prize_value' | t }} {{ prize_value | metafield_text -}}
+      </p>
+    {%- endif -%}
+
+    <{{ heading }} class="competition-card__title">
+      <a
+        class="competition-card__link"
+        href="{{ product.url }}"
+        data-track="competition_card_click"
+        data-track-payload='{"product_id":{{ product.id }},"position":{{ index | default: 0 }}}'
+      >
+        {{- product.title | escape -}}
+      </a>
+    </{{ heading }}>
+
+    {%- if with_progress -%}
+      {%- render 'competition-progress', product: product -%}
+    {%- endif -%}
+
+    {%- if with_closing -%}
+      {%- capture closing_markup -%}{%- render 'competition-closing', product: product -%}{%- endcapture -%}
+      {%- if closing_markup != blank -%}
+        <div class="competition-card__meta">{{ closing_markup }}</div>
+      {%- endif -%}
+    {%- endif -%}
+
+    <div class="competition-card__spacer"></div>
+
+    <div class="competition-card__footer">
+      <p class="competition-card__price">
+        <span class="competition-card__price-amount">
+          {%- if product.price_varies -%}
+            {{- 'products.product.from_price' | t: price: product.price_min | money -}}
+          {%- else -%}
+            {{- product.price | money -}}
+          {%- endif -%}
+        </span>
+        <span class="competition-card__price-label">
+          {{- 'products.competition.per_entry' | t -}}
+        </span>
+      </p>
+
+      <span class="competition-card__cta button button--primary button--small" aria-hidden="true">
+        {{- cta_label -}}
+      </span>
+    </div>
+  </div>
+</article>

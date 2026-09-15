@@ -1,0 +1,42 @@
+{%- comment -%}
+  Render target for the Product Recommendations API.
+  Returns nothing at all when the engine has no suggestions.
+{%- endcomment -%}
+{%- if recommendations.performed and recommendations.products_count > 0 -%}
+  <div class="cart-recommendations__inner">
+    <p class="predictive__heading">{{ 'cart.recommendations_heading' | t }}</p>
+    <ul class="cart-recommendations__list">
+      {%- for product in recommendations.products limit: 3 -%}
+        <li>
+          <a class="cart-recommendation" href="{{ product.url }}">
+            {%- if product.featured_media -%}
+              <img
+                class="predictive__thumb"
+                src="{{ product.featured_media | image_url: width: 112 }}"
+                alt=""
+                width="56"
+                height="56"
+                loading="lazy"
+              >
+            {%- else -%}
+              {%- render 'placeholder', name: 'product-1', class: 'predictive__thumb' -%}
+            {%- endif -%}
+            <span class="cart-recommendation__text">
+              <span class="predictive__title">{{ product.title | escape }}</span>
+              <span class="predictive__meta">
+                {{- product.price | money }} {{ 'products.competition.per_entry' | t -}}
+              </span>
+            </span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Cart recommendations",
+  "settings": []
+}
+{% endschema %}

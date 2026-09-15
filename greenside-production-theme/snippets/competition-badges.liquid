@@ -1,0 +1,94 @@
+{%- comment -%}
+  Badge row for a competition.
+
+  Order of priority, highest first, so the most decision-relevant badge always
+  survives the `max` cut:
+    1. Closed / fully entered  (blocks entry — must always show)
+    2. Closing soon            (real date, within 48 hours)
+    3. Instant win             (changes the mechanic)
+    4. Merchant badge          (custom.badge_label)
+    5. Featured / New          (marketing)
+
+  Parameters:
+    product  (required)
+    max      maximum badges to render (default: theme setting)
+    context  'card' or 'page'
+{%- endcomment -%}
+
+{%- liquid
+  assign max_badges = max | default: settings.card_max_badges | default: 2
+  if context == 'page'
+    assign max_badges = 6
+  endif
+
+  assign closing_at = product.metafields.custom.closing_at.value
+  assign instant_win = product.metafields.custom.instant_win.value
+  assign badge_label = product.metafields.custom.badge_label.value
+
+  assign is_closed = false
+  assign is_closing_soon = false
+
+  if closing_at != blank
+    assign now_stamp = 'now' | date: '%s' | times: 1
+    assign close_stamp = closing_at | date: '%s' | times: 1
+    assign seconds_left = close_stamp | minus: now_stamp
+    if seconds_left <= 0
+      assign is_closed = true
+    elsif seconds_left <= 172800
+      assign is_closing_soon = true
+    endif
+  endif
+
+  assign badges = ''
+
+  if is_closed
+    assign badges = badges | append: 'closed|'
+  elsif product.available == false
+    assign badges = badges | append: 'full|'
+  endif
+
+  if is_closing_soon and is_closed == false and product.available
+    assign badges = badges | append: 'closing|'
+  endif
+
+  if instant_win
+    assign badges = badges | append: 'instant|'
+  endif
+
+  if badge_label != blank
+    assign badges = badges | append: 'custom|'
+  endif
+
+  if product.tags contains 'featured'
+    assign badges = badges | append: 'featured|'
+  endif
+
+  if product.tags contains 'new'
+    assign badges = badges | append: 'new|'
+  endif
+
+  assign badge_list = badges | split: '|'
+-%}
+
+{%- if badge_list.size > 0 -%}
+  <div class="competition-card__badges">
+    {%- for badge in badge_list limit: max_badges -%}
+      {%- case badge -%}
+        {%- when 'closed' -%}
+          <span class="badge badge--closed">{{ 'products.competition.badge_closed' | t }}</span>
+        {%- when 'full' -%}
+          <span class="badge badge--closed">{{ 'products.competition.badge_sold_out' | t }}</span>
+        {%- when 'closing' -%}
+          <span class="badge badge--highlight">{{ 'products.competition.badge_closing_soon' | t }}</span>
+        {%- when 'instant' -%}
+          <span class="badge badge--accent">{{ 'products.competition.badge_instant_win' | t }}</span>
+        {%- when 'custom' -%}
+          <span class="badge badge--brand">{{ badge_label | escape }}</span>
+        {%- when 'featured' -%}
+          <span class="badge badge--brand">{{ 'products.competition.badge_featured' | t }}</span>
+        {%- when 'new' -%}
+          <span class="badge badge--neutral">{{ 'products.competition.badge_new' | t }}</span>
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

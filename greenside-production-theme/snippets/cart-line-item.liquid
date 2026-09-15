@@ -1,0 +1,128 @@
+{%- comment -%}
+  One cart line.
+
+  Quantity is described as "entries" throughout, because on this store a line
+  quantity is literally the number of entries bought.
+
+  Parameters:
+    item     (required) a cart line item
+    context  'drawer' or 'page'
+{%- endcomment -%}
+{%- liquid
+  assign entry_total = item.quantity
+  assign max_per_person = item.product.metafields.custom.max_entries_per_person.value
+-%}
+<li class="cart-item" data-cart-item data-line-key="{{ item.key }}" data-line-index="{{ forloop.index }}">
+  <a class="cart-item__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+    {%- if item.image -%}
+      <img
+        src="{{ item.image | image_url: width: 160 }}"
+        srcset="{{ item.image | image_url: width: 160 }} 160w, {{ item.image | image_url: width: 240 }} 240w"
+        sizes="80px"
+        alt=""
+        width="80"
+        height="80"
+        loading="lazy"
+      >
+    {%- else -%}
+      {%- render 'placeholder', name: 'product-1' -%}
+    {%- endif -%}
+  </a>
+
+  <div class="cart-item__details">
+    <a class="cart-item__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+
+    {%- unless item.product.has_only_default_variant -%}
+      <p class="cart-item__variant">{{ item.variant.title | escape }}</p>
+    {%- endunless -%}
+
+    {%- if item.properties.size > 0 -%}
+      <dl class="cart-item__properties">
+        {%- for property in item.properties -%}
+          {%- comment -%} Shopify uses a leading underscore for hidden properties. {%- endcomment -%}
+          {%- if property.last != blank and property.first.first != '_' -%}
+            <div>
+              <dt>{{ property.first | escape }}:</dt>
+              <dd>{{ property.last | escape }}</dd>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </dl>
+    {%- endif -%}
+
+    <p class="cart-item__unit text-xs text-muted">
+      {{ item.original_price | money }} {{ 'products.competition.per_entry' | t }}
+    </p>
+
+    {%- if item.line_level_discount_allocations.size > 0 -%}
+      <ul class="cart-item__discounts">
+        {%- for allocation in item.line_level_discount_allocations -%}
+          <li>{{ allocation.discount_application.title }} (&minus;{{ allocation.amount | money }})</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <div class="cart-item__controls">
+      <gs-quantity class="quantity-selector quantity-selector--small">
+        <button
+          type="button"
+          class="quantity-selector__button"
+          data-quantity-decrease
+          aria-label="{{ 'products.competition.decrease' | t }}"
+        >
+          {%- render 'icon', icon: 'minus', size: 14 -%}
+        </button>
+        <label class="visually-hidden" for="CartQty-{{ context }}-{{ forloop.index }}">
+          {{ 'products.competition.quantity_label' | t }}
+        </label>
+        <input
+          id="CartQty-{{ context }}-{{ forloop.index }}"
+          class="quantity-selector__input"
+          type="number"
+          inputmode="numeric"
+          name="updates[]"
+          value="{{ item.quantity }}"
+          min="0"
+          {% if max_per_person != blank and max_per_person > 0 %}max="{{ max_per_person }}"{% endif %}
+          step="1"
+          data-cart-quantity
+          data-line-key="{{ item.key }}"
+        >
+        <button
+          type="button"
+          class="quantity-selector__button"
+          data-quantity-increase
+          aria-label="{{ 'products.competition.increase' | t }}"
+        >
+          {%- render 'icon', icon: 'plus', size: 14 -%}
+        </button>
+      </gs-quantity>
+
+      <button
+        type="button"
+        class="cart-item__remove"
+        data-cart-remove
+        data-line-key="{{ item.key }}"
+        aria-label="{{ 'cart.remove_item' | t: title: item.product.title }}"
+      >
+        {%- render 'icon', icon: 'trash', size: 16 -%}
+        <span class="hide-mobile">{{ 'cart.remove' | t }}</span>
+      </button>
+    </div>
+
+    {%- if max_per_person != blank and max_per_person > 0 -%}
+      <p class="cart-item__limit text-xs text-muted">
+        {{ 'products.competition.max_per_person' | t: count: max_per_person }}
+      </p>
+    {%- endif -%}
+  </div>
+
+  <div class="cart-item__price">
+    <span class="cart-item__line-total" data-line-total>{{ item.final_line_price | money }}</span>
+    <span class="cart-item__line-count text-xs text-muted">
+      {{- 'cart.entry_count' | t: count: entry_total -}}
+    </span>
+  </div>
+
+  <p class="cart-item__error text-xs" data-line-error role="alert" hidden></p>
+</li>

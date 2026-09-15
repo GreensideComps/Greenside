@@ -1,0 +1,16 @@
+{%- comment -%}
+  Neutral placeholder for a missing image.
+
+  Shopify's own placeholder SVGs are used so nothing looks broken when a
+  merchant has not uploaded artwork yet.
+
+  Parameters:
+    name   a Shopify placeholder name, e.g. 'product-1', 'collection-1', 'lifestyle-1'
+    class  extra classes
+{%- endcomment -%}
+{%- liquid
+  assign placeholder_name = name | default: 'product-1'
+-%}
+<div class="placeholder-svg {{ class }}" aria-hidden="true">
+  {{ placeholder_name | placeholder_svg_tag: 'placeholder-svg__inner' }}
+</div>

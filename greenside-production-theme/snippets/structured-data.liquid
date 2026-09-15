@@ -58,7 +58,6 @@
 {%- if request.page_type == 'product' -%}
   {%- liquid
     assign product_media = product.featured_media
-    assign prize_value = product.metafields.custom.prize_value
     assign closing_at = product.metafields.custom.closing_at
   -%}
   <script type="application/ld+json">

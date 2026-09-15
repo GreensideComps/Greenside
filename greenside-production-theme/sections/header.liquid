@@ -1,0 +1,259 @@
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+  if section.settings.colour_scheme == 'light' or section.settings.colour_scheme == 'cream'
+    assign header_logo = settings.logo
+  else
+    assign header_logo = settings.logo_light | default: settings.logo
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --logo-width: {{ settings.logo_width | default: 180 }}px;
+    --logo-width-mobile: {{ settings.logo_width_mobile | default: 130 }}px;
+  }
+{%- endstyle -%}
+
+<gs-header
+  class="header-wrapper{% if section.settings.sticky %} header-wrapper--sticky{% endif %}"
+  {% if section.settings.sticky %}data-sticky{% endif %}
+>
+  <header class="header scheme-{{ section.settings.colour_scheme }}">
+    <div class="page-width">
+      <div class="header__inner">
+        {%- comment -%} Left: menu toggle on mobile, logo on desktop. {%- endcomment -%}
+        <div class="header__start">
+          <button
+            type="button"
+            class="header__action header__menu-toggle hide-desktop"
+            data-overlay-trigger="MobileMenu"
+            aria-label="{{ 'header.menu' | t }}"
+            aria-haspopup="dialog"
+          >
+            {%- render 'icon', icon: 'menu' -%}
+          </button>
+
+          <a
+            href="{{ routes.root_url }}"
+            class="header__logo hide-mobile"
+            {% if request.page_type == 'index' %}aria-current="page"{% endif %}
+          >
+            {%- if header_logo -%}
+              <img
+                src="{{ header_logo | image_url: width: 480 }}"
+                srcset="{{ header_logo | image_url: width: 240 }} 240w, {{ header_logo | image_url: width: 480 }} 480w"
+                sizes="{{ settings.logo_width | default: 180 }}px"
+                alt="{{ shop.name | escape }}"
+                width="{{ header_logo.width }}"
+                height="{{ header_logo.height }}"
+                fetchpriority="high"
+              >
+            {%- else -%}
+              <span class="header__logo-text">{{ shop.name }}</span>
+            {%- endif -%}
+          </a>
+        </div>
+
+        {%- comment -%} Centre: logo on mobile, navigation on desktop. {%- endcomment -%}
+        <a
+          href="{{ routes.root_url }}"
+          class="header__logo hide-desktop header__logo--mobile"
+          {% if request.page_type == 'index' %}aria-current="page"{% endif %}
+        >
+          {%- if header_logo -%}
+            <img
+              src="{{ header_logo | image_url: width: 360 }}"
+              alt="{{ shop.name | escape }}"
+              width="{{ header_logo.width }}"
+              height="{{ header_logo.height }}"
+              fetchpriority="high"
+            >
+          {%- else -%}
+            <span class="header__logo-text">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+
+        {%- if menu.links.size > 0 -%}
+          <nav class="header__nav" aria-label="{{ 'header.menu' | t }}">
+            <ul class="nav-list">
+              {%- for link in menu.links -%}
+                {%- liquid
+                  assign has_children = false
+                  assign is_mega = false
+                  if link.links.size > 0
+                    assign has_children = true
+                    for child in link.links
+                      if child.links.size > 0
+                        assign is_mega = true
+                        break
+                      endif
+                    endfor
+                  endif
+                -%}
+                <li class="nav-item"{% if has_children %} data-nav-item{% endif %}>
+                  {%- if has_children -%}
+                    <button
+                      type="button"
+                      class="nav-link"
+                      aria-expanded="false"
+                      data-nav-trigger
+                    >
+                      {{ link.title | escape }}
+                      <span class="nav-link__caret">{%- render 'icon', icon: 'chevron-down', size: 10 -%}</span>
+                    </button>
+
+                    {%- if is_mega -%}
+                      <div class="nav-mega" data-nav-panel>
+                        <ul class="nav-mega__grid">
+                          {%- for child in link.links -%}
+                            <li>
+                              <p class="nav-mega__heading">
+                                <a class="nav-mega__link" href="{{ child.url }}">{{ child.title | escape }}</a>
+                              </p>
+                              {%- if child.links.size > 0 -%}
+                                <ul class="nav-mega__list">
+                                  {%- for grandchild in child.links -%}
+                                    <li>
+                                      <a
+                                        class="nav-mega__link"
+                                        href="{{ grandchild.url }}"
+                                        {% if grandchild.current %}aria-current="page"{% endif %}
+                                      >
+                                        {{- grandchild.title | escape -}}
+                                      </a>
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                              {%- endif -%}
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </div>
+                    {%- else -%}
+                      <ul class="nav-dropdown" data-nav-panel>
+                        {%- for child in link.links -%}
+                          <li>
+                            <a
+                              class="nav-dropdown__link"
+                              href="{{ child.url }}"
+                              {% if child.current %}aria-current="page"{% endif %}
+                            >
+                              {{- child.title | escape -}}
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  {%- else -%}
+                    <a
+                      class="nav-link"
+                      href="{{ link.url }}"
+                      {% if link.current %}aria-current="page"{% endif %}
+                    >
+                      {{- link.title | escape -}}
+                    </a>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- else -%}
+          <span></span>
+        {%- endif -%}
+
+        {%- comment -%} Right: search, account, cart. {%- endcomment -%}
+        <div class="header__actions">
+          {%- if settings.predictive_search_enabled -%}
+            <button
+              type="button"
+              class="header__action"
+              data-overlay-trigger="SearchModal"
+              aria-label="{{ 'general.search.title' | t }}"
+              aria-haspopup="dialog"
+            >
+              {%- render 'icon', icon: 'search' -%}
+            </button>
+          {%- else -%}
+            <a href="{{ routes.search_url }}" class="header__action" aria-label="{{ 'general.search.title' | t }}">
+              {%- render 'icon', icon: 'search' -%}
+            </a>
+          {%- endif -%}
+
+          {%- if shop.customer_accounts_enabled and section.settings.show_account -%}
+            <a
+              href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+              class="header__action"
+              aria-label="{% if customer %}{{ 'header.account' | t }}{% else %}{{ 'header.log_in' | t }}{% endif %}"
+            >
+              {%- render 'icon', icon: 'account' -%}
+            </a>
+          {%- endif -%}
+
+          {%- if settings.cart_behaviour == 'drawer' -%}
+            <button
+              type="button"
+              class="header__action"
+              data-overlay-trigger="CartDrawer"
+              aria-haspopup="dialog"
+              aria-label="{{ 'header.cart_count' | t: count: cart.item_count }}"
+            >
+              {%- render 'cart-icon-bubble' -%}
+            </button>
+          {%- else -%}
+            <a
+              href="{{ routes.cart_url }}"
+              class="header__action"
+              aria-label="{{ 'header.cart_count' | t: count: cart.item_count }}"
+            >
+              {%- render 'cart-icon-bubble' -%}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </header>
+</gs-header>
+
+{%- render 'mobile-menu', menu: menu -%}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header-host",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Stick to the top of the screen",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show the account link",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "colour_scheme",
+      "label": "t:sections.all.colour_scheme",
+      "options": [
+        { "value": "brand", "label": "t:sections.all.scheme_brand" },
+        { "value": "deep", "label": "t:sections.all.scheme_deep" },
+        { "value": "light", "label": "t:sections.all.scheme_light" },
+        { "value": "cream", "label": "t:sections.all.scheme_cream" }
+      ],
+      "default": "brand"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

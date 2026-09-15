@@ -1,0 +1,61 @@
+{%- comment -%}
+  Closing or draw date, written the way an entrant reads it.
+
+  "Closing today" / "Closing tomorrow" are calendar comparisons in the shop's
+  timezone, not fuzzy countdowns, and they only ever reflect a real date held in
+  custom.closing_at. No date, no output.
+
+  Parameters:
+    product  (required)
+    field    'closing_at' (default) or 'draw_at'
+    icon     show a clock icon (default true)
+{%- endcomment -%}
+
+{%- liquid
+  assign which = field | default: 'closing_at'
+  if which == 'draw_at'
+    assign stamp = product.metafields.custom.draw_at.value
+  else
+    assign stamp = product.metafields.custom.closing_at.value
+  endif
+-%}
+
+{%- if stamp != blank -%}
+  {%- liquid
+    assign today = 'now' | date: '%Y-%m-%d'
+    assign tomorrow = 'now' | date: '%s' | plus: 86400 | date: '%Y-%m-%d'
+    assign target_day = stamp | date: '%Y-%m-%d'
+
+    assign now_stamp = 'now' | date: '%s' | times: 1
+    assign target_stamp = stamp | date: '%s' | times: 1
+
+    assign label = ''
+    if target_stamp <= now_stamp
+      assign label = 'products.competition.closed' | t
+    elsif target_day == today
+      if which == 'draw_at'
+        assign label = 'products.competition.draw_today' | t
+      else
+        assign label = 'products.competition.closing_today' | t
+      endif
+    elsif target_day == tomorrow
+      if which == 'draw_at'
+        assign label = 'products.competition.draw_tomorrow' | t
+      else
+        assign label = 'products.competition.closing_tomorrow' | t
+      endif
+    else
+      assign formatted = stamp | date: '%a %-d %b'
+      if which == 'draw_at'
+        assign prefix = 'products.competition.draw_date' | t
+      else
+        assign prefix = 'products.competition.closes' | t
+      endif
+      assign label = prefix | append: ' ' | append: formatted
+    endif
+  -%}
+  <span class="competition-meta__item">
+    {%- unless icon == false -%}{%- render 'icon', icon: 'clock', size: 14 -%}{%- endunless -%}
+    <time datetime="{{ stamp | date: '%Y-%m-%dT%H:%M:%S%z' }}">{{ label }}</time>
+  </span>
+{%- endif -%}

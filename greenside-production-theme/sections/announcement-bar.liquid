@@ -1,0 +1,123 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="announcement scheme-{{ section.settings.colour_scheme }}">
+    <div class="page-width">
+      <div class="announcement__inner">
+        {%- if section.blocks.size == 1 -%}
+          {%- assign block = section.blocks.first -%}
+          <div class="announcement__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != 'none' -%}
+              {%- render 'icon', icon: block.settings.icon, size: 14 -%}
+            {%- endif -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+            {%- else -%}
+              <span>{{ block.settings.text | escape }}</span>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          <gs-announcement
+            class="announcement__rotator"
+            data-interval="{{ section.settings.rotate_speed | times: 1000 }}"
+            aria-label="{{ 'header.announcement' | t }}"
+          >
+            {%- for block in section.blocks -%}
+              <div
+                class="announcement__item"
+                data-announcement-slide
+                {% unless forloop.first %}aria-hidden="true" hidden{% endunless %}
+                {{ block.shopify_attributes }}
+              >
+                {%- if block.settings.icon != 'none' -%}
+                  {%- render 'icon', icon: block.settings.icon, size: 14 -%}
+                {%- endif -%}
+                {%- if block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+                {%- else -%}
+                  <span>{{ block.settings.text | escape }}</span>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </gs-announcement>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'announcement.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "announcement-section",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "select",
+      "id": "colour_scheme",
+      "label": "t:sections.all.colour_scheme",
+      "options": [
+        { "value": "deep", "label": "t:sections.all.scheme_deep" },
+        { "value": "brand", "label": "t:sections.all.scheme_brand" },
+        { "value": "light", "label": "t:sections.all.scheme_light" },
+        { "value": "cream", "label": "t:sections.all.scheme_cream" }
+      ],
+      "default": "deep"
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "label": "Seconds between messages",
+      "info": "Only applies when there is more than one message. Rotation pauses on hover and for anyone who prefers reduced motion.",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free entry route available on every competition"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.all.link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "ticket", "label": "Ticket" },
+            { "value": "check-circle", "label": "Tick" },
+            { "value": "flag", "label": "Flag" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" }
+          ],
+          "default": "shield"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "announcement" }
+    ]
+  },
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

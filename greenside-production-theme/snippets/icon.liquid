@@ -1,0 +1,150 @@
+{%- comment -%}
+  Inline SVG icons.
+
+  Inlining avoids a sprite request and lets every icon inherit currentColor.
+  Icons are decorative by default; pass a `label` to expose one to assistive
+  technology, which also gives it role="img" and a <title>.
+
+  Usage:
+    {% render 'icon', icon: 'cart' %}
+    {% render 'icon', icon: 'search', label: 'Search' %}
+    {% render 'icon', icon: 'chevron-right', size: 12 %}
+{%- endcomment -%}
+
+{%- liquid
+  assign size = size | default: 24
+  assign stroke_width = stroke_width | default: 1.75
+  assign uid = icon | append: '-' | append: size
+-%}
+
+{%- capture svg_attrs -%}
+  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="{{ size }}" height="{{ size }}" fill="none"
+  {%- if label != blank %} role="img" aria-labelledby="icon-title-{{ uid }}"{% else %} aria-hidden="true" focusable="false"{% endif -%}
+  {%- if class != blank %} class="{{ class }}"{% endif -%}
+{%- endcapture -%}
+
+<svg {{ svg_attrs }}>
+  {%- if label != blank -%}<title id="icon-title-{{ uid }}">{{ label }}</title>{%- endif -%}
+  {%- case icon -%}
+    {%- when 'cart' -%}
+      <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+      <circle cx="18" cy="20" r="1.4" fill="currentColor"/>
+    {%- when 'search' -%}
+      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'account' -%}
+      <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'menu' -%}
+      <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'close' -%}
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'chevron-down' -%}
+      <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'chevron-up' -%}
+      <path d="m6 15 6-6 6 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'chevron-left' -%}
+      <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'chevron-right' -%}
+      <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'arrow-right' -%}
+      <path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'arrow-left' -%}
+      <path d="M20 12H4m6-6-6 6 6 6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'check' -%}
+      <path d="m4.5 12.5 5 5 10-11" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'check-circle' -%}
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="m8 12.5 2.5 2.5L16 9.5" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'plus' -%}
+      <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'minus' -%}
+      <path d="M5 12h14" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'trash' -%}
+      <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-12" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'filter' -%}
+      <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'calendar' -%}
+      <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M3.5 10h17M8 3.5v3M16 3.5v3" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'clock' -%}
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'trophy' -%}
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="M7 6H4.5a2.5 2.5 0 0 0 2.5 4M17 6h2.5a2.5 2.5 0 0 1-2.5 4M12 14v3.5M8.5 20.5h7" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'ticket' -%}
+      <path d="M3 8.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2V10a2 2 0 0 0 0 4v1.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V14a2 2 0 0 0 0-4V8.5Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="M13 7.5v9" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-dasharray="1.5 2.5"/>
+    {%- when 'shield' -%}
+      <path d="M12 3.5 5 6v6c0 4.2 2.9 7.6 7 8.5 4.1-.9 7-4.3 7-8.5V6l-7-2.5Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'lock' -%}
+      <rect x="4.5" y="10" width="15" height="10" rx="2" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M8 10V7.5a4 4 0 0 1 8 0V10" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'flag' -%}
+      <path d="M6 21V4m0 0 9 2.5-2 3.5 2 3.5L6 16" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'gift' -%}
+      <rect x="3.5" y="9" width="17" height="11" rx="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M3.5 13h17M12 9v11M12 9c-1.5-3-3-4-4.5-3.2C6.3 6.4 7 8.6 12 9Zm0 0c1.5-3 3-4 4.5-3.2 1.2.6.5 2.8-4.5 3.2Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+    {%- when 'star' -%}
+      <path d="m12 4 2.4 5 5.6.8-4 3.9 1 5.5-5-2.7-5 2.7 1-5.5-4-3.9 5.6-.8L12 4Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+    {%- when 'play' -%}
+      <path d="M9 6.5v11l9-5.5-9-5.5Z" fill="currentColor"/>
+    {%- when 'info' -%}
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M12 11v5.5" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+      <circle cx="12" cy="8" r="1" fill="currentColor"/>
+    {%- when 'warning' -%}
+      <path d="M12 4.5 2.8 20h18.4L12 4.5Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="M12 10v4" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    {%- when 'copy' -%}
+      <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M15 6.5A2.5 2.5 0 0 0 12.5 4H6a2 2 0 0 0-2 2v6.5A2.5 2.5 0 0 0 6.5 15" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'share' -%}
+      <path d="M12 3.5v11m0-11L8.5 7M12 3.5 15.5 7" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.5 12v6.5a1.5 1.5 0 0 0 1.5 1.5h10a1.5 1.5 0 0 0 1.5-1.5V12" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'mail' -%}
+      <rect x="3" y="5.5" width="18" height="13" rx="2" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="m4 7 8 5.5L20 7" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    {%- when 'users' -%}
+      <circle cx="9" cy="8.5" r="3.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M2.5 19.5c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+      <path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.4c2.4.6 4 2.4 4 5.1" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+    {%- when 'instagram' -%}
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <circle cx="17" cy="7" r="1.1" fill="currentColor"/>
+    {%- when 'facebook' -%}
+      <path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6A21 21 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8h3.2Z" fill="currentColor"/>
+    {%- when 'tiktok' -%}
+      <path d="M14 3.5h2.8a4.9 4.9 0 0 0 4.2 4.3v2.8a7.7 7.7 0 0 1-4.2-1.4v6.1a5.8 5.8 0 1 1-5.8-5.8c.3 0 .6 0 .9.1v2.9a2.9 2.9 0 1 0 2 2.8V3.5Z" fill="currentColor"/>
+    {%- when 'youtube' -%}
+      <path d="M21.4 8.1a2.5 2.5 0 0 0-1.75-1.75C18.1 6 12 6 12 6s-6.1 0-7.65.35A2.5 2.5 0 0 0 2.6 8.1 26 26 0 0 0 2.25 12c0 1.3.12 2.6.35 3.9a2.5 2.5 0 0 0 1.75 1.75C5.9 18 12 18 12 18s6.1 0 7.65-.35a2.5 2.5 0 0 0 1.75-1.75c.23-1.3.35-2.6.35-3.9 0-1.3-.12-2.6-.35-3.9Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="m10.25 14.5 4.5-2.5-4.5-2.5v5Z" fill="currentColor"/>
+    {%- when 'x' -%}
+      <path d="M4 4h3.8l4.3 5.9L17.2 4H21l-6.9 8L21.4 20h-3.8l-4.6-6.3L7.2 20H3.4l7.2-8.3L4 4Z" fill="currentColor"/>
+    {%- when 'whatsapp' -%}
+      <path d="M3.5 20.5 5 16.3a8 8 0 1 1 3.2 3.1l-4.7 1.1Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+      <path d="M9.3 8.4c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.5l.7 1.6c.1.2 0 .4-.1.6l-.4.5c-.2.2-.3.3-.1.6a7 7 0 0 0 2.7 2.4c.3.2.5.1.6 0l.6-.6c.2-.2.4-.2.6-.1l1.5.8c.3.2.3.4.3.6a1.8 1.8 0 0 1-1.7 1.6c-.6 0-2.4-.2-4.6-2.3S9 10.4 9 9.6c0-.5.1-.9.3-1.2Z" fill="currentColor"/>
+    {%- when 'golf-flag' -%}
+      <path d="M8 20.5V3.5l9 3-9 3" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="12" cy="20.5" rx="6" ry="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+    {%- when 'grid' -%}
+      <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+    {%- when 'sparkle' -%}
+      <path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.3l-1.8-5.7L4.5 10.8 10.2 9 12 3.5Z" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linejoin="round"/>
+    {%- when 'question' -%}
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="{{ stroke_width }}"/>
+      <path d="M9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.1-2.5 3.6" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    {%- when 'external' -%}
+      <path d="M14 4h6v6M20 4l-8.5 8.5" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18 14.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.5" stroke="currentColor" stroke-width="{{ stroke_width }}" stroke-linecap="round"/>
+  {%- endcase -%}
+</svg>

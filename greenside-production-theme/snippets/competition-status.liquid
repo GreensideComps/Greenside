@@ -1,0 +1,30 @@
+{%- comment -%}
+  Works out the live state of a competition and renders nothing.
+
+  Because `render` isolates scope, this snippet is only used where its *output*
+  is wanted. Callers that need the values compute them inline — see
+  competition-card.liquid and sections/main-competition.liquid.
+
+  This file documents the shared rules in one place so they stay consistent:
+
+  OPEN        product.available and (no closing date, or closing date in future)
+  CLOSING     open, and closing date is today or tomorrow
+  FULL        not product.available because every entry has been bought
+  CLOSED      closing date has passed
+  UNAVAILABLE not available for any other reason (draft, unpublished variant)
+
+  Metafields read (all optional, namespace `custom`):
+    closing_at              date_time   entries close
+    draw_at                 date_time   draw takes place
+    entries_total           integer     entries released
+    entries_sold            integer     entries taken
+    prize_value             money       retail value of the prize
+    cash_alternative        money       cash instead of the prize
+    max_entries_per_person  integer     per-person cap
+    instant_win             boolean     has instant win prizes
+    competition_type        text        e.g. "Live draw"
+    badge_label             text        one merchant-defined badge
+
+  Nothing here invents a value. Each display is skipped when its metafield is
+  empty, rather than falling back to a placeholder number.
+{%- endcomment -%}

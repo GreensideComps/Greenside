@@ -1,0 +1,13 @@
+{%- comment -%}
+  Render target for the cart bubble.
+
+  theme.js asks the Cart API for this section by name after every cart change,
+  so the header count stays correct without re-rendering the whole page.
+{%- endcomment -%}
+<span data-cart-icon-source hidden>{{ cart.item_count }}</span>
+{% schema %}
+{
+  "name": "Cart count",
+  "settings": []
+}
+{% endschema %}

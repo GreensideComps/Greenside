@@ -1,0 +1,90 @@
+<gs-cart-drawer id="CartDrawer" class="cart-drawer" aria-label="{{ 'cart.drawer_title' | t }}">
+  <div class="overlay__scrim" data-overlay-scrim></div>
+  <div class="overlay__panel overlay__panel--end" data-overlay-panel>
+    <div class="overlay__header">
+      <h2 class="overlay__title h5">
+        {{ 'cart.drawer_title' | t }}
+        <span class="cart-drawer__count text-sm text-muted">
+          {{- ' ' }}({{ cart.item_count }})
+        </span>
+      </h2>
+      <button
+        type="button"
+        class="icon-button"
+        data-overlay-close
+        aria-label="{{ 'general.accessibility.close' | t }}"
+      >
+        {%- render 'icon', icon: 'close' -%}
+      </button>
+    </div>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="overlay__body">
+        <div class="empty-state">
+          <span class="empty-state__icon">{%- render 'icon', icon: 'cart', size: 28 -%}</span>
+          <p class="h4">{{ 'cart.empty_title' | t }}</p>
+          <p class="empty-state__text">{{ 'cart.empty_body' | t }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="button button--primary" data-overlay-close>
+            {{ 'general.continue_shopping' | t }}
+          </a>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="overlay__body">
+        <ul class="cart-items" data-cart-items>
+          {%- for item in cart.items -%}
+            {%- render 'cart-line-item', item: item, context: 'drawer' -%}
+          {%- endfor -%}
+        </ul>
+
+        {%- if settings.cart_show_recommendations -%}
+          {%- render 'cart-recommendations' -%}
+        {%- endif -%}
+      </div>
+
+      <div class="overlay__footer">
+        {%- if cart.cart_level_discount_applications.size > 0 -%}
+          <ul class="cart-discounts">
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <li class="cart-discounts__item">
+                {%- render 'icon', icon: 'ticket', size: 14 -%}
+                {{ discount.title }}
+                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        <div class="cart-totals">
+          <span class="cart-totals__label">{{ 'cart.subtotal' | t }}</span>
+          <span class="cart-totals__value" data-cart-subtotal>{{ cart.total_price | money }}</span>
+        </div>
+
+        <p class="cart-totals__note">{{ 'cart.taxes_and_shipping' | t }}</p>
+
+        <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm">
+          <button
+            type="submit"
+            name="checkout"
+            class="button button--primary button--full button--large"
+            data-track="begin_checkout"
+          >
+            {%- render 'icon', icon: 'lock', size: 16 -%}
+            {{ 'cart.checkout' | t }}
+          </button>
+        </form>
+
+        {%- if settings.cart_reassurance != blank -%}
+          <div class="cart-reassurance rte text-xs text-muted">{{ settings.cart_reassurance }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</gs-cart-drawer>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,10 @@
+# Shopify Theme Check configuration for the Greenside production theme.
+extends: theme-check:recommended
+
+# Docs, tests and the packaging script live alongside the theme for
+# convenience but are excluded from the ZIP, so they are not checked as theme
+# files either.
+ignore:
+  - docs/*
+  - tests/*
+  - node_modules/*

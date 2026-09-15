@@ -1,0 +1,15 @@
+{%- comment -%}
+  Cart icon with an item count bubble.
+
+  Rendered inside sections/cart-icon.liquid too, so the Section Rendering API
+  can swap it after an add-to-cart without a page load.
+{%- endcomment -%}
+{%- render 'icon', icon: 'cart' -%}
+<span
+  class="header__cart-count"
+  data-cart-count
+  {% if cart.item_count == 0 %}hidden{% endif %}
+  aria-hidden="true"
+>
+  {{- cart.item_count -}}
+</span>
