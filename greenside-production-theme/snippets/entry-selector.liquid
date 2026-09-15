@@ -1,0 +1,232 @@
+{%- comment -%}
+  Entry selection.
+
+  Two modes, both priced entirely from Shopify. Neither invents a discount.
+
+  BUNDLE MODE — the product has more than one variant.
+    Each variant is a bundle. The number of entries it contains comes from the
+    variant metafield `custom.entries` (falling back to 1). The per-entry price
+    is calculated from the variant's real price, so the value comparison shown
+    to the customer is arithmetic on live data, never a claim. "Best value" is
+    applied automatically to whichever variant genuinely has the lowest
+    per-entry price, and is omitted entirely when every variant costs the same
+    per entry.
+
+  QUANTITY MODE — the product has one variant.
+    The line quantity is the number of entries. Preset amounts come from the
+    product metafield `custom.entry_bundles` (a list of integers). Because the
+    per-entry price is identical at every preset, no value badges are shown —
+    labelling one as better would be untrue.
+
+  Both modes respect `custom.max_entries_per_person` as a hard cap.
+
+  Parameters:
+    product (required)
+{%- endcomment -%}
+
+{%- liquid
+  assign max_per_person = product.metafields.custom.max_entries_per_person.value
+  assign bundles = product.metafields.custom.entry_bundles.value
+  assign entry_word_one = settings.entry_word_singular | default: 'entry'
+  assign entry_word_many = settings.entry_word_plural | default: 'entries'
+
+  assign is_bundle_mode = false
+  if product.variants.size > 1
+    assign is_bundle_mode = true
+  endif
+
+  comment
+    Work out the lowest per-entry price across variants. Only used to mark a
+    genuine best value, and only when the variants actually differ.
+  endcomment
+  assign lowest_unit = 0
+  assign highest_unit = 0
+  if is_bundle_mode
+    for variant in product.variants
+      assign variant_entries = variant.metafields.custom.entries.value | default: 1
+      if variant_entries < 1
+        assign variant_entries = 1
+      endif
+      assign unit = variant.price | divided_by: variant_entries
+      if forloop.first
+        assign lowest_unit = unit
+        assign highest_unit = unit
+      endif
+      if unit < lowest_unit
+        assign lowest_unit = unit
+      endif
+      if unit > highest_unit
+        assign highest_unit = unit
+      endif
+    endfor
+  endif
+
+  assign units_differ = false
+  if highest_unit > lowest_unit
+    assign units_differ = true
+  endif
+-%}
+
+<div class="entry-selector" data-entry-selector data-mode="{{ is_bundle_mode | default: false }}">
+  <fieldset class="entry-selector__fieldset">
+    <legend class="entry-selector__legend">
+      {{ 'products.competition.choose_entries' | t }}
+    </legend>
+
+    {%- if is_bundle_mode -%}
+      <div class="entry-bundles" role="radiogroup" aria-label="{{ 'products.competition.choose_entries' | t }}">
+        {%- for variant in product.variants -%}
+          {%- liquid
+            assign variant_entries = variant.metafields.custom.entries.value | default: 1
+            if variant_entries < 1
+              assign variant_entries = 1
+            endif
+            assign unit_price = variant.price | divided_by: variant_entries
+            assign is_best = false
+            if units_differ and unit_price == lowest_unit
+              assign is_best = true
+            endif
+            assign is_selected = false
+            if variant.id == product.selected_or_first_available_variant.id
+              assign is_selected = true
+            endif
+          -%}
+          <label
+            class="entry-bundle{% unless variant.available %} entry-bundle--unavailable{% endunless %}"
+            for="EntryBundle-{{ variant.id }}"
+          >
+            <input
+              id="EntryBundle-{{ variant.id }}"
+              class="entry-bundle__input visually-hidden"
+              type="radio"
+              name="id"
+              value="{{ variant.id }}"
+              data-variant-entries="{{ variant_entries }}"
+              data-variant-price="{{ variant.price }}"
+              {% if is_selected %}checked{% endif %}
+              {% unless variant.available %}disabled{% endunless %}
+            >
+            <span class="entry-bundle__body">
+              <span class="entry-bundle__count">
+                {%- if variant_entries == 1 -%}
+                  {{ variant_entries }} {{ entry_word_one }}
+                {%- else -%}
+                  {{ variant_entries }} {{ entry_word_many }}
+                {%- endif -%}
+              </span>
+              <span class="entry-bundle__price">{{ variant.price | money }}</span>
+              <span class="entry-bundle__unit">
+                {{- variant.price | divided_by: variant_entries | money }} {{ 'products.competition.per_entry' | t -}}
+              </span>
+            </span>
+            {%- if is_best -%}
+              <span class="badge badge--highlight entry-bundle__badge">
+                {{- 'products.competition.best_value' | t -}}
+              </span>
+            {%- endif -%}
+            {%- unless variant.available -%}
+              <span class="badge badge--closed entry-bundle__badge">
+                {{- 'products.competition.badge_sold_out' | t -}}
+              </span>
+            {%- endunless -%}
+          </label>
+        {%- endfor -%}
+      </div>
+
+      <input type="hidden" name="quantity" value="1">
+
+    {%- else -%}
+      {%- assign current_variant = product.selected_or_first_available_variant -%}
+      <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+      {%- if bundles != blank and bundles.size > 0 -%}
+        <div class="entry-presets" data-entry-presets>
+          {%- for amount in bundles -%}
+            {%- liquid
+              assign preset = amount | times: 1
+              assign over_cap = false
+              if max_per_person != blank and max_per_person > 0 and preset > max_per_person
+                assign over_cap = true
+              endif
+            -%}
+            {%- unless over_cap -%}
+              <button
+                type="button"
+                class="entry-preset"
+                data-entry-preset="{{ preset }}"
+                aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              >
+                <span class="entry-preset__count">
+                  {%- if preset == 1 -%}
+                    {{ preset }} {{ entry_word_one }}
+                  {%- else -%}
+                    {{ preset }} {{ entry_word_many }}
+                  {%- endif -%}
+                </span>
+                <span class="entry-preset__price" data-preset-price>
+                  {{- current_variant.price | times: preset | money -}}
+                </span>
+              </button>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="entry-custom">
+        <label class="entry-custom__label" for="EntryQuantity-{{ product.id }}">
+          {%- if bundles != blank and bundles.size > 0 -%}
+            {{ 'products.competition.custom_amount' | t }}
+          {%- else -%}
+            {{ 'products.competition.quantity_label' | t }}
+          {%- endif -%}
+        </label>
+
+        <gs-quantity class="quantity-selector quantity-selector--large">
+          <button
+            type="button"
+            class="quantity-selector__button"
+            data-quantity-decrease
+            aria-label="{{ 'products.competition.decrease' | t }}"
+          >
+            {%- render 'icon', icon: 'minus', size: 16 -%}
+          </button>
+          <input
+            id="EntryQuantity-{{ product.id }}"
+            class="quantity-selector__input"
+            type="number"
+            inputmode="numeric"
+            name="quantity"
+            value="1"
+            min="1"
+            step="1"
+            {% if max_per_person != blank and max_per_person > 0 %}max="{{ max_per_person }}"{% endif %}
+            data-entry-quantity
+            data-unit-price="{{ current_variant.price }}"
+          >
+          <button
+            type="button"
+            class="quantity-selector__button"
+            data-quantity-increase
+            aria-label="{{ 'products.competition.increase' | t }}"
+          >
+            {%- render 'icon', icon: 'plus', size: 16 -%}
+          </button>
+        </gs-quantity>
+      </div>
+    {%- endif -%}
+
+    {%- if max_per_person != blank and max_per_person > 0 -%}
+      <p class="entry-selector__cap text-xs text-muted">
+        {%- render 'icon', icon: 'info', size: 14 -%}
+        {{ 'products.competition.max_per_person' | t: count: max_per_person }}
+      </p>
+    {%- endif -%}
+  </fieldset>
+
+  <div class="entry-total" data-entry-total-row>
+    <span class="entry-total__label">{{ 'products.competition.total_label' | t }}</span>
+    <span class="entry-total__value" data-entry-total>
+      {{- product.selected_or_first_available_variant.price | money -}}
+    </span>
+  </div>
+</div>

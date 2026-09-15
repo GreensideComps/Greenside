@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-winners",
+      "settings": {
+        "eyebrow": "Real people. Real prizes.",
+        "text": "<p>Every Greenside winner, with the competition they entered and the date of the draw.</p>",
+        "per_page": 12,
+        "padding_top": 60,
+        "padding_bottom": 100
+      }
+    },
+    "signup": {
+      "type": "email-signup",
+      "settings": {
+        "eyebrow": "Next draw",
+        "heading": "Be in the next one",
+        "text": "<p>We email every result, and tell you when a new competition opens.</p>",
+        "button_label": "Join the Club",
+        "analytics_label": "winners",
+        "colour_scheme": "brand",
+        "layout": "split",
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
+    }
+  },
+  "order": ["main", "signup"]
+}

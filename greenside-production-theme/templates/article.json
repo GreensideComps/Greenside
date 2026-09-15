@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "settings": { "show_author": false, "show_read_time": true, "show_share": true }
+    }
+  },
+  "order": ["main"]
+}

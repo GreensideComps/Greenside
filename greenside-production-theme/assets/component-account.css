@@ -1,0 +1,189 @@
+/* ==========================================================================
+   Customer account
+   ========================================================================== */
+
+.account-page { padding-block: var(--section-spacing); }
+
+.auth-card {
+  max-width: 460px;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  border: 1px solid rgb(var(--color-border));
+  border-radius: var(--card-radius);
+  background-color: rgb(var(--color-surface));
+  box-shadow: var(--card-shadow);
+}
+
+.auth-card__header { text-align: center; margin-bottom: 1.5rem; }
+.auth-card__header p { color: rgb(var(--color-text-muted)); margin-top: 0.4rem; }
+
+.auth-form { display: grid; gap: 1rem; }
+.auth-form__actions { display: grid; gap: 0.75rem; margin-top: 0.25rem; }
+
+.auth-form__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+}
+
+.auth-card__footer {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgb(var(--color-border));
+  text-align: center;
+  font-size: var(--text-sm);
+  color: rgb(var(--color-text-muted));
+}
+
+/* --------------------------------------------------------------------------
+   Account dashboard
+   -------------------------------------------------------------------------- */
+
+.account-layout { display: grid; gap: 2rem; align-items: start; }
+
+@media screen and (min-width: 750px) {
+  .account-layout { grid-template-columns: minmax(200px, 240px) minmax(0, 1fr); gap: 3rem; }
+}
+
+.account-nav { list-style: none; display: grid; gap: 0.25rem; }
+
+.account-nav__link {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--button-radius);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.account-nav__link:hover { background-color: rgb(var(--color-surface-muted)); }
+
+.account-nav__link[aria-current='page'] {
+  background-color: rgb(var(--color-brand));
+  color: rgb(var(--color-on-brand));
+}
+
+.account-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.account-panel {
+  padding: 1.5rem;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: var(--card-radius);
+  background-color: rgb(var(--color-surface));
+}
+
+.account-panel + .account-panel { margin-top: 1.5rem; }
+.account-panel__title { margin-bottom: 1rem; }
+
+/* --------------------------------------------------------------------------
+   Orders table — becomes cards on small screens
+   -------------------------------------------------------------------------- */
+
+.order-table { width: 100%; font-size: var(--text-sm); }
+.order-table th { text-align: start; font-weight: 700; }
+
+.order-table th,
+.order-table td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.order-table thead th {
+  font-family: var(--font-heading-family);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-muted));
+}
+
+@media screen and (max-width: 749px) {
+  .order-table thead { display: none; }
+  .order-table,
+  .order-table tbody,
+  .order-table tr,
+  .order-table td { display: block; width: 100%; }
+
+  .order-table tr {
+    border: 1px solid rgb(var(--color-border));
+    border-radius: var(--card-radius);
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .order-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 0;
+    padding: 0.4rem 0;
+  }
+
+  /* The header label is repeated per cell so each row still reads correctly. */
+  .order-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: rgb(var(--color-text-muted));
+  }
+}
+
+.order-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: rgb(var(--color-text) / 0.08);
+}
+
+.order-status--paid,
+.order-status--fulfilled { background-color: rgb(var(--color-success) / 0.14); color: rgb(var(--color-success)); }
+
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1rem;
+  list-style: none;
+}
+
+.address-card {
+  padding: 1.25rem;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: var(--card-radius);
+  background-color: rgb(var(--color-surface));
+}
+
+.address-card__actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.address-form { display: grid; gap: 1rem; margin-top: 1rem; }
+
+@media screen and (min-width: 600px) {
+  .address-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+}
+
+.entries-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-radius: var(--card-radius);
+  background-color: rgb(var(--color-surface-muted));
+  font-size: var(--text-sm);
+  color: rgb(var(--color-text-muted));
+  margin-top: 1rem;
+}
+
+.entries-note svg { flex: none; margin-top: 0.1rem; color: rgb(var(--color-accent)); }

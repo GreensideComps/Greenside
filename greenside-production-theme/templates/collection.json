@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "show_description": true,
+        "enable_filtering": true,
+        "enable_sorting": true,
+        "enable_infinite": true,
+        "products_per_page": 16,
+        "columns_desktop": 4,
+        "image_ratio": "landscape",
+        "padding_top": 60,
+        "padding_bottom": 100
+      }
+    }
+  },
+  "order": ["main"]
+}

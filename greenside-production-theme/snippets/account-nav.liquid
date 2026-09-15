@@ -1,0 +1,30 @@
+{%- comment -%}
+  Account sidebar. `current` marks the active item.
+{%- endcomment -%}
+<nav aria-label="{{ 'customer.account.title' | t }}">
+  <ul class="account-nav">
+    <li>
+      <a
+        class="account-nav__link"
+        href="{{ routes.account_url }}"
+        {% if current == 'orders' %}aria-current="page"{% endif %}
+      >
+        {{- 'customer.account.orders' | t -}}
+      </a>
+    </li>
+    <li>
+      <a
+        class="account-nav__link"
+        href="{{ routes.account_addresses_url }}"
+        {% if current == 'addresses' %}aria-current="page"{% endif %}
+      >
+        {{- 'customer.account.view_addresses' | t -}}
+      </a>
+    </li>
+    <li>
+      <a class="account-nav__link" href="{{ routes.account_logout_url }}">
+        {{- 'customer.account.log_out' | t -}}
+      </a>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,144 @@
+{%- comment -%}
+  Referrals.
+
+  A referral link is only meaningful once a provider is issuing and tracking
+  codes. Until settings.referral_base_url is filled in, this section explains
+  what is coming and offers plain sharing — it never shows a fake link or a
+  reward that does not exist.
+
+  Once the setting holds a base URL, the link is built as:
+    <referral_base_url>?<referral_query_param>=<customer id>
+  A logged-out visitor is asked to log in first, because there is no identity
+  to attribute a referral to. See docs/INTEGRATIONS.md.
+{%- endcomment -%}
+
+{%- liquid
+  assign referral_base = settings.referral_base_url
+  assign referral_param = settings.referral_query_param | default: 'ref'
+  assign connected = false
+  if referral_base != blank
+    assign connected = true
+  endif
+
+  assign referral_link = ''
+  if connected and customer
+    assign referral_link = referral_base | append: '?' | append: referral_param | append: '=' | append: customer.id
+  endif
+-%}
+
+{%- render 'section-styles',
+  id: section.id,
+  padding_top: section.settings.padding_top,
+  padding_bottom: section.settings.padding_bottom
+-%}
+
+<div class="section scheme-{{ section.settings.colour_scheme }}">
+  <div class="page-width">
+    <div class="referral">
+      <div class="referral__content">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="eyebrow eyebrow--highlight">{{ section.settings.eyebrow | escape }}</span>
+        {%- endif -%}
+        <h2 class="h2">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.text != blank -%}
+          <div class="text-lead rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="referral__panel">
+        {%- if connected == false -%}
+          <p class="referral__status">
+            {%- render 'icon', icon: 'clock', size: 18 -%}
+            <span>{{ 'referral.not_connected' | t }}</span>
+          </p>
+          <p class="text-sm text-muted">{{ section.settings.pending_text | escape }}</p>
+
+        {%- elsif customer == nil -%}
+          <p class="referral__status">
+            {%- render 'icon', icon: 'account', size: 18 -%}
+            <span>{{ 'referral.sign_in_prompt' | t }}</span>
+          </p>
+          <a class="button button--primary" href="{{ routes.account_login_url }}">
+            {{- 'customer.login.submit' | t -}}
+          </a>
+
+        {%- else -%}
+          <p class="field__label">{{ 'referral.your_link' | t }}</p>
+          <div class="referral__link">
+            <input
+              class="field__input"
+              type="text"
+              value="{{ referral_link }}"
+              readonly
+              aria-label="{{ 'referral.your_link' | t }}"
+              onfocus="this.select()"
+            >
+            <gs-copy value="{{ referral_link }}">
+              <button type="button" class="button button--primary" data-track="referral_click">
+                {%- render 'icon', icon: 'copy', size: 16 -%}
+                {{ 'referral.copy' | t }}
+              </button>
+              <span class="share__copied" data-copy-feedback hidden>{{ 'referral.copied' | t }}</span>
+            </gs-copy>
+          </div>
+
+          <a
+            class="button button--secondary button--full"
+            href="https://wa.me/?text={{ 'referral.share_message' | t | url_encode }}%20{{ referral_link | url_encode }}"
+            target="_blank"
+            rel="noopener"
+            data-track="referral_share"
+            data-track-payload='{"channel":"whatsapp"}'
+          >
+            {%- render 'icon', icon: 'whatsapp', size: 16 -%}
+            {{ 'referral.share_whatsapp' | t }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Referrals",
+  "tag": "section",
+  "class": "section-referral",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Set 'Referral link base URL' under Theme settings → Integrations to switch this on. While it is empty the section says invites are coming rather than showing a link that does not work."
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Referrals" },
+    { "type": "text", "id": "heading", "label": "t:sections.all.heading", "default": "Invite your fourball" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.all.content",
+      "default": "<p>Your mates want to win too. Send them your link and we'll both know about it.</p>"
+    },
+    {
+      "type": "text",
+      "id": "pending_text",
+      "label": "Text while referrals are not connected",
+      "default": "We're setting this up properly. Join the Club and we'll tell you the moment invites go live."
+    },
+    {
+      "type": "select",
+      "id": "colour_scheme",
+      "label": "t:sections.all.colour_scheme",
+      "options": [
+        { "value": "brand", "label": "t:sections.all.scheme_brand" },
+        { "value": "deep", "label": "t:sections.all.scheme_deep" },
+        { "value": "light", "label": "t:sections.all.scheme_light" },
+        { "value": "cream", "label": "t:sections.all.scheme_cream" }
+      ],
+      "default": "brand"
+    },
+    { "type": "header", "content": "t:sections.all.padding_header" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 100 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+  ],
+  "presets": [{ "name": "Referrals" }]
+}
+{% endschema %}

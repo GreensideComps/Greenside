@@ -1,0 +1,98 @@
+{%- comment -%}
+  Winners page.
+
+  Reads every entry in the `winner` metaobject and pages through them in the
+  browser, so the page scales to hundreds of winners without a long first
+  render. Nothing is ever fabricated: with no metaobject entries the page
+  explains that winners appear after the first draw.
+{%- endcomment -%}
+
+{%- liquid
+  assign winners = shop.metaobjects.winner.values
+  assign per_page = section.settings.per_page | default: 12
+-%}
+
+{%- render 'section-styles',
+  id: section.id,
+  padding_top: section.settings.padding_top,
+  padding_bottom: section.settings.padding_bottom
+-%}
+
+<div class="section winners-page">
+  <div class="page-width">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="section-header section-header--center">
+      <div class="section-header__text">
+        <span class="eyebrow eyebrow--highlight">
+          {{- section.settings.eyebrow | default: 'winners.eyebrow' | t | escape -}}
+        </span>
+        <h1 class="h1">{{ section.settings.heading | default: page.title | escape }}</h1>
+        {%- if section.settings.text != blank -%}
+          <div class="text-lead rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+        {%- if winners.size > 0 -%}
+          <p class="text-muted">{{ 'winners.count' | t: count: winners.size }}</p>
+        {%- endif -%}
+      </div>
+    </header>
+
+    {%- if winners.size > 0 -%}
+      <gs-winners data-per-page="{{ per_page }}">
+        <ul class="winner-grid" role="list" data-winners-list>
+          {%- for winner in winners -%}
+            <li data-winner-item {% if forloop.index > per_page %}hidden{% endif %}>
+              {%- render 'winner-card', winner: winner, show_story: true -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if winners.size > per_page -%}
+          <p class="center" style="margin-top: 2.5rem;">
+            <button type="button" class="button button--secondary" data-winners-more>
+              {{- 'general.pagination.load_more' | t -}}
+            </button>
+          </p>
+        {%- endif -%}
+
+        <p class="visually-hidden" role="status" aria-live="polite" data-winners-status></p>
+      </gs-winners>
+
+      <script src="{{ 'winners.js' | asset_url }}" defer="defer"></script>
+    {%- else -%}
+      <div class="empty-state">
+        <span class="empty-state__icon">{%- render 'icon', icon: 'trophy', size: 28 -%}</span>
+        <p class="h4">{{ 'winners.empty_title' | t }}</p>
+        <p class="empty-state__text">{{ 'winners.empty_body' | t }}</p>
+        <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
+          {{- 'products.empty.browse_all' | t -}}
+        </a>
+      </div>
+    {%- endif -%}
+
+    {%- if page.content != blank -%}
+      <div class="rte page-width--narrow" style="margin-top: 3rem;">{{ page.content }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Winners",
+  "tag": "section",
+  "class": "section-main-winners",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Winners are published as `winner` metaobject entries. See docs/SHOPIFY-SETUP.md for the field list."
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Real people. Real prizes." },
+    { "type": "text", "id": "heading", "label": "t:sections.all.heading", "info": "Leave empty to use the page title." },
+    { "type": "richtext", "id": "text", "label": "t:sections.all.content" },
+    { "type": "range", "id": "per_page", "min": 6, "max": 48, "step": 6, "label": "Winners shown before 'load more'", "default": 12 },
+    { "type": "header", "content": "t:sections.all.padding_header" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+  ]
+}
+{% endschema %}

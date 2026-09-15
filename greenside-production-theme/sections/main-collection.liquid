@@ -1,0 +1,217 @@
+{{ 'component-collection.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign columns = section.settings.columns_desktop | default: 4
+  assign per_page = section.settings.products_per_page | default: 16
+  assign show_filters = section.settings.enable_filtering
+  assign show_sorting = section.settings.enable_sorting
+  assign has_facets = false
+  if show_filters and collection.filters.size > 0
+    assign has_facets = true
+  endif
+-%}
+
+{%- assign collection_style = '--columns-desktop: ' | append: columns | append: ';' -%}
+{%- render 'section-styles',
+  id: section.id,
+  padding_top: section.settings.padding_top,
+  padding_bottom: section.settings.padding_bottom,
+  extra: collection_style
+-%}
+
+<div class="section collection-page">
+  <div class="page-width">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="collection-header">
+      <h1 class="h1">{{ collection.title | escape }}</h1>
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <div class="collection-header__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- paginate collection.products by per_page -%}
+      <gs-facets
+        class="collection-body"
+        data-section-id="{{ section.id }}"
+        {% if section.settings.enable_infinite == false %}data-manual-pagination{% endif %}
+      >
+        {%- if has_facets or show_sorting -%}
+          <div class="facets-bar">
+            {%- if has_facets -%}
+              <button
+                type="button"
+                class="button button--secondary button--small facets-bar__toggle"
+                data-overlay-trigger="FacetDrawer"
+                aria-haspopup="dialog"
+              >
+                {%- render 'icon', icon: 'filter', size: 16 -%}
+                {{ 'products.facets.title' | t }}
+                {%- assign active_count = 0 -%}
+                {%- for filter in collection.filters -%}
+                  {%- assign active_count = active_count | plus: filter.active_values.size -%}
+                  {%- if filter.type == 'price_range' and filter.min_value.value != nil -%}
+                    {%- assign active_count = active_count | plus: 1 -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if active_count > 0 -%}
+                  <span class="facets-bar__count">{{ active_count }}</span>
+                {%- endif -%}
+              </button>
+            {%- endif -%}
+
+            <p class="facets-bar__results" data-facets-count aria-live="polite">
+              {{- 'products.facets.showing' | t: count: collection.products_count -}}
+            </p>
+
+            {%- if show_sorting -%}
+              {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+              <form class="facets-bar__sort" data-facets-sort>
+                <label class="visually-hidden" for="CollectionSort">{{ 'products.facets.sort_by' | t }}</label>
+                <select
+                  id="CollectionSort"
+                  class="field__select field__select--compact"
+                  name="sort_by"
+                  data-sort-select
+                >
+                  {%- for option in collection.sort_options -%}
+                    <option
+                      value="{{ option.value }}"
+                      {% if option.value == sort_by %}selected{% endif %}
+                    >
+                      {{ option.name | escape }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+              </form>
+            {%- endif -%}
+          </div>
+
+          {%- if active_count > 0 -%}
+            <ul class="active-facets" data-active-facets>
+              {%- for filter in collection.filters -%}
+                {%- for value in filter.active_values -%}
+                  <li>
+                    <a class="active-facet" href="{{ value.url_to_remove }}" data-facet-remove>
+                      <span>{{ filter.label | escape }}: {{ value.label | escape }}</span>
+                      {%- render 'icon', icon: 'close', size: 12 -%}
+                    </a>
+                  </li>
+                {%- endfor -%}
+                {%- if filter.type == 'price_range' and filter.min_value.value != nil -%}
+                  <li>
+                    <a class="active-facet" href="{{ filter.url_to_remove }}" data-facet-remove>
+                      <span>
+                        {{- filter.label | escape }}:
+                        {{ filter.min_value.value | money }} &ndash; {{ filter.max_value.value | money -}}
+                      </span>
+                      {%- render 'icon', icon: 'close', size: 12 -%}
+                    </a>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+              <li>
+                <a class="active-facet active-facet--clear" href="{{ collection.url }}" data-facet-remove>
+                  {{- 'products.facets.clear_all' | t -}}
+                </a>
+              </li>
+            </ul>
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="collection-results" data-facets-results>
+          {%- if collection.products.size > 0 -%}
+            <ul class="competition-grid" role="list" data-product-grid>
+              {%- for product in collection.products -%}
+                <li>
+                  {%- render 'competition-card',
+                    product: product,
+                    index: forloop.index,
+                    image_ratio: section.settings.image_ratio,
+                    sizes: '(min-width: 990px) 320px, (min-width: 600px) 45vw, 92vw'
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+
+            {%- if paginate.pages > 1 -%}
+              {%- render 'pagination', paginate: paginate -%}
+            {%- endif -%}
+          {%- elsif active_count > 0 -%}
+            <div class="empty-state">
+              <span class="empty-state__icon">{%- render 'icon', icon: 'filter', size: 28 -%}</span>
+              <p class="h4">{{ 'products.facets.no_results_title' | t }}</p>
+              <p class="empty-state__text">{{ 'products.facets.no_results_body' | t }}</p>
+              <a class="button button--primary" href="{{ collection.url }}">
+                {{- 'products.facets.clear_all' | t -}}
+              </a>
+            </div>
+          {%- else -%}
+            <div class="empty-state">
+              <span class="empty-state__icon">{%- render 'icon', icon: 'golf-flag', size: 28 -%}</span>
+              <p class="h4">{{ 'products.empty.collection_title' | t }}</p>
+              <p class="empty-state__text">{{ 'products.empty.collection_body' | t }}</p>
+              <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
+                {{- 'products.empty.browse_all' | t -}}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      </gs-facets>
+
+      {%- if has_facets -%}
+        {%- render 'facet-drawer', filters: collection.filters, results_url: collection.url -%}
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</div>
+
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Competition listing",
+  "tag": "section",
+  "class": "section-main-collection",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Filters come from Shopify's Search & Discovery app. Only filters you have configured there appear here, so the theme can never offer a filter your data cannot support."
+    },
+    { "type": "checkbox", "id": "show_description", "label": "Show the collection description", "default": true },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filtering", "default": true },
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite",
+      "label": "Load results without a page reload",
+      "info": "Keeps filtering and paging on one screen. Turn off to use plain page links.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "label": "Competitions per page",
+      "default": 16
+    },
+    { "type": "range", "id": "columns_desktop", "min": 2, "max": 5, "step": 1, "label": "t:sections.all.columns_desktop", "default": 4 },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" }
+      ],
+      "default": "landscape"
+    },
+    { "type": "header", "content": "t:sections.all.padding_header" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,105 @@
+<div class="section cart-page" id="MainCart">
+  <div class="page-width">
+    <h1 class="h1 cart-page__title">{{ 'cart.title' | t }}</h1>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="empty-state">
+        <span class="empty-state__icon">{%- render 'icon', icon: 'cart', size: 28 -%}</span>
+        <p class="h4">{{ 'cart.empty_title' | t }}</p>
+        <p class="empty-state__text">{{ 'cart.empty_body' | t }}</p>
+        <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
+          {{- 'general.continue_shopping' | t -}}
+        </a>
+      </div>
+    {%- else -%}
+      <gs-cart-page class="cart-page__layout">
+        <div class="cart-page__items">
+          <ul class="cart-items" role="list">
+            {%- for item in cart.items -%}
+              {%- render 'cart-line-item', item: item, context: 'page' -%}
+            {%- endfor -%}
+          </ul>
+
+          <p class="cart-page__continue">
+            <a class="link" href="{{ routes.all_products_collection_url }}">
+              {%- render 'icon', icon: 'arrow-left', size: 16 -%}
+              {{ 'cart.continue' | t }}
+            </a>
+          </p>
+        </div>
+
+        <aside class="cart-page__summary" aria-label="{{ 'cart.total' | t }}">
+          <div class="cart-summary">
+            {%- if cart.cart_level_discount_applications.size > 0 -%}
+              <ul class="cart-discounts">
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <li class="cart-discounts__item">
+                    {%- render 'icon', icon: 'ticket', size: 14 -%}
+                    {{ discount.title }}
+                    <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+
+            <div class="cart-totals">
+              <span class="cart-totals__label">{{ 'cart.subtotal' | t }}</span>
+              <span class="cart-totals__value">{{ cart.total_price | money }}</span>
+            </div>
+
+            <p class="cart-totals__note">{{ 'cart.taxes_and_shipping' | t }}</p>
+
+            <form action="{{ routes.cart_url }}" method="post" novalidate>
+              {%- if settings.cart_show_note -%}
+                <div class="field" style="margin-bottom: 1rem;">
+                  <label class="field__label" for="CartNote">{{ 'cart.note' | t }}</label>
+                  <textarea
+                    id="CartNote"
+                    class="field__textarea"
+                    name="note"
+                    placeholder="{{ 'cart.note_placeholder' | t }}"
+                  >{{ cart.note }}</textarea>
+                </div>
+              {%- endif -%}
+
+              <button
+                type="submit"
+                name="checkout"
+                class="button button--primary button--full button--large"
+                data-track="begin_checkout"
+              >
+                {%- render 'icon', icon: 'lock', size: 16 -%}
+                {{ 'cart.checkout' | t }}
+              </button>
+            </form>
+
+            {%- if settings.cart_reassurance != blank -%}
+              <div class="cart-reassurance rte text-xs text-muted">{{ settings.cart_reassurance }}</div>
+            {%- endif -%}
+
+            {%- if shop.enabled_payment_types.size > 0 -%}
+              <ul class="competition-form__payments" aria-label="{{ 'footer.payment_methods' | t }}">
+                {%- for type in shop.enabled_payment_types -%}
+                  <li>{{ type | payment_type_svg_tag: class: 'payment-icon' }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </aside>
+      </gs-cart-page>
+
+      {%- if settings.cart_show_recommendations -%}
+        {%- render 'cart-recommendations' -%}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": "section",
+  "class": "section-main-cart",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,106 @@
+<div class="section">
+  <div class="page-width--narrow">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="page-content__header">
+      <h1 class="h1">{{ section.settings.heading | default: page.title | escape }}</h1>
+      {%- if section.settings.text != blank -%}
+        <div class="text-lead rte" style="margin-top: 0.75rem;">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- if page.content != blank -%}
+      <div class="rte" style="margin-bottom: 2rem;">{{ page.content }}</div>
+    {%- endif -%}
+
+    {%- form 'contact', class: 'contact-form', novalidate: 'novalidate' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="form-status form-status--success" role="status">
+          {%- render 'icon', icon: 'check-circle', size: 18 -%}
+          <span>{{ 'contact.success' | t }}</span>
+        </p>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <div class="form-status form-status--error" role="alert">
+          {%- render 'icon', icon: 'warning', size: 16 -%}
+          <span>{{ 'contact.error' | t }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="field{% if form.errors contains 'name' %} field--error{% endif %}">
+        <label class="field__label" for="ContactName">{{ 'contact.name' | t }}</label>
+        <input
+          id="ContactName"
+          class="field__input"
+          type="text"
+          name="contact[name]"
+          value="{{ form.name | default: customer.name }}"
+          autocomplete="name"
+          required
+        >
+      </div>
+
+      <div class="field{% if form.errors contains 'email' %} field--error{% endif %}">
+        <label class="field__label" for="ContactEmail">{{ 'contact.email' | t }}</label>
+        <input
+          id="ContactEmail"
+          class="field__input"
+          type="email"
+          name="contact[email]"
+          value="{{ form.email | default: customer.email }}"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+          {% if form.errors contains 'email' %}aria-invalid="true" aria-describedby="ContactEmailError"{% endif %}
+        >
+        {%- if form.errors contains 'email' -%}
+          <p class="field__error" id="ContactEmailError" role="alert">
+            {%- render 'icon', icon: 'warning', size: 14 -%}
+            {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+          </p>
+        {%- endif -%}
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="ContactPhone">{{ 'contact.phone' | t }}</label>
+        <input
+          id="ContactPhone"
+          class="field__input"
+          type="tel"
+          name="contact[phone]"
+          value="{{ form.phone | default: customer.phone }}"
+          autocomplete="tel"
+        >
+      </div>
+
+      <div class="field{% if form.errors contains 'body' %} field--error{% endif %}">
+        <label class="field__label" for="ContactBody">{{ 'contact.message' | t }}</label>
+        <textarea id="ContactBody" class="field__textarea" name="contact[body]" required>
+          {{- form.body -}}
+        </textarea>
+      </div>
+
+      <button type="submit" class="button button--primary" style="justify-self: start;">
+        {{- 'contact.submit' | t -}}
+      </button>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact",
+  "tag": "section",
+  "class": "section-main-contact",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "t:sections.all.heading", "info": "Leave empty to use the page title." },
+    { "type": "richtext", "id": "text", "label": "t:sections.all.content" },
+    { "type": "header", "content": "t:sections.all.padding_header" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+  ]
+}
+{% endschema %}

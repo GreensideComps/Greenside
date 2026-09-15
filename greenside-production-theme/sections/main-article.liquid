@@ -1,0 +1,128 @@
+{%- liquid
+  assign word_count = article.content | strip_html | split: ' ' | size
+  assign read_minutes = word_count | divided_by: 220 | at_least: 1
+  assign article_alt = article.image.alt | default: article.title
+-%}
+
+<article class="section article-page">
+  <div class="page-width--narrow">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="article-page__header">
+      <p class="article-card__meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{- article.published_at | date: '%-d %B %Y' -}}
+        </time>
+        {%- if section.settings.show_author and article.author != blank %}
+          &middot; {{ 'blogs.article.by_author' | t: author: article.author }}
+        {%- endif %}
+        {%- if section.settings.show_read_time %}
+          &middot; {{ 'blogs.article.read_time' | t: minutes: read_minutes }}
+        {%- endif %}
+      </p>
+      <h1 class="h1">{{ article.title | escape }}</h1>
+    </header>
+  </div>
+
+  {%- if article.image -%}
+    <div class="page-width article-page__media">
+      {%- render 'responsive-image',
+        image: article.image,
+        alt: article_alt,
+        sizes: '(min-width: 1320px) 1320px, 100vw',
+        widths: '720,900,1200,1600,2000',
+        loading: 'eager',
+        fetchpriority: 'high'
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="page-width--narrow">
+    <div class="rte article-page__body">{{ article.content }}</div>
+
+    {%- if section.settings.show_share -%}
+      <div class="article-page__share">
+        {%- render 'share-buttons', url: article.url, title: article.title -%}
+      </div>
+    {%- endif -%}
+
+    {%- if blog.comments_enabled? -%}
+      <section class="article-comments" id="comments">
+        <h2 class="h3">{{ 'blogs.article.comments' | t: count: article.comments_count }}</h2>
+
+        {%- if article.comments_count > 0 -%}
+          <ul class="article-comments__list" role="list">
+            {%- for comment in article.comments -%}
+              <li class="article-comment">
+                <p class="article-comment__author">{{ comment.author | escape }}</p>
+                <p class="article-comment__date">{{ comment.created_at | date: '%-d %b %Y' }}</p>
+                <div class="rte">{{ comment.content }}</div>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- form 'new_comment', article, class: 'article-comments__form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="form-status form-status--success" role="status">
+              {%- if blog.moderated? -%}
+                {{ 'blogs.article.success_moderated' | t }}
+              {%- else -%}
+                {{ 'blogs.article.success' | t }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+
+          {%- if form.errors -%}
+            <p class="form-status form-status--error" role="alert">
+              {{ form.errors.messages.form | default: 'contact.error' | t }}
+            </p>
+          {%- endif -%}
+
+          <h3 class="h4">{{ 'blogs.article.comment_form_title' | t }}</h3>
+
+          <div class="field">
+            <label class="field__label" for="CommentAuthor">{{ 'blogs.article.name' | t }}</label>
+            <input id="CommentAuthor" class="field__input" type="text" name="comment[author]" value="{{ form.author }}" autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="CommentEmail">{{ 'blogs.article.email' | t }}</label>
+            <input id="CommentEmail" class="field__input" type="email" name="comment[email]" value="{{ form.email }}" autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="CommentBody">{{ 'blogs.article.message' | t }}</label>
+            <textarea id="CommentBody" class="field__textarea" name="comment[body]" required>{{ form.body }}</textarea>
+          </div>
+
+          {%- if blog.moderated? -%}
+            <p class="field__hint">{{ 'blogs.article.moderated' | t }}</p>
+          {%- endif -%}
+
+          <button type="submit" class="button button--primary">{{ 'blogs.article.submit' | t }}</button>
+        {%- endform -%}
+      </section>
+    {%- endif -%}
+
+    <p style="margin-top: 2.5rem;">
+      <a class="link" href="{{ blog.url }}">
+        {%- render 'icon', icon: 'arrow-left', size: 16 -%}
+        {{ 'blogs.article.back_to_blog' | t: title: blog.title }}
+      </a>
+    </p>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "tag": "section",
+  "class": "section-main-article",
+  "settings": [
+    { "type": "checkbox", "id": "show_author", "label": "Show the author", "default": false },
+    { "type": "checkbox", "id": "show_read_time", "label": "Show the reading time", "default": true },
+    { "type": "checkbox", "id": "show_share", "label": "Show share buttons", "default": true }
+  ]
+}
+{% endschema %}

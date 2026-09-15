@@ -1,0 +1,111 @@
+{%- comment -%}
+  Prize gallery.
+
+  A scroll-snap rail with thumbnail buttons implemented as a tablist, so the
+  whole gallery is operable by keyboard and works with no JavaScript at all —
+  without JS the rail is still scrollable and every image is reachable.
+
+  Parameters:
+    product (required)
+{%- endcomment -%}
+
+{%- assign media_items = product.media -%}
+
+<gs-gallery class="gallery" data-gallery>
+  {%- if media_items.size > 0 -%}
+    <div class="gallery__viewport">
+      <ul class="gallery__track" data-gallery-track role="list">
+        {%- for media in media_items -%}
+          {%- assign media_alt = media.alt | default: product.title -%}
+          <li
+            class="gallery__slide"
+            id="GalleryPanel-{{ media.id }}"
+            data-gallery-slide
+            data-media-id="{{ media.id }}"
+            {% if media_items.size > 1 %}
+              role="tabpanel"
+              aria-label="{{ 'products.product.media_of' | t: index: forloop.index, total: media_items.size }}"
+            {% endif %}
+          >
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- render 'responsive-image',
+                  image: media.preview_image,
+                  alt: media_alt,
+                  sizes: '(min-width: 990px) 640px, 100vw',
+                  widths: '540,720,900,1200,1600',
+                  loading: 'eager'
+                -%}
+              {%- when 'video' -%}
+                {{ media | video_tag: image_size: '1200x', controls: true, muted: false }}
+              {%- when 'external_video' -%}
+                {{ media | external_video_tag }}
+              {%- when 'model' -%}
+                {{ media | model_viewer_tag }}
+              {%- else -%}
+                {{ media | media_tag }}
+            {%- endcase -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if media_items.size > 1 -%}
+        <button
+          type="button"
+          class="gallery__nav gallery__nav--prev"
+          data-gallery-prev
+          aria-label="{{ 'general.accessibility.previous' | t }}"
+        >
+          {%- render 'icon', icon: 'chevron-left', size: 20 -%}
+        </button>
+        <button
+          type="button"
+          class="gallery__nav gallery__nav--next"
+          data-gallery-next
+          aria-label="{{ 'general.accessibility.next' | t }}"
+        >
+          {%- render 'icon', icon: 'chevron-right', size: 20 -%}
+        </button>
+      {%- endif -%}
+    </div>
+
+    {%- if media_items.size > 1 -%}
+      <ul
+        class="gallery__thumbs"
+        data-gallery-thumbs
+        role="tablist"
+        aria-label="{{ 'general.accessibility.carousel' | t }}"
+      >
+        {%- for media in media_items -%}
+          <li>
+            <button
+              type="button"
+              class="gallery__thumb"
+              role="tab"
+              id="GalleryTab-{{ media.id }}"
+              aria-controls="GalleryPanel-{{ media.id }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+              data-gallery-thumb
+              data-media-id="{{ media.id }}"
+            >
+              <img
+                src="{{ media.preview_image | image_url: width: 160, height: 160, crop: 'center' }}"
+                alt="{{ 'products.product.gallery_thumbnail' | t: index: forloop.index }}"
+                width="80"
+                height="80"
+                loading="lazy"
+              >
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  {%- else -%}
+    <div class="gallery__viewport">
+      <div class="media media--landscape">
+        {%- render 'placeholder', name: 'product-1' -%}
+      </div>
+    </div>
+  {%- endif -%}
+</gs-gallery>

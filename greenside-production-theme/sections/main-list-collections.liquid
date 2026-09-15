@@ -1,0 +1,59 @@
+{%- assign list_style = '--category-columns: ' | append: section.settings.columns_desktop | append: ';' -%}
+{%- render 'section-styles', id: section.id, padding_top: 60, padding_bottom: 100, extra: list_style -%}
+
+<div class="section">
+  <div class="page-width">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="collection-header">
+      <h1 class="h1">{{ page_title | escape }}</h1>
+    </header>
+
+    {%- if collections.size > 0 -%}
+      <ul class="category-grid" role="list">
+        {%- for collection in collections -%}
+          {%- assign collection_alt = collection.featured_image.alt | default: collection.title -%}
+          <li>
+            <a class="category-tile" href="{{ collection.url }}">
+              <div class="category-tile__media">
+                {%- if collection.featured_image -%}
+                  {%- render 'responsive-image',
+                    image: collection.featured_image,
+                    alt: collection_alt,
+                    sizes: '(min-width: 750px) 300px, 45vw',
+                    widths: '300,420,600,800'
+                  -%}
+                {%- else -%}
+                  {%- render 'placeholder', name: 'collection-1' -%}
+                {%- endif -%}
+              </div>
+              <div class="category-tile__content">
+                <span class="category-tile__title">{{ collection.title | escape }}</span>
+                <span class="category-tile__count">
+                  {{- 'products.facets.showing' | t: count: collection.all_products_count -}}
+                </span>
+              </div>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="empty-state">
+        <span class="empty-state__icon">{%- render 'icon', icon: 'grid', size: 28 -%}</span>
+        <p class="h4">{{ 'products.empty.collection_title' | t }}</p>
+        <p class="empty-state__text">{{ 'products.empty.collection_body' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "tag": "section",
+  "class": "section-list-collections",
+  "settings": [
+    { "type": "range", "id": "columns_desktop", "min": 2, "max": 6, "step": 1, "label": "t:sections.all.columns_desktop", "default": 4 }
+  ]
+}
+{% endschema %}

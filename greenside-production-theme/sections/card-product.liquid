@@ -1,0 +1,16 @@
+{%- comment -%}
+  Render target for a single competition card, used by recently-viewed.js to
+  fetch cards for products held only in browser storage. Keeping it a section
+  means those cards are produced by exactly the same Liquid as every other
+  card on the store.
+{%- endcomment -%}
+{%- if product != blank and product.id -%}
+  {%- render 'competition-card', product: product, sizes: '(min-width: 990px) 300px, 78vw' -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Competition card",
+  "settings": []
+}
+{% endschema %}

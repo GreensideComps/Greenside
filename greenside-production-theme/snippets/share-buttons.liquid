@@ -1,0 +1,70 @@
+{%- comment -%}
+  Share controls.
+
+  Uses the native share sheet where the browser offers one (most phones), and
+  falls back to explicit links plus copy-to-clipboard everywhere else.
+
+  Parameters:
+    url    (required) a store-relative URL
+    title  (required)
+{%- endcomment -%}
+{%- liquid
+  assign share_url = shop.url | append: url
+  assign share_text = title | append: ' — ' | append: shop.name
+-%}
+<div class="share" data-share data-url="{{ share_url }}" data-title="{{ title | escape }}">
+  <span class="share__label">{{ 'general.share.label' | t }}</span>
+
+  <button
+    type="button"
+    class="share__native icon-button"
+    data-share-native
+    aria-label="{{ 'general.share.label' | t }}"
+    hidden
+  >
+    {%- render 'icon', icon: 'share', size: 18 -%}
+  </button>
+
+  <div class="share__links" data-share-links>
+    <a
+      class="icon-button"
+      href="https://wa.me/?text={{ share_text | url_encode }}%20{{ share_url | url_encode }}"
+      target="_blank"
+      rel="noopener"
+      aria-label="{{ 'general.share.whatsapp' | t }}"
+      data-track="referral_share"
+      data-track-payload='{"channel":"whatsapp"}'
+    >
+      {%- render 'icon', icon: 'whatsapp', size: 18 -%}
+    </a>
+    <a
+      class="icon-button"
+      href="https://www.facebook.com/sharer/sharer.php?u={{ share_url | url_encode }}"
+      target="_blank"
+      rel="noopener"
+      aria-label="{{ 'general.share.facebook' | t }}"
+      data-track="referral_share"
+      data-track-payload='{"channel":"facebook"}'
+    >
+      {%- render 'icon', icon: 'facebook', size: 18 -%}
+    </a>
+    <a
+      class="icon-button"
+      href="https://x.com/intent/post?text={{ share_text | url_encode }}&url={{ share_url | url_encode }}"
+      target="_blank"
+      rel="noopener"
+      aria-label="{{ 'general.share.x' | t }}"
+      data-track="referral_share"
+      data-track-payload='{"channel":"x"}'
+    >
+      {%- render 'icon', icon: 'x', size: 18 -%}
+    </a>
+
+    <gs-copy class="share__copy" value="{{ share_url }}">
+      <button type="button" class="icon-button" aria-label="{{ 'general.share.copy_link' | t }}">
+        {%- render 'icon', icon: 'copy', size: 18 -%}
+      </button>
+      <span class="share__copied" data-copy-feedback hidden>{{ 'general.share.copied' | t }}</span>
+    </gs-copy>
+  </div>
+</div>

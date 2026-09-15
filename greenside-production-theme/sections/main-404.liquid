@@ -1,0 +1,51 @@
+<div class="section">
+  <div class="page-width">
+    <div class="empty-state">
+      <span class="empty-state__icon">{%- render 'icon', icon: 'golf-flag', size: 28 -%}</span>
+      <h1 class="h2">{{ 'page.error_404.title' | t }}</h1>
+      <p class="empty-state__text">{{ 'page.error_404.body' | t }}</p>
+      <div class="flow-gap" style="justify-content: center;">
+        <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
+          {{- 'page.error_404.cta' | t -}}
+        </a>
+        <a class="button button--secondary" href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+      </div>
+    </div>
+
+    {%- if section.settings.collection != blank -%}
+      {%- assign fallback_collection = collections[section.settings.collection] -%}
+      {%- if fallback_collection.products.size > 0 -%}
+        <div style="margin-top: 3rem;">
+          <div class="section-header section-header--center">
+            <div class="section-header__text">
+              <h2 class="h3">{{ section.settings.heading | escape }}</h2>
+            </div>
+          </div>
+          <ul class="competition-grid" role="list">
+            {%- for product in fallback_collection.products limit: 4 -%}
+              <li>
+                {%- render 'competition-card',
+                  product: product,
+                  index: forloop.index,
+                  sizes: '(min-width: 990px) 300px, (min-width: 600px) 45vw, 92vw'
+                -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404 page",
+  "tag": "section",
+  "class": "section-404",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "t:sections.all.heading", "default": "Open right now" },
+    { "type": "collection", "id": "collection", "label": "t:sections.all.collection" }
+  ]
+}
+{% endschema %}

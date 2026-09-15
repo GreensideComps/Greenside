@@ -1,0 +1,124 @@
+{{ 'component-account.css' | asset_url | stylesheet_tag }}
+
+<div class="account-page">
+  <div class="page-width">
+    <div class="auth-card">
+      <div id="RecoverPassword" class="auth-card__recover" style="display: none;">
+        <div class="auth-card__header">
+          <h1 class="h3">{{ 'customer.recover_password.title' | t }}</h1>
+          <p>{{ 'customer.recover_password.subtitle' | t }}</p>
+        </div>
+
+        {%- form 'recover_customer_password', class: 'auth-form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="form-status form-status--success" role="status">
+              {{ 'customer.recover_password.success' | t }}
+            </p>
+          {%- endif -%}
+
+          <div class="field{% if form.errors %} field--error{% endif %}">
+            <label class="field__label" for="RecoverEmail">{{ 'customer.login.email' | t }}</label>
+            <input
+              id="RecoverEmail"
+              class="field__input"
+              type="email"
+              name="email"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              {% if form.errors %}aria-invalid="true"{% endif %}
+            >
+            {%- if form.errors -%}
+              <p class="field__error" role="alert">
+                {%- render 'icon', icon: 'warning', size: 14 -%}
+                {{ form.errors.messages.form }}
+              </p>
+            {%- endif -%}
+          </div>
+
+          <div class="auth-form__actions">
+            <button type="submit" class="button button--primary button--full">
+              {{- 'customer.recover_password.submit' | t -}}
+            </button>
+            <button type="button" class="button button--ghost" data-show-login>
+              {{- 'customer.recover_password.cancel' | t -}}
+            </button>
+          </div>
+        {%- endform -%}
+      </div>
+
+      <div id="LoginPanel">
+        <div class="auth-card__header">
+          <h1 class="h3">{{ 'customer.login.title' | t }}</h1>
+          <p>{{ 'customer.login.subtitle' | t }}</p>
+        </div>
+
+        {%- form 'customer_login', class: 'auth-form', novalidate: 'novalidate' -%}
+          {%- if form.errors -%}
+            <p class="form-status form-status--error" role="alert">
+              {%- render 'icon', icon: 'warning', size: 16 -%}
+              <span>{{ form.errors.messages.form }}</span>
+            </p>
+          {%- endif -%}
+
+          <div class="field">
+            <label class="field__label" for="LoginEmail">{{ 'customer.login.email' | t }}</label>
+            <input
+              id="LoginEmail"
+              class="field__input"
+              type="email"
+              name="customer[email]"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="LoginPassword">{{ 'customer.login.password' | t }}</label>
+            <input
+              id="LoginPassword"
+              class="field__input"
+              type="password"
+              name="customer[password]"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <div class="auth-form__meta">
+            <button type="button" class="link" data-show-recover>
+              {{- 'customer.login.forgot_password' | t -}}
+            </button>
+          </div>
+
+          <button type="submit" class="button button--primary button--full" data-track-submit="login">
+            {{- 'customer.login.submit' | t -}}
+          </button>
+        {%- endform -%}
+
+        <p class="auth-card__footer">
+          {{ 'customer.login.no_account' | t }}
+          <a class="link" href="{{ routes.account_register_url }}">
+            {{- 'customer.login.create_account' | t -}}
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'account.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Login",
+  "tag": "section",
+  "class": "section-main-login",
+  "settings": []
+}
+{% endschema %}

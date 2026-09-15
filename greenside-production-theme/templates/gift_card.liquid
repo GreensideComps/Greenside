@@ -1,0 +1,75 @@
+{%- comment -%}
+  Gift card. Shopify renders this outside the main layout, so it carries its own
+  minimal document.
+
+  No QR code is rendered: generating one needs a third-party library, and the
+  code below is what a customer actually enters at checkout.
+{%- endcomment -%}
+{%- liquid
+  assign card_value = gift_card.initial_value | money
+  assign card_title = 'gift_cards.issued.title' | t: value: card_value, shop: shop.name
+  assign card_balance = gift_card.balance | money
+-%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ card_title }}</title>
+    <meta name="robots" content="noindex,nofollow">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    <style>{%- render 'css-variables' -%}</style>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'components.css' | asset_url | stylesheet_tag }}
+    {{ 'component-account.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body class="template-gift-card">
+    <main class="section" role="main">
+      <div class="page-width--narrow">
+        <div class="auth-card center">
+          {%- if settings.logo != blank -%}
+            <img
+              src="{{ settings.logo | image_url: width: 360 }}"
+              alt="{{ shop.name | escape }}"
+              width="180"
+              height="60"
+              style="margin: 0 auto 1.5rem; object-fit: contain;"
+            >
+          {%- endif -%}
+
+          <p class="eyebrow">{{ 'gift_cards.issued.subtext' | t }}</p>
+          <h1 class="h1">{{ card_value }}</h1>
+
+          {%- if gift_card.expired -%}
+            <p class="form-status form-status--error" role="status" style="margin-top: 1rem;">
+              {%- render 'icon', icon: 'warning', size: 16 -%}
+              <span>{{ 'gift_cards.issued.expires' | t: date: gift_card.expires_on | date: '%-d %b %Y' }}</span>
+            </p>
+          {%- elsif gift_card.expires_on -%}
+            <p class="text-muted">
+              {{- 'gift_cards.issued.expires' | t: date: gift_card.expires_on | date: '%-d %b %Y' -}}
+            </p>
+          {%- endif -%}
+
+          {%- if gift_card.balance != gift_card.initial_value -%}
+            <p class="text-muted">{{ 'gift_cards.issued.remaining_html' | t: balance: card_balance }}</p>
+          {%- endif -%}
+
+          <p class="field__label" style="margin-top: 1.5rem;">{{ 'gift_cards.issued.code' | t }}</p>
+          <p class="h3" style="letter-spacing: 0.08em; word-break: break-all;">
+            {{ gift_card.code | format_code }}
+          </p>
+
+          <div class="flow-gap no-print" style="justify-content: center; margin-top: 1.5rem;">
+            <a class="button button--primary" href="{{ shop.url }}">
+              {{- 'gift_cards.issued.shop_link' | t -}}
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

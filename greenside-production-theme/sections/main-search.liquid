@@ -1,0 +1,181 @@
+{{ 'component-collection.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign columns = section.settings.columns_desktop | default: 4
+  assign per_page = section.settings.results_per_page | default: 16
+  assign terms = search.terms
+-%}
+
+{%- assign search_style = '--columns-desktop: ' | append: columns | append: ';' -%}
+{%- render 'section-styles',
+  id: section.id,
+  padding_top: section.settings.padding_top,
+  padding_bottom: section.settings.padding_bottom,
+  extra: search_style
+-%}
+
+<div class="section search-page">
+  <div class="page-width">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="collection-header">
+      {%- if search.performed and terms != blank -%}
+        <h1 class="h1">{{ 'general.search.results_for' | t: terms: terms }}</h1>
+      {%- else -%}
+        <h1 class="h1">{{ 'general.search.title' | t }}</h1>
+      {%- endif -%}
+    </header>
+
+    <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+      <div class="field">
+        <label class="visually-hidden" for="SearchPageInput">{{ 'general.search.title' | t }}</label>
+        <input
+          id="SearchPageInput"
+          class="field__input"
+          type="search"
+          name="q"
+          value="{{ terms | escape }}"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          autocomplete="off"
+        >
+      </div>
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="button button--primary">{{ 'general.search.submit' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        {%- paginate search.results by per_page -%}
+          <gs-facets class="collection-body" data-section-id="{{ section.id }}">
+            <div class="facets-bar">
+              <p class="facets-bar__results" data-facets-count aria-live="polite">
+                {{- 'general.search.results_count' | t: count: search.results_count -}}
+              </p>
+
+              {%- if section.settings.enable_sorting -%}
+                {%- assign sort_by = search.sort_by | default: 'relevance' -%}
+                <form class="facets-bar__sort" data-facets-sort>
+                  <label class="visually-hidden" for="SearchSort">{{ 'products.facets.sort_by' | t }}</label>
+                  <select id="SearchSort" class="field__select field__select--compact" name="sort_by" data-sort-select>
+                    {%- for option in search.sort_options -%}
+                      <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+                        {{ option.name | escape }}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                </form>
+              {%- endif -%}
+            </div>
+
+            <div class="collection-results" data-facets-results>
+              {%- assign products = search.results | where: 'object_type', 'product' -%}
+              {%- assign other_results = '' -%}
+
+              {%- if products.size > 0 -%}
+                <ul class="competition-grid" role="list">
+                  {%- for product in products -%}
+                    <li>
+                      {%- render 'competition-card',
+                        product: product,
+                        index: forloop.index,
+                        sizes: '(min-width: 990px) 320px, (min-width: 600px) 45vw, 92vw'
+                      -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
+              {%- capture other_results -%}
+                {%- for item in search.results -%}
+                  {%- unless item.object_type == 'product' -%}
+                    <li class="search-result">
+                      <a href="{{ item.url }}">
+                        <span class="search-result__type">
+                          {%- if item.object_type == 'article' -%}
+                            {{ 'general.search.articles' | t }}
+                          {%- else -%}
+                            {{ 'general.search.pages' | t }}
+                          {%- endif -%}
+                        </span>
+                        <span class="search-result__title">{{ item.title | escape }}</span>
+                        {%- if item.content != blank -%}
+                          <span class="search-result__excerpt">
+                            {{- item.content | strip_html | truncate: 160 -}}
+                          </span>
+                        {%- endif -%}
+                      </a>
+                    </li>
+                  {%- endunless -%}
+                {%- endfor -%}
+              {%- endcapture -%}
+
+              {%- if other_results != blank -%}
+                <div class="search-results__group">
+                  <h2 class="h4">{{ 'general.search.pages' | t }}</h2>
+                  <ul class="search-results__list" role="list">{{ other_results }}</ul>
+                </div>
+              {%- endif -%}
+
+              {%- if paginate.pages > 1 -%}
+                {%- render 'pagination', paginate: paginate -%}
+              {%- endif -%}
+            </div>
+          </gs-facets>
+        {%- endpaginate -%}
+      {%- else -%}
+        <div class="empty-state">
+          <span class="empty-state__icon">{%- render 'icon', icon: 'search', size: 28 -%}</span>
+          <p class="h4">{{ 'general.search.no_results_title' | t: terms: terms }}</p>
+          <p class="empty-state__text">{{ 'general.search.no_results_body' | t }}</p>
+          <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
+            {{- 'products.empty.browse_all' | t -}}
+          </a>
+        </div>
+
+        {%- if settings.search_shortcuts_menu != blank -%}
+          {%- assign shortcuts = linklists[settings.search_shortcuts_menu] -%}
+          {%- if shortcuts.links.size > 0 -%}
+            <div class="center" style="margin-top: 1.5rem;">
+              <p class="predictive__heading">{{ 'general.search.shortcuts' | t }}</p>
+              <ul class="search-shortcuts" style="justify-content: center;">
+                {%- for link in shortcuts.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- if settings.search_shortcuts_menu != blank -%}
+        {%- assign shortcuts = linklists[settings.search_shortcuts_menu] -%}
+        {%- if shortcuts.links.size > 0 -%}
+          <p class="predictive__heading">{{ 'general.search.shortcuts' | t }}</p>
+          <ul class="search-shortcuts">
+            {%- for link in shortcuts.links -%}
+              <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Search results",
+  "tag": "section",
+  "class": "section-main-search",
+  "settings": [
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
+    { "type": "range", "id": "results_per_page", "min": 8, "max": 48, "step": 4, "label": "Results per page", "default": 16 },
+    { "type": "range", "id": "columns_desktop", "min": 2, "max": 5, "step": 1, "label": "t:sections.all.columns_desktop", "default": 4 },
+    { "type": "header", "content": "t:sections.all.padding_header" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+  ]
+}
+{% endschema %}

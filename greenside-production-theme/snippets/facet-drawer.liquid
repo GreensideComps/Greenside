@@ -1,0 +1,139 @@
+{%- comment -%}
+  Filter drawer.
+
+  Filters are whatever Shopify's Search & Discovery app exposes on this
+  collection, so the theme never offers a filter the catalogue cannot answer.
+  A drawer on every screen size keeps one implementation to test rather than
+  two divergent ones.
+
+  Parameters:
+    filters      (required) collection.filters or search.filters
+    results_url  (required) the base URL to reset to
+{%- endcomment -%}
+
+<gs-overlay id="FacetDrawer" class="facet-drawer" aria-label="{{ 'products.facets.title' | t }}">
+  <div class="overlay__scrim" data-overlay-scrim></div>
+  <div class="overlay__panel overlay__panel--bottom" data-overlay-panel>
+    <div class="overlay__header">
+      <h2 class="overlay__title h5">{{ 'products.facets.title' | t }}</h2>
+      <button
+        type="button"
+        class="icon-button"
+        data-overlay-close
+        aria-label="{{ 'products.facets.close_filters' | t }}"
+      >
+        {%- render 'icon', icon: 'close' -%}
+      </button>
+    </div>
+
+    <form class="overlay__body" data-facets-form>
+      {%- for filter in filters -%}
+        <details class="facet-group" {% if filter.active_values.size > 0 %}open{% endif %}>
+          <summary class="facet-group__summary">
+            <span>{{ filter.label | escape }}</span>
+            {%- if filter.active_values.size > 0 -%}
+              <span class="facet-group__count">{{ filter.active_values.size }}</span>
+            {%- endif -%}
+            {%- render 'icon', icon: 'chevron-down', size: 16 -%}
+          </summary>
+
+          <div class="facet-group__panel">
+            {%- case filter.type -%}
+              {%- when 'list' -%}
+                <ul class="facet-list">
+                  {%- for value in filter.values -%}
+                    <li>
+                      <label
+                        class="checkbox facet-option{% if value.count == 0 and value.active == false %} facet-option--empty{% endif %}"
+                        for="Facet-{{ filter.param_name | escape }}-{{ forloop.index }}"
+                      >
+                        <input
+                          id="Facet-{{ filter.param_name | escape }}-{{ forloop.index }}"
+                          type="checkbox"
+                          name="{{ filter.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                        >
+                        <span class="facet-option__label">{{ value.label | escape }}</span>
+                        <span class="facet-option__count">{{ value.count }}</span>
+                      </label>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+
+              {%- when 'boolean' -%}
+                <ul class="facet-list">
+                  {%- for value in filter.values -%}
+                    <li>
+                      <label class="checkbox facet-option" for="Facet-{{ filter.param_name | escape }}-{{ forloop.index }}">
+                        <input
+                          id="Facet-{{ filter.param_name | escape }}-{{ forloop.index }}"
+                          type="checkbox"
+                          name="{{ filter.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                        >
+                        <span class="facet-option__label">{{ value.label | escape }}</span>
+                        <span class="facet-option__count">{{ value.count }}</span>
+                      </label>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+
+              {%- when 'price_range' -%}
+                <div class="facet-price">
+                  <div class="field">
+                    <label class="field__label" for="Facet-{{ filter.min_value.param_name }}">
+                      {{ 'products.facets.from' | t }}
+                    </label>
+                    <input
+                      id="Facet-{{ filter.min_value.param_name }}"
+                      class="field__input"
+                      type="number"
+                      inputmode="decimal"
+                      name="{{ filter.min_value.param_name }}"
+                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                      min="0"
+                      max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                      step="0.01"
+                      placeholder="0"
+                    >
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="Facet-{{ filter.max_value.param_name }}">
+                      {{ 'products.facets.to' | t }}
+                    </label>
+                    <input
+                      id="Facet-{{ filter.max_value.param_name }}"
+                      class="field__input"
+                      type="number"
+                      inputmode="decimal"
+                      name="{{ filter.max_value.param_name }}"
+                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                      min="0"
+                      max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                      step="0.01"
+                      placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    >
+                  </div>
+                  <p class="field__hint">
+                    {{ 'products.facets.max_price' | t: price: filter.range_max | money }}
+                  </p>
+                </div>
+            {%- endcase -%}
+          </div>
+        </details>
+      {%- endfor -%}
+    </form>
+
+    <div class="overlay__footer facet-drawer__footer">
+      <a class="button button--secondary" href="{{ results_url }}" data-facets-clear>
+        {{- 'products.facets.clear_all' | t -}}
+      </a>
+      <button type="button" class="button button--primary" data-overlay-close>
+        {{- 'products.facets.apply' | t -}}
+      </button>
+    </div>
+  </div>
+</gs-overlay>

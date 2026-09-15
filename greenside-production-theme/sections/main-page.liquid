@@ -1,0 +1,27 @@
+<div class="section page-content">
+  <div class="{% if section.settings.narrow %}page-width--narrow{% else %}page-width{% endif %}">
+    {%- if section.settings.show_breadcrumbs -%}
+      {%- render 'breadcrumbs' -%}
+    {%- endif -%}
+
+    <header class="page-content__header">
+      <h1 class="h1">{{ page.title | escape }}</h1>
+    </header>
+
+    {%- if page.content != blank -%}
+      <div class="rte page-content__body">{{ page.content }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "class": "section-main-page",
+  "settings": [
+    { "type": "checkbox", "id": "narrow", "label": "Narrow column", "info": "Easier to read for long text.", "default": true },
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true }
+  ]
+}
+{% endschema %}

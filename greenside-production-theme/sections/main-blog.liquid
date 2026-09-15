@@ -1,0 +1,71 @@
+<div class="section">
+  <div class="page-width">
+    {%- render 'breadcrumbs' -%}
+
+    <header class="collection-header">
+      <h1 class="h1">{{ blog.title | escape }}</h1>
+    </header>
+
+    {%- if blog.articles_count > 0 -%}
+      {%- paginate blog.articles by section.settings.posts_per_page -%}
+        <ul class="article-grid" role="list">
+          {%- for article in blog.articles -%}
+            {%- assign article_alt = article.image.alt | default: article.title -%}
+            <li>
+              <article class="article-card">
+                <a class="article-card__link" href="{{ article.url }}">
+                  <div class="article-card__media media media--wide">
+                    {%- if article.image -%}
+                      {%- render 'responsive-image',
+                        image: article.image,
+                        alt: article_alt,
+                        sizes: '(min-width: 990px) 400px, 92vw',
+                        widths: '400,560,720,900'
+                      -%}
+                    {%- else -%}
+                      {%- render 'placeholder', name: 'lifestyle-2' -%}
+                    {%- endif -%}
+                  </div>
+                  <div class="article-card__body">
+                    <p class="article-card__meta">
+                      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                        {{- article.published_at | date: '%-d %b %Y' -}}
+                      </time>
+                    </p>
+                    <h2 class="article-card__title h4">{{ article.title | escape }}</h2>
+                    {%- if article.excerpt_or_content != blank -%}
+                      <p class="article-card__excerpt">
+                        {{- article.excerpt_or_content | strip_html | truncate: 140 -}}
+                      </p>
+                    {%- endif -%}
+                  </div>
+                </a>
+              </article>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          {%- render 'pagination', paginate: paginate -%}
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- else -%}
+      <div class="empty-state">
+        <span class="empty-state__icon">{%- render 'icon', icon: 'info', size: 28 -%}</span>
+        <p class="h4">{{ 'blogs.empty.title' | t }}</p>
+        <p class="empty-state__text">{{ 'blogs.empty.body' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog",
+  "tag": "section",
+  "class": "section-main-blog",
+  "settings": [
+    { "type": "range", "id": "posts_per_page", "min": 6, "max": 24, "step": 3, "label": "Posts per page", "default": 12 }
+  ]
+}
+{% endschema %}

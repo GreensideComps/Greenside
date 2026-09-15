@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-404", "settings": { "heading": "Open right now" } }
+  },
+  "order": ["main"]
+}

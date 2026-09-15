@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-contact",
+      "settings": {
+        "heading": "Get in touch",
+        "text": "<p>Questions about a competition, an order or a draw? Send us a message and we'll come back to you.</p>",
+        "padding_top": 60,
+        "padding_bottom": 100
+      }
+    }
+  },
+  "order": ["main"]
+}

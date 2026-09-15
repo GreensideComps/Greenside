@@ -1,0 +1,126 @@
+{{ 'component-account.css' | asset_url | stylesheet_tag }}
+
+<div class="account-page">
+  <div class="page-width">
+    <div class="account-header">
+      <div>
+        <h1 class="h2">{{ 'customer.order.title' | t: name: order.name }}</h1>
+        <p class="text-muted">
+          {{- 'customer.order.date' | t: date: order.created_at | date: '%-d %B %Y' -}}
+        </p>
+        {%- if order.cancelled -%}
+          <p class="form-status form-status--error" role="status" style="margin-top: 0.75rem;">
+            {{ 'customer.order.cancelled' | t: date: order.cancelled_at | date: '%-d %B %Y' }}
+            {%- if order.cancel_reason %} &mdash; {{ 'customer.order.cancelled_reason' | t: reason: order.cancel_reason_label }}{% endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+      <a class="link" href="{{ routes.account_url }}">
+        {%- render 'icon', icon: 'arrow-left', size: 16 -%}
+        {{ 'customer.order.back' | t }}
+      </a>
+    </div>
+
+    <section class="account-panel">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ 'customer.order.product' | t }}</th>
+            <th scope="col">{{ 'customer.order.price' | t }}</th>
+            <th scope="col">{{ 'customer.order.quantity' | t }}</th>
+            <th scope="col">{{ 'customer.order.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for line_item in order.line_items -%}
+            <tr>
+              <td data-label="{{ 'customer.order.product' | t }}">
+                <span>
+                  {%- if line_item.product -%}
+                    <a class="link" href="{{ line_item.product.url }}">{{ line_item.title | escape }}</a>
+                  {%- else -%}
+                    {{ line_item.title | escape }}
+                  {%- endif -%}
+                  {%- if line_item.properties.size > 0 -%}
+                    <span class="text-xs text-muted" style="display: block;">
+                      {%- for property in line_item.properties -%}
+                        {%- if property.last != blank and property.first.first != '_' -%}
+                          {{ property.first | escape }}: {{ property.last | escape }}<br>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </span>
+                  {%- endif -%}
+                </span>
+              </td>
+              <td data-label="{{ 'customer.order.price' | t }}">{{ line_item.price | money }}</td>
+              <td data-label="{{ 'customer.order.quantity' | t }}">{{ line_item.quantity }}</td>
+              <td data-label="{{ 'customer.order.total' | t }}">{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" data-label="{{ 'customer.order.subtotal' | t }}">
+              {{ 'customer.order.subtotal' | t }}
+            </td>
+            <td data-label="{{ 'customer.order.subtotal' | t }}">{{ order.line_items_subtotal_price | money }}</td>
+          </tr>
+          {%- for discount in order.cart_level_discount_applications -%}
+            <tr>
+              <td colspan="3" data-label="{{ 'customer.order.discount' | t }}">{{ discount.title }}</td>
+              <td data-label="{{ 'customer.order.discount' | t }}">
+                &minus;{{ discount.total_allocated_amount | money }}
+              </td>
+            </tr>
+          {%- endfor -%}
+          {%- for shipping_method in order.shipping_methods -%}
+            <tr>
+              <td colspan="3" data-label="{{ 'customer.order.shipping' | t }}">{{ shipping_method.title }}</td>
+              <td data-label="{{ 'customer.order.shipping' | t }}">{{ shipping_method.price | money }}</td>
+            </tr>
+          {%- endfor -%}
+          {%- for tax_line in order.tax_lines -%}
+            <tr>
+              <td colspan="3" data-label="{{ 'customer.order.tax' | t }}">
+                {{ tax_line.title }} ({{ tax_line.rate | times: 100 }}%)
+              </td>
+              <td data-label="{{ 'customer.order.tax' | t }}">{{ tax_line.price | money }}</td>
+            </tr>
+          {%- endfor -%}
+          <tr>
+            <td colspan="3" data-label="{{ 'customer.order.total' | t }}"><strong>{{ 'customer.order.total' | t }}</strong></td>
+            <td data-label="{{ 'customer.order.total' | t }}"><strong>{{ order.total_price | money }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <p class="entries-note">
+        {%- render 'icon', icon: 'info', size: 16 -%}
+        <span>{{ 'customer.account.entries_note' | t }}</span>
+      </p>
+    </section>
+
+    <div class="account-layout" style="margin-top: 1.5rem;">
+      <section class="account-panel">
+        <h2 class="h5 account-panel__title">{{ 'customer.order.billing_address' | t }}</h2>
+        <p class="order-status">{{ order.financial_status_label }}</p>
+        <div class="text-muted" style="margin-top: 0.75rem;">{{ order.billing_address | format_address }}</div>
+      </section>
+
+      <section class="account-panel">
+        <h2 class="h5 account-panel__title">{{ 'customer.order.shipping_address' | t }}</h2>
+        <p class="order-status">{{ order.fulfillment_status_label }}</p>
+        <div class="text-muted" style="margin-top: 0.75rem;">{{ order.shipping_address | format_address }}</div>
+      </section>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Order",
+  "tag": "section",
+  "class": "section-main-order",
+  "settings": []
+}
+{% endschema %}

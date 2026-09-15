@@ -1,0 +1,55 @@
+{%- comment -%}
+  Pagination.
+
+  Rendered as real links so the whole result set is crawlable and works without
+  JavaScript. facets.js intercepts these links to swap results in place when
+  "load without a page reload" is on.
+
+  Parameters:
+    paginate (required)
+{%- endcomment -%}
+<nav class="pagination" aria-label="{{ 'general.pagination.label' | t }}" data-pagination>
+  <ol class="pagination__list">
+    {%- if paginate.previous -%}
+      <li>
+        <a class="pagination__link pagination__link--arrow" href="{{ paginate.previous.url }}" rel="prev">
+          {%- render 'icon', icon: 'chevron-left', size: 16 -%}
+          <span class="hide-mobile">{{ 'general.pagination.previous' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      <li>
+        {%- if part.is_link -%}
+          <a
+            class="pagination__link"
+            href="{{ part.url }}"
+            aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+          >
+            {{- part.title -}}
+          </a>
+        {%- elsif part.title == hellip -%}
+          <span class="pagination__gap">{{ part.title }}</span>
+        {%- else -%}
+          <span
+            class="pagination__link pagination__link--current"
+            aria-current="page"
+            aria-label="{{ 'general.pagination.current_page' | t: number: part.title, total: paginate.pages }}"
+          >
+            {{- part.title -}}
+          </span>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+
+    {%- if paginate.next -%}
+      <li>
+        <a class="pagination__link pagination__link--arrow" href="{{ paginate.next.url }}" rel="next">
+          <span class="hide-mobile">{{ 'general.pagination.next' | t }}</span>
+          {%- render 'icon', icon: 'chevron-right', size: 16 -%}
+        </a>
+      </li>
+    {%- endif -%}
+  </ol>
+</nav>

@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": { "narrow": true, "show_breadcrumbs": true } }
+  },
+  "order": ["main"]
+}

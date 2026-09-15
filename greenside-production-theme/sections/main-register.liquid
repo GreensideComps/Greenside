@@ -1,0 +1,115 @@
+{{ 'component-account.css' | asset_url | stylesheet_tag }}
+
+<div class="account-page">
+  <div class="page-width">
+    <div class="auth-card">
+      <div class="auth-card__header">
+        <h1 class="h3">{{ 'customer.register.title' | t }}</h1>
+        <p>{{ 'customer.register.subtitle' | t }}</p>
+      </div>
+
+      {%- form 'create_customer', class: 'auth-form', novalidate: 'novalidate' -%}
+        {%- if form.errors -%}
+          <div class="form-status form-status--error" role="alert">
+            {%- render 'icon', icon: 'warning', size: 16 -%}
+            <ul style="list-style: none;">
+              {%- for field in form.errors -%}
+                <li>
+                  {{ form.errors.translated_fields[field] | capitalize }}
+                  {{ form.errors.messages[field] }}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <div class="field">
+          <label class="field__label" for="RegisterFirstName">{{ 'customer.register.first_name' | t }}</label>
+          <input
+            id="RegisterFirstName"
+            class="field__input"
+            type="text"
+            name="customer[first_name]"
+            value="{{ form.first_name }}"
+            autocomplete="given-name"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="RegisterLastName">{{ 'customer.register.last_name' | t }}</label>
+          <input
+            id="RegisterLastName"
+            class="field__input"
+            type="text"
+            name="customer[last_name]"
+            value="{{ form.last_name }}"
+            autocomplete="family-name"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="RegisterEmail">{{ 'customer.register.email' | t }}</label>
+          <input
+            id="RegisterEmail"
+            class="field__input"
+            type="email"
+            name="customer[email]"
+            value="{{ form.email }}"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="RegisterPassword">{{ 'customer.register.password' | t }}</label>
+          <input
+            id="RegisterPassword"
+            class="field__input"
+            type="password"
+            name="customer[password]"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        {%- comment -%}
+          Progressive profiling: one optional opt-in here, everything else is
+          learned later from behaviour rather than a long signup form.
+        {%- endcomment -%}
+        <label class="checkbox" for="RegisterMarketing">
+          <input
+            id="RegisterMarketing"
+            type="checkbox"
+            name="customer[accepts_marketing]"
+            value="true"
+            checked
+          >
+          <span>{{ 'customer.register.marketing_opt_in' | t }}</span>
+        </label>
+
+        <button type="submit" class="button button--primary button--full" data-track-submit="signup">
+          {{- 'customer.register.submit' | t -}}
+        </button>
+      {%- endform -%}
+
+      <p class="auth-card__footer">
+        {{ 'customer.register.has_account' | t }}
+        <a class="link" href="{{ routes.account_login_url }}">{{ 'customer.register.log_in' | t }}</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Register",
+  "tag": "section",
+  "class": "section-main-register",
+  "settings": []
+}
+{% endschema %}
