@@ -117,8 +117,9 @@
                       placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
                     >
                   </div>
+                  {%- assign range_max_price = filter.range_max | money -%}
                   <p class="field__hint">
-                    {{ 'products.facets.max_price' | t: price: filter.range_max | money }}
+                    {{ 'products.facets.max_price' | t: price: range_max_price }}
                   </p>
                 </div>
             {%- endcase -%}

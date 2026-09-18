@@ -5,8 +5,9 @@
     <div class="account-header">
       <div>
         <h1 class="h2">{{ 'customer.account.title' | t }}</h1>
+        {%- assign greeting_name = customer.first_name | default: customer.email -%}
         <p class="text-muted">
-          {{- 'customer.account.welcome' | t: name: customer.first_name | default: customer.email -}}
+          {{- 'customer.account.welcome' | t: name: greeting_name -}}
         </p>
       </div>
     </div>

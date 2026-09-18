@@ -433,3 +433,28 @@ test('the hero always produces a heading, so the homepage has an h1', () => {
     'hero must fall back to the shop name so a heading always exists'
   );
 });
+
+test('no filter is applied inside a translation argument', () => {
+  // `'key' | t: date: order.created_at | date: '%Y'` pipes the *translated
+  // string* into the filter, not the argument. It produced "© now" in the
+  // footer instead of the year. Build the value first, then pass it.
+  const offenders = [];
+  const dirs = ['sections', 'snippets', 'blocks', 'layout', 'templates'];
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const rel = path.join(dir, file);
+      readMarkup(rel)
+        .split('\n')
+        .forEach((line, i) => {
+          // A `| t:` followed by another pipe before the tag closes.
+          if (/\|\s*t:\s*[^}]*\|/.test(line)) {
+            offenders.push(`${rel}:${i + 1} — ${line.trim().slice(0, 90)}`);
+          }
+        });
+    }
+  }
+
+  assert.deepEqual(offenders, [], `filter inside a t: argument:\n${offenders.join('\n')}`);
+});

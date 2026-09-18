@@ -73,7 +73,8 @@
     <div class="footer__bottom">
       <div class="footer__legal">
         <p>
-          {{ 'footer.copyright' | t: year: 'now' | date: '%Y', shop: shop.name }}
+          {%- assign current_year = 'now' | date: '%Y' -%}
+          {{ 'footer.copyright' | t: year: current_year, shop: shop.name }}
           {%- if section.settings.show_policy_links -%}
             {%- for policy in shop.policies -%}
               {%- if policy != blank %} &middot;

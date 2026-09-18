@@ -54,17 +54,31 @@
 
         <h1 class="competition-page__title h1">{{ product.title | escape }}</h1>
 
-        {%- if prize_value != blank or cash_alternative != blank -%}
+        {%- comment -%}
+          Whole pounds. A trailing ".00" is noise at display size, while a
+          genuine ".50" survives the removal.
+        {%- endcomment -%}
+        {%- liquid
+          assign prize_value_text = ''
+          if prize_value != blank
+            assign prize_value_text = prize_value | metafield_text | remove: '.00'
+          endif
+          assign cash_alternative_text = ''
+          if cash_alternative != blank
+            assign cash_alternative_text = cash_alternative | metafield_text | remove: '.00'
+          endif
+        -%}
+        {%- if prize_value_text != blank or cash_alternative_text != blank -%}
           <ul class="competition-page__values" role="list">
-            {%- if prize_value != blank -%}
+            {%- if prize_value_text != blank -%}
               <li>
-                <span class="competition-page__value-amount">{{ prize_value | metafield_text }}</span>
+                <span class="competition-page__value-amount">{{ prize_value_text }}</span>
                 <span class="competition-page__value-label">{{ 'products.competition.prize_value' | t }}</span>
               </li>
             {%- endif -%}
-            {%- if cash_alternative != blank -%}
+            {%- if cash_alternative_text != blank -%}
               <li>
-                <span class="competition-page__value-amount">{{ cash_alternative | metafield_text }}</span>
+                <span class="competition-page__value-amount">{{ cash_alternative_text }}</span>
                 <span class="competition-page__value-label">{{ 'products.competition.cash_alternative' | t }}</span>
               </li>
             {%- endif -%}
@@ -84,7 +98,8 @@
         <div class="competition-page__price">
           <span class="competition-page__price-amount">
             {%- if product.price_varies -%}
-              {{- 'products.product.from_price' | t: price: product.price_min | money -}}
+              {%- assign min_price = product.price_min | money -%}
+              {{- 'products.product.from_price' | t: price: min_price -}}
             {%- else -%}
               {{- product.price | money -}}
             {%- endif -%}

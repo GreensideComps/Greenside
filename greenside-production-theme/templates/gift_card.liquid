@@ -9,6 +9,7 @@
   assign card_value = gift_card.initial_value | money
   assign card_title = 'gift_cards.issued.title' | t: value: card_value, shop: shop.name
   assign card_balance = gift_card.balance | money
+  assign expires_on_text = gift_card.expires_on | date: '%-d %b %Y'
 -%}
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
@@ -46,11 +47,11 @@
           {%- if gift_card.expired -%}
             <p class="form-status form-status--error" role="status" style="margin-top: 1rem;">
               {%- render 'icon', icon: 'warning', size: 16 -%}
-              <span>{{ 'gift_cards.issued.expires' | t: date: gift_card.expires_on | date: '%-d %b %Y' }}</span>
+              <span>{{ 'gift_cards.issued.expires' | t: date: expires_on_text }}</span>
             </p>
           {%- elsif gift_card.expires_on -%}
             <p class="text-muted">
-              {{- 'gift_cards.issued.expires' | t: date: gift_card.expires_on | date: '%-d %b %Y' -}}
+              {{- 'gift_cards.issued.expires' | t: date: expires_on_text -}}
             </p>
           {%- endif -%}
 

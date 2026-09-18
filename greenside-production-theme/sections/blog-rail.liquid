@@ -9,6 +9,12 @@
   bottom: section.settings.spacing_bottom
 -%}
 
+{%- comment -%}
+  Hidden entirely when the blog is empty. An "it's coming" placeholder is dead
+  space on a homepage — unlike the winners rail, whose empty state explains the
+  publishing promise and therefore earns its place.
+{%- endcomment -%}
+{%- if blog.articles_count > 0 -%}
 <div class="section scheme-{{ section.settings.colour_scheme }}">
   <div class="page-width">
     <div class="section-header">
@@ -65,15 +71,10 @@
           </li>
         {%- endfor -%}
       </ul>
-    {%- else -%}
-      <div class="empty-state">
-        <span class="empty-state__icon">{%- render 'icon', icon: 'info', size: 28 -%}</span>
-        <p class="h4">{{ 'blogs.empty.title' | t }}</p>
-        <p class="empty-state__text">{{ 'blogs.empty.body' | t }}</p>
-      </div>
     {%- endif -%}
   </div>
 </div>
+{%- endif -%}
 
 {% schema %}
 {

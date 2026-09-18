@@ -174,7 +174,8 @@
       <p class="competition-card__price">
         <span class="competition-card__price-amount num">
           {%- if product.price_varies -%}
-            {{- 'products.product.from_price' | t: price: product.price_min | money -}}
+            {%- assign min_price = product.price_min | money -%}
+            {{- 'products.product.from_price' | t: price: min_price -}}
           {%- else -%}
             {{- product.price | money -}}
           {%- endif -%}

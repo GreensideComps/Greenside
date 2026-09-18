@@ -5,12 +5,14 @@
     <div class="account-header">
       <div>
         <h1 class="h2">{{ 'customer.order.title' | t: name: order.name }}</h1>
-        <p class="text-muted">
-          {{- 'customer.order.date' | t: date: order.created_at | date: '%-d %B %Y' -}}
+        {%- assign order_date = order.created_at | date: '%-d %B %Y' -%}
+        <p class="text-muted num">
+          {{- 'customer.order.date' | t: date: order_date -}}
         </p>
         {%- if order.cancelled -%}
           <p class="form-status form-status--error" role="status" style="margin-top: 0.75rem;">
-            {{ 'customer.order.cancelled' | t: date: order.cancelled_at | date: '%-d %B %Y' }}
+            {%- assign cancelled_date = order.cancelled_at | date: '%-d %B %Y' -%}
+            {{ 'customer.order.cancelled' | t: date: cancelled_date }}
             {%- if order.cancel_reason %} &mdash; {{ 'customer.order.cancelled_reason' | t: reason: order.cancel_reason_label }}{% endif -%}
           </p>
         {%- endif -%}
