@@ -458,3 +458,57 @@ test('no filter is applied inside a translation argument', () => {
 
   assert.deepEqual(offenders, [], `filter inside a t: argument:\n${offenders.join('\n')}`);
 });
+
+test('every value in settings_data is valid against settings_schema', () => {
+  // Shopify validates this on upload and rejects the whole file. A range value
+  // that is not an exact step from the minimum fails, which is easy to write by
+  // hand and impossible to spot by eye.
+  const schema = JSON.parse(read('config/settings_schema.json'));
+  const data = JSON.parse(read('config/settings_data.json'));
+
+  const defs = new Map();
+  for (const group of schema) {
+    for (const setting of group.settings || []) {
+      if (setting.id) defs.set(setting.id, setting);
+    }
+  }
+
+  const scopes = [['current', data.current]].concat(
+    Object.entries(data.presets || {}).map(([name, values]) => [`preset:${name}`, values])
+  );
+
+  const problems = [];
+  for (const [scopeName, scope] of scopes) {
+    for (const [key, value] of Object.entries(scope)) {
+      if (key === 'sections') continue;
+
+      const def = defs.get(key);
+      if (!def) {
+        problems.push(`${scopeName}.${key}: no such setting in the schema`);
+        continue;
+      }
+
+      if (def.type === 'range') {
+        if (typeof value !== 'number') {
+          problems.push(`${scopeName}.${key}: ${JSON.stringify(value)} is not a number`);
+        } else if (value < def.min || value > def.max) {
+          problems.push(`${scopeName}.${key}: ${value} is outside ${def.min}..${def.max}`);
+        } else if ((value - def.min) % def.step !== 0) {
+          const nearest = def.min + Math.round((value - def.min) / def.step) * def.step;
+          problems.push(
+            `${scopeName}.${key}: ${value} is not a step of ${def.step} from ${def.min} (nearest valid: ${nearest})`
+          );
+        }
+      } else if (def.type === 'select') {
+        const options = def.options.map((o) => o.value);
+        if (!options.includes(String(value))) {
+          problems.push(`${scopeName}.${key}: ${JSON.stringify(value)} is not one of ${options.join(', ')}`);
+        }
+      } else if (def.type === 'checkbox' && typeof value !== 'boolean') {
+        problems.push(`${scopeName}.${key}: ${JSON.stringify(value)} is not a boolean`);
+      }
+    }
+  }
+
+  assert.deepEqual(problems, [], `invalid theme settings:\n${problems.join('\n')}`);
+});

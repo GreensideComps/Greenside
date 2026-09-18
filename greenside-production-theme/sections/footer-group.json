@@ -22,14 +22,14 @@
           "type": "menu",
           "settings": {
             "heading": "Competitions",
-            "menu": "footer"
+            "menu": "greenside-production-footer"
           }
         },
         "menu-help": {
           "type": "menu",
           "settings": {
             "heading": "Help",
-            "menu": "footer"
+            "menu": "greenside-production-footer"
           }
         }
       },

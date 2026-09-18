@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Shopify__graphql_mutation",
+      "mcp__Shopify__graphql_query",
+      "mcp__Shopify__graphql_schema",
+      "mcp__Shopify__search_docs_chunks",
+      "mcp__Shopify__validate_graphql_codeblocks",
+      "mcp__Shopify__get-shop-info",
+      "mcp__Shopify__search_products",
+      "mcp__Shopify__search_collections",
+      "mcp__Shopify__create-collection",
+      "mcp__Shopify__update-collection",
+      "mcp__Shopify__add-to-collection",
+      "mcp__Shopify__get-collection",
+      "mcp__Shopify__get-product",
+      "mcp__Shopify__create-product",
+      "mcp__Shopify__update-product"
+    ]
+  }
+}

@@ -1,9 +1,8 @@
 {
   "current": {
     "logo_width": 170,
-    "logo_width_mobile": 124,
+    "logo_width_mobile": 125,
     "brand_tagline": "Premium Prizes. Affordable Entries.",
-
     "color_brand_deep": "#0c1f18",
     "color_brand": "#1b4332",
     "color_accent": "#417b25",
@@ -16,7 +15,6 @@
     "color_border": "#d9ddd6",
     "color_success": "#2d6a4f",
     "color_error": "#a6262c",
-
     "font_heading": "instrument_serif_n4",
     "heading_case": "none",
     "heading_letter_spacing": -2,
@@ -24,19 +22,16 @@
     "font_body": "inter_n4",
     "body_scale": 100,
     "font_mono": "ibm_plex_mono_n5",
-
     "page_width": "1320",
     "section_spacing": 76,
     "card_radius": 4,
     "media_radius": 2,
     "card_shadow": "none",
     "enable_motion": true,
-
     "button_radius": 2,
     "button_case": "none",
     "button_letter_spacing": 2,
     "button_weight": 600,
-
     "card_image_ratio": "portrait",
     "card_trim_win_prefix": true,
     "card_show_prize_value": true,
@@ -47,25 +42,23 @@
     "entry_word_singular": "entry",
     "entry_word_plural": "entries",
     "entry_cta_label": "Enter",
-
     "cart_behaviour": "drawer",
     "cart_show_note": false,
     "cart_show_recommendations": true,
     "cart_reassurance": "<p>Entry numbers are emailed the moment your payment clears, and stay on your order in your account.</p>",
-
     "predictive_search_enabled": true,
     "predictive_search_show_pages": true,
     "predictive_search_show_articles": true,
-
     "analytics_enabled": true,
     "analytics_debug": false,
     "entry_progress_endpoint": "",
     "referral_base_url": "",
     "referral_query_param": "ref",
-
     "legal_min_age": "18",
-
-    "sections": {}
+    "sections": {},
+    "search_shortcuts_menu": "greenside-search-shortcuts",
+    "legal_competition_rules_url": "/pages/competition-rules",
+    "legal_free_entry_url": "/pages/free-entry"
   },
   "presets": {
     "Greenside": {
