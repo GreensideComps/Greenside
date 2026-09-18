@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Node — only used by the test runner and the local QA harness
+node_modules/
+npm-debug.log*
+
+# Shopify CLI
+.shopify/
+
+# The theme ZIP is committed on purpose: it is the deliverable, rebuilt with
+# greenside-production-theme/package.sh. Extracted copies are not.
+/greenside-production-theme-extracted/
