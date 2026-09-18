@@ -92,3 +92,24 @@ becomes badge soup. When more apply than fit, the highest priority survive:
 
 Tags are only used for these marketing badges. Anything that affects entry
 mechanics comes from a metafield, so it is structured and reportable.
+
+## Two settings that make a claim about your draw
+
+Both ship **off**, because each asserts something about how Greenside operates
+that the storefront must not say before your rules do. See `docs/PERSUASION.md`
+for the full reasoning.
+
+| Setting | What it publishes | Turn it on when |
+|---|---|---|
+| `show_odds` | "1 in 4,000 — at the full entry cap" on the competition page | Your competition rules state the draw is made from the full set of issued entry numbers |
+| `entry_numbers_issued` | "Your entry numbers are issued with that confirmation" | Something actually allocates entry numbers and sends them |
+
+`show_odds` divides `custom.entries_total` by the entries being considered —
+never `entries_sold`, which would flatter the figure and drift upward as the
+competition fills. Dividing by the published cap is the worst case for the
+entrant, so a real chance can only be better than the number shown.
+
+`entry_numbers_issued` exists because nothing in Shopify allocates entry numbers
+by default. Allocation needs Shopify Flow or a small app writing numbers to an
+order metafield or line item property. Until that exists, leaving this off keeps
+the storefront from promising a number the entrant never receives.

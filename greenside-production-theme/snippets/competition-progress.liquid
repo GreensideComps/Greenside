@@ -44,6 +44,14 @@
     assign remaining = total | minus: safe_sold
     assign display = style | default: settings.progress_style | default: 'both'
     assign entry_word = settings.entry_word_plural | default: 'entries'
+  -%}
+  {%- capture sold_text -%}{%- render 'format-number', value: safe_sold -%}{%- endcapture -%}
+  {%- capture total_text -%}{%- render 'format-number', value: total -%}{%- endcapture -%}
+  {%- capture remaining_text -%}{%- render 'format-number', value: remaining -%}{%- endcapture -%}
+  {%- liquid
+    assign sold_text = sold_text | strip
+    assign total_text = total_text | strip
+    assign remaining_text = remaining_text | strip
     comment
       The fill is one neutral colour at every percentage. A bar that turns gold
       as it fills is the single most recognisable cue in online gambling, and
@@ -63,7 +71,7 @@
       aria-valuemin="0"
       aria-valuemax="{{ total }}"
       aria-valuenow="{{ safe_sold }}"
-      aria-valuetext="{{ 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word }}"
+      aria-valuetext="{{ 'products.competition.entries_sold' | t: sold: sold_text, total: total_text, entry_word: entry_word }}"
       aria-label="{{ 'products.competition.progress_label' | t }}"
     >
       <span class="progress__fill" style="width: {{ percent }}%" data-progress-fill></span>
@@ -71,14 +79,14 @@
     <div class="progress__labels">
       {%- if display == 'count' or display == 'both' -%}
         <span class="progress__count num" data-progress-count>
-          {{- 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word -}}
+          {{- 'products.competition.entries_sold' | t: sold: sold_text, total: total_text, entry_word: entry_word -}}
         </span>
       {%- endif -%}
       {%- if display == 'percent' or display == 'both' -%}
         <span class="num" data-progress-percent>{{ 'products.competition.entries_percent' | t: percent: percent }}</span>
       {%- endif -%}
       {%- if display == 'count' and remaining > 0 -%}
-        <span class="num" data-progress-remaining>{{ 'products.competition.entries_remaining' | t: count: remaining }}</span>
+        <span class="num" data-progress-remaining>{{ 'products.competition.entries_remaining' | t: count: remaining, formatted: remaining_text }}</span>
       {%- endif -%}
     </div>
   </div>

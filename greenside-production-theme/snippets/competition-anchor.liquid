@@ -1,0 +1,40 @@
+{%- comment -%}
+  Relates the prize value to the entry price in one line.
+
+  Both numbers are already on the page, but they sit in different blocks and the
+  customer is left to do the arithmetic. "£529 prize · £2.49 an entry" states the
+  comparison the entry price is actually asking them to make. It is two facts
+  the store already publishes, put next to each other — not a claim about value,
+  a saving, or a likelihood of winning.
+
+  Deliberately not included: any "worth X times the entry" multiplier. That
+  framing invites the reader to treat an entry as an investment with an expected
+  return, which is both misleading and the exact register this brand avoids.
+
+  Parameters:
+    product  (required)
+{%- endcomment -%}
+
+{%- liquid
+  assign prize_value = product.metafields.custom.prize_value
+  assign show = false
+  if prize_value != blank
+    if product.price > 0
+      assign show = true
+    endif
+  endif
+-%}
+
+{%- if show -%}
+  {%- liquid
+    assign prize_text = prize_value | metafield_text | remove: '.00'
+    if product.price_varies
+      assign entry_text = product.price_min | money
+    else
+      assign entry_text = product.price | money
+    endif
+  -%}
+  <p class="competition-anchor">
+    {{- 'products.competition.anchor' | t: prize: prize_text, entry: entry_text -}}
+  </p>
+{%- endif -%}

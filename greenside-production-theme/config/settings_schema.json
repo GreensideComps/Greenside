@@ -414,6 +414,28 @@
       },
       {
         "type": "header",
+        "content": "t:settings.competition.honesty_header"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:settings.competition.honesty_intro"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_odds",
+        "label": "t:settings.competition.show_odds",
+        "info": "t:settings.competition.show_odds_info",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "entry_numbers_issued",
+        "label": "t:settings.competition.entry_numbers_issued",
+        "info": "t:settings.competition.entry_numbers_issued_info",
+        "default": false
+      },
+      {
+        "type": "header",
         "content": "t:settings.competition.card_header"
       },
       {

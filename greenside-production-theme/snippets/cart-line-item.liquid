@@ -115,6 +115,15 @@
         {{ 'products.competition.max_per_person' | t: count: max_per_person }}
       </p>
     {%- endif -%}
+
+    {%- comment -%}
+      A basket holding two competitions holds two different deadlines, and
+      until now neither was shown. Someone deciding whether to check out now or
+      later has no way to tell which one is about to close.
+    {%- endcomment -%}
+    <p class="cart-item__closing text-xs text-muted">
+      {%- render 'competition-closing', product: item.product, icon: false -%}
+    </p>
   </div>
 
   <div class="cart-item__price">

@@ -5,10 +5,20 @@
   timezone, not fuzzy countdowns, and they only ever reflect a real date held in
   custom.closing_at. No date, no output.
 
+  With `detail: true` the label also carries the closing *time* and how many days
+  away it is. A deadline a customer has to work out for themselves is a deadline
+  that does not influence the decision: "Closes Wed 23 Sep" leaves them to check
+  a calendar, and says nothing about whether entries stop at 9am or midnight.
+  Both facts are already in the metafield — this states them rather than
+  implying pressure. Nothing here counts down and nothing is invented: if the
+  merchant stored no time, no time is shown.
+
   Parameters:
     product  (required)
     field    'closing_at' (default) or 'draw_at'
     icon     show a clock icon (default true)
+    detail   add the time and the days remaining (default false, so cards stay
+             compact and only the competition page carries the long form)
 {%- endcomment -%}
 
 {%- liquid
@@ -29,6 +39,18 @@
     assign now_stamp = 'now' | date: '%s' | times: 1
     assign target_stamp = stamp | date: '%s' | times: 1
 
+    comment
+      A merchant who set only a date gets midnight, which is a storage artefact
+      rather than a stated cut-off. Showing "at 12:00 am" would present it as
+      one, so the time is only shown when it is genuinely a time of day.
+    endcomment
+    assign clock = stamp | date: '%H%M'
+    assign has_time = true
+    if clock == '0000'
+      assign has_time = false
+    endif
+    assign time_text = stamp | date: '%-I:%M %p' | downcase
+
     assign label = ''
     if target_stamp <= now_stamp
       assign label = 'products.competition.closed' | t
@@ -38,11 +60,17 @@
       else
         assign label = 'products.competition.closing_today' | t
       endif
+      if detail and has_time
+        assign label = 'products.competition.at_time' | t: label: label, time: time_text
+      endif
     elsif target_day == tomorrow
       if which == 'draw_at'
         assign label = 'products.competition.draw_tomorrow' | t
       else
         assign label = 'products.competition.closing_tomorrow' | t
+      endif
+      if detail and has_time
+        assign label = 'products.competition.at_time' | t: label: label, time: time_text
       endif
     else
       assign formatted = stamp | date: '%a %-d %b'
@@ -52,6 +80,25 @@
         assign prefix = 'products.competition.closes' | t
       endif
       assign label = prefix | append: ' ' | append: formatted
+
+      if detail
+        if has_time
+          assign label = 'products.competition.at_time' | t: label: label, time: time_text
+        endif
+
+        comment
+          Whole calendar days, so a deadline late tomorrow does not round down
+          to zero days the way a raw seconds division would.
+        endcomment
+        assign today_epoch = today | date: '%s' | times: 1
+        assign target_epoch = target_day | date: '%s' | times: 1
+        assign days_away = target_epoch | minus: today_epoch | divided_by: 86400
+
+        if days_away > 1
+          assign away_text = 'products.competition.days_away' | t: count: days_away
+          assign label = label | append: ' · ' | append: away_text
+        endif
+      endif
     endif
   -%}
   <span class="competition-meta__item">

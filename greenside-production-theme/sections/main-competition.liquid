@@ -87,9 +87,14 @@
 
         {%- render 'competition-progress', product: product, size: 'large' -%}
 
+        {%- comment -%}
+          The competition page is the one place with room for the full deadline,
+          so `detail` adds the closing time and how far off it is. Cards stay
+          with the short form.
+        {%- endcomment -%}
         {%- capture date_meta -%}
-          {%- render 'competition-closing', product: product -%}
-          {%- render 'competition-closing', product: product, field: 'draw_at' -%}
+          {%- render 'competition-closing', product: product, detail: true -%}
+          {%- render 'competition-closing', product: product, field: 'draw_at', detail: true -%}
         {%- endcapture -%}
         {%- if date_meta != blank -%}
           <div class="competition-page__dates">{{ date_meta }}</div>
@@ -106,6 +111,9 @@
           </span>
           <span class="competition-page__price-label">{{ 'products.competition.per_entry' | t }}</span>
         </div>
+
+        {%- render 'competition-anchor', product: product -%}
+        {%- render 'competition-odds', product: product -%}
 
         {%- if can_enter -%}
           <gs-add-to-cart class="competition-form" data-product-id="{{ product.id }}">
@@ -211,6 +219,13 @@
             </div>
           </div>
         {%- endif -%}
+
+        {%- comment -%}
+          What the wait looks like, placed with the legal reassurances rather
+          than below the fold: "what happens after I pay" is a question the
+          entrant has while deciding, not afterwards.
+        {%- endcomment -%}
+        {%- render 'what-happens-next', product: product -%}
 
         {%- comment -%} Legal and reassurance, always visible. {%- endcomment -%}
         <ul class="competition-page__assurances" role="list">

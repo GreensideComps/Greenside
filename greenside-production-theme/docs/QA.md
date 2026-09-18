@@ -102,3 +102,24 @@ Each of the recurring classes now has a test that fails if it returns.
   not confusing ones. Worth a pass with VoiceOver or NVDA before launch.
 - **Field performance.** Run Lighthouse against the previewed theme with real
   images, which are the variable that matters most.
+
+---
+
+## Promises the storefront makes
+
+Copy that commits the business to sending something is tested, not just
+reviewed. `tests/persuasion-integrity.test.js` asserts that:
+
+- no entry-number promise appears outside the `entry_numbers_issued` flag
+- no countdown timer exists in any script
+- scarcity figures never fall back to a default
+- odds are calculated against the published cap, never entries sold
+- no consent checkbox ships pre-ticked
+- no fabricated urgency or social proof appears in Liquid or copy
+
+This class of defect does not show up in rendering or in Theme Check. It shows
+up on the first real order, which is the worst place to find it. The basket
+promised entry numbers for months while nothing allocated them.
+
+When adding persuasive copy, work through the checklist at the end of
+`docs/PERSUASION.md` first.

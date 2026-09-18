@@ -1,0 +1,57 @@
+{%- comment -%}
+  States the entrant's chance of winning, as a "1 in N" figure.
+
+  Why this exists: a capped competition is one of the few prize formats where
+  the odds are genuinely knowable, and publishing them is the strongest honest
+  trust signal available. Competitors overwhelmingly do not.
+
+  Why it is calculated against the published cap rather than entries sold:
+  quoting the sold figure would flatter the number — with 2,570 of 4,000 taken,
+  one entry reads as 1 in 2,570 instead of 1 in 4,000 — and it would drift every
+  time somebody entered. The cap is fixed, published up front, and produces the
+  *worst case* for the entrant. If the draw is made from sold entries only, a
+  real chance can only be better than the figure shown. Understating is the only
+  safe direction to be wrong in.
+
+  It is off by default (settings.show_odds). The wording asserts how the draw
+  pool is defined, so it must not appear until the competition rules say the
+  same thing. docs/COMPETITION-DATA-MODEL.md covers what to confirm first.
+
+  Parameters:
+    product  (required)
+    entries  entries being considered (default 1)
+{%- endcomment -%}
+
+{%- liquid
+  assign total = product.metafields.custom.entries_total.value
+  assign held = entries | default: 1 | plus: 0
+
+  assign can_show = false
+  if settings.show_odds
+    if total != blank and total > 0 and held > 0
+      assign can_show = true
+    endif
+  endif
+
+  comment
+    More entries held than the cap is a data error, not a certainty of winning.
+    Say nothing rather than claim "1 in 1".
+  endcomment
+  if held > total
+    assign can_show = false
+  endif
+-%}
+
+{%- if can_show -%}
+  {%- liquid
+    assign chance = total | divided_by: held
+  -%}
+  {%- capture chance_text -%}{%- render 'format-number', value: chance -%}{%- endcapture -%}
+  {%- assign chance_text = chance_text | strip -%}
+  <p class="competition-odds">
+    <span class="competition-odds__figure num">
+      {{- 'products.competition.odds_value' | t: chance: chance_text -}}
+    </span>
+    <span class="competition-odds__note">{{ 'products.competition.odds_note' | t }}</span>
+  </p>
+{%- endif -%}

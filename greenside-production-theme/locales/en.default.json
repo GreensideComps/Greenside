@@ -127,8 +127,8 @@
       "entries_sold": "{{ sold }} of {{ total }} {{ entry_word }}",
       "entries_percent": "{{ percent }}% entered",
       "entries_remaining": {
-        "one": "{{ count }} entry left",
-        "other": "{{ count }} entries left"
+        "one": "{{ formatted }} entry left",
+        "other": "{{ formatted }} entries left"
       },
       "progress_label": "Entry progress",
       "max_per_person": "Max {{ count }} per person",
@@ -167,7 +167,22 @@
       "how_drawn_heading": "How the winner is drawn",
       "terms_heading": "Terms and eligibility",
       "min_age": "Entrants must be {{ age }} or over and resident in the UK.",
-      "view_competition": "View competition"
+      "view_competition": "View competition",
+      "at_time": "{{ label }} at {{ time }}",
+      "days_away": {
+        "one": "in {{ count }} day",
+        "other": "in {{ count }} days"
+      },
+      "anchor": "{{ prize }} prize · {{ entry }} an entry",
+      "odds_value": "1 in {{ chance }}",
+      "odds_note": "at the full entry cap",
+      "odds_selected": "{{ entries }} entries · 1 in {{ chance }} at the full entry cap",
+      "next_heading": "What happens after you enter",
+      "next_confirmation": "You get an order confirmation by email straight away.",
+      "next_numbers": "Your entry numbers are issued with that confirmation.",
+      "next_closes": "Entries close on {{ date }}. Nothing is drawn before then.",
+      "next_draw": "The draw takes place on {{ date }}.",
+      "next_published": "The draw is filmed and published in full, with the winning number. You do not need to be watching."
     },
     "product": {
       "add_to_cart": "Add to basket",
@@ -260,113 +275,6 @@
     "continue": "Keep browsing",
     "view_cart": "View basket",
     "added_to_cart": "Added to your basket"
-  },
-  "customer": {
-    "account": {
-      "title": "Your account",
-      "welcome": "Hello {{ name }}",
-      "log_out": "Log out",
-      "details": "Account details",
-      "view_addresses": "Manage addresses",
-      "orders": "Your orders",
-      "entries": "Your entries",
-      "no_orders_title": "No orders yet",
-      "no_orders_body": "Once you enter a competition it'll show up here, with your entry numbers.",
-      "order_number": "Order",
-      "date": "Date",
-      "payment_status": "Payment",
-      "fulfillment_status": "Status",
-      "total": "Total",
-      "entries_note": "Entry numbers are emailed to you and listed on each order."
-    },
-    "login": {
-      "title": "Log in",
-      "subtitle": "Your entries, orders and account details.",
-      "email": "Email",
-      "password": "Password",
-      "forgot_password": "Forgot your password?",
-      "submit": "Log in",
-      "no_account": "New to Greenside?",
-      "create_account": "Create an account",
-      "guest_title": "Continue as a guest",
-      "guest_submit": "Continue"
-    },
-    "recover_password": {
-      "title": "Reset your password",
-      "subtitle": "We'll email you a link to set a new one.",
-      "submit": "Send reset link",
-      "success": "If that address has an account, a reset link is on its way.",
-      "cancel": "Back to log in"
-    },
-    "register": {
-      "title": "Create your account",
-      "subtitle": "It takes a minute, and keeps every entry in one place.",
-      "first_name": "First name",
-      "last_name": "Last name",
-      "email": "Email",
-      "password": "Password",
-      "submit": "Create account",
-      "has_account": "Already have an account?",
-      "log_in": "Log in",
-      "marketing_opt_in": "Email me new competitions and Club news. Unsubscribe any time."
-    },
-    "activate_account": {
-      "title": "Activate your account",
-      "subtitle": "Set a password to finish setting up.",
-      "password": "Password",
-      "password_confirm": "Confirm password",
-      "submit": "Activate",
-      "decline": "Decline invitation"
-    },
-    "reset_password": {
-      "title": "Set a new password",
-      "password": "New password",
-      "password_confirm": "Confirm password",
-      "submit": "Save password"
-    },
-    "addresses": {
-      "title": "Your addresses",
-      "add_new": "Add an address",
-      "edit": "Edit",
-      "delete": "Delete",
-      "delete_confirm": "Delete this address?",
-      "default": "Default address",
-      "set_default": "Use as my default address",
-      "first_name": "First name",
-      "last_name": "Last name",
-      "company": "Company",
-      "address1": "Address",
-      "address2": "Address line 2",
-      "city": "Town or city",
-      "country": "Country",
-      "province": "County",
-      "zip": "Postcode",
-      "phone": "Phone",
-      "submit": "Save address",
-      "cancel": "Cancel",
-      "none": "You haven't saved an address yet."
-    },
-    "order": {
-      "title": "Order {{ name }}",
-      "date": "Placed on {{ date }}",
-      "cancelled": "Cancelled on {{ date }}",
-      "cancelled_reason": "Reason: {{ reason }}",
-      "product": "Competition",
-      "sku": "SKU",
-      "price": "Price",
-      "quantity": "Entries",
-      "total": "Total",
-      "subtotal": "Subtotal",
-      "shipping": "Delivery",
-      "tax": "Tax",
-      "discount": "Discount",
-      "billing_address": "Billing address",
-      "shipping_address": "Delivery address",
-      "payment_status": "Payment",
-      "fulfillment_status": "Status",
-      "back": "Back to your orders",
-      "entry_numbers": "Entry numbers"
-    }
   },
   "blogs": {
     "article": {

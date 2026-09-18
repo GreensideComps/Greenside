@@ -114,7 +114,13 @@
       "labels_header": "Wording",
       "entry_word_singular": "Word for one entry",
       "entry_word_plural": "Word for several entries",
-      "entry_cta": "Entry button label"
+      "entry_cta": "Entry button label",
+      "honesty_header": "Odds and entry numbers",
+      "honesty_intro": "Both of these state something about how your draw works. Leave them off until your competition rules say the same thing.",
+      "show_odds": "Publish the odds of winning",
+      "show_odds_info": "Shows \"1 in N\" on the competition page, calculated against the published entry cap. Only turn this on once your rules confirm the draw is made from the full set of issued entry numbers. Calculating against the cap is the worst case for the entrant, so a real chance can only be better.",
+      "entry_numbers_issued": "Entry numbers are issued to entrants",
+      "entry_numbers_issued_info": "Only turn this on once something actually allocates entry numbers and sends them. Nothing in Shopify does this by default, so leaving it off keeps the storefront from promising a number the entrant never receives."
     },
     "cart": {
       "name": "Cart",

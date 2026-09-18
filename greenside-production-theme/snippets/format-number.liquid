@@ -1,0 +1,53 @@
+{%- comment -%}
+  Groups a whole number with thousands separators: 4000 -> 4,000.
+
+  Shopify's Liquid has no separator filter, and entry counts are the numbers an
+  entrant is asked to reason about — "2570 of 4000" is measurably harder to read
+  at a glance than "2,570 of 4,000", and the entry cap is the whole basis of the
+  scarcity claim. Getting it wrong makes a true number look careless.
+
+  Accepts:
+  - value {Number} the number to format. Non-numeric or blank returns nothing.
+
+  Returns the formatted number as text, for use inside a `capture`.
+{%- endcomment -%}
+
+{%- liquid
+  assign number = value | plus: 0 | round: 0
+
+  assign is_negative = false
+  if number < 0
+    assign is_negative = true
+    assign number = 0 | minus: number
+  endif
+
+  assign digits = number | append: ''
+  assign length = digits | size
+  assign grouped = ''
+  assign since_comma = 0
+
+  comment
+    Walk right to left, inserting a separator every third digit but never
+    leading: 1000 -> "1,000", not ",1,000".
+  endcomment
+  for position in (1..length)
+    assign index = length | minus: forloop.index
+    assign character = digits | slice: index
+    assign grouped = character | append: grouped
+    assign since_comma = since_comma | plus: 1
+    assign remaining = length | minus: forloop.index
+
+    if since_comma == 3
+      if remaining > 0
+        assign grouped = ',' | append: grouped
+      endif
+      assign since_comma = 0
+    endif
+  endfor
+
+  if is_negative
+    assign grouped = '-' | append: grouped
+  endif
+
+  echo grouped
+-%}

@@ -45,7 +45,7 @@
     "cart_behaviour": "drawer",
     "cart_show_note": false,
     "cart_show_recommendations": true,
-    "cart_reassurance": "<p>Entry numbers are emailed the moment your payment clears, and stay on your order in your account.</p>",
+    "cart_reassurance": "<p>Your order confirmation arrives by email straight away. Every draw is filmed and published in full, with the winning number — you do not need to be watching.</p>",
     "predictive_search_enabled": true,
     "predictive_search_show_pages": true,
     "predictive_search_show_articles": true,
@@ -62,7 +62,9 @@
     "url_how_it_works": "/pages/how-it-works",
     "url_club": "/pages/club",
     "meta_description": "Premium golf prizes with capped entries and affordable entry prices. Every Greenside draw is filmed and published in full, and every competition has a free entry route.",
-    "legal_footer_text": "<p>Greenside Competitions is a trading name of [BUSINESS INFORMATION REQUIRED: registered company name]. Registered in England and Wales, company number [BUSINESS INFORMATION REQUIRED: company number]. Registered office: [BUSINESS INFORMATION REQUIRED: registered address].</p><p>Entrants must be 18 or over and resident in the UK. Every competition has a free entry route.</p>"
+    "legal_footer_text": "<p>Greenside Competitions is a trading name of [BUSINESS INFORMATION REQUIRED: registered company name]. Registered in England and Wales, company number [BUSINESS INFORMATION REQUIRED: company number]. Registered office: [BUSINESS INFORMATION REQUIRED: registered address].</p><p>Entrants must be 18 or over and resident in the UK. Every competition has a free entry route.</p>",
+    "show_odds": false,
+    "entry_numbers_issued": false
   },
   "presets": {
     "Greenside": {

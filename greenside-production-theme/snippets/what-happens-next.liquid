@@ -1,0 +1,66 @@
+{%- comment -%}
+  What happens after you enter.
+
+  The purchase is not the end of the relationship in a prize competition — it is
+  the start of a wait. A customer who does not know what that wait looks like
+  has an unanswered question at the moment they are deciding to pay, and no
+  reason to come back afterwards.
+
+  Every line is derived from data the store actually holds, or from mechanics
+  the storefront already commits to elsewhere. Nothing here promises a message,
+  a document or a record that the business has no way to send:
+
+  - the draw date is shown only when custom.draw_at is set
+  - the entry-number line appears only when settings.entry_numbers_issued is on,
+    because nothing currently allocates entry numbers (see docs/QA.md)
+
+  Parameters:
+    product  (required)
+{%- endcomment -%}
+
+{%- liquid
+  assign draw_at = product.metafields.custom.draw_at.value
+  assign closing_at = product.metafields.custom.closing_at.value
+-%}
+
+<div class="next-steps">
+  <h2 class="next-steps__heading h4">{{ 'products.competition.next_heading' | t }}</h2>
+  <ol class="next-steps__list" role="list">
+    <li class="next-steps__step">
+      {%- render 'icon', icon: 'check-circle', size: 16 -%}
+      <span>{{ 'products.competition.next_confirmation' | t }}</span>
+    </li>
+
+    {%- if settings.entry_numbers_issued -%}
+      <li class="next-steps__step">
+        {%- render 'icon', icon: 'ticket', size: 16 -%}
+        <span>{{ 'products.competition.next_numbers' | t }}</span>
+      </li>
+    {%- endif -%}
+
+    {%- if closing_at != blank -%}
+      <li class="next-steps__step">
+        {%- render 'icon', icon: 'clock', size: 16 -%}
+        <span>
+          {%- assign closes_text = closing_at | date: '%a %-d %b' -%}
+          {{- 'products.competition.next_closes' | t: date: closes_text -}}
+        </span>
+      </li>
+    {%- endif -%}
+
+    {%- if draw_at != blank -%}
+      <li class="next-steps__step">
+        {%- render 'icon', icon: 'trophy', size: 16 -%}
+        <span>
+          {%- assign draw_text = draw_at | date: '%a %-d %b' -%}
+          {{- 'products.competition.next_draw' | t: date: draw_text -}}
+        </span>
+      </li>
+    {%- endif -%}
+
+    <li class="next-steps__step">
+      {%- render 'icon', icon: 'shield', size: 16 -%}
+      <span>{{ 'products.competition.next_published' | t }}</span>
+    </li>
+  </ol>
+</div>
