@@ -6,8 +6,8 @@
         "eyebrow": "Real people. Real prizes.",
         "text": "<p>Every Greenside winner, with the competition they entered and the date of the draw.</p>",
         "per_page": 12,
-        "padding_top": 60,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "signup": {
@@ -20,10 +20,13 @@
         "analytics_label": "winners",
         "colour_scheme": "brand",
         "layout": "split",
-        "padding_top": 100,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     }
   },
-  "order": ["main", "signup"]
+  "order": [
+    "main",
+    "signup"
+  ]
 }

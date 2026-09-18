@@ -10,10 +10,12 @@
         "products_per_page": 16,
         "columns_desktop": 4,
         "image_ratio": "landscape",
-        "padding_top": 60,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

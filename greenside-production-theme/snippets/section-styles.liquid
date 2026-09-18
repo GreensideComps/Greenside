@@ -1,24 +1,46 @@
 {%- comment -%}
-  Per-section spacing, emitted as a scoped style block.
+  Per-section spacing.
 
-  Sections expose padding_top / padding_bottom as percentages of the global
-  section spacing setting, so a merchant changing the global rhythm moves every
-  section together while keeping their per-section adjustments.
+  Sections pick from three tiers rather than setting their own numbers. Uniform
+  rhythm is what makes a page read as a list instead of a composition, so the
+  tiers sit far apart: major is 1.75x standard, minor is half.
 
   Parameters:
-    id              section id
-    padding_top     0-200 (percent of the global spacing)
-    padding_bottom  0-200
-    extra           additional declarations for this section
+    id      section id
+    top     'major' | 'standard' | 'minor' | 'none'   (default 'standard')
+    bottom  as above
+    extra   additional declarations scoped to this section
 {%- endcomment -%}
 {%- liquid
-  assign top = padding_top | default: 100
-  assign bottom = padding_bottom | default: 100
+  assign tier_top = top | default: 'standard'
+  assign tier_bottom = bottom | default: 'standard'
+
+  case tier_top
+    when 'major'
+      assign value_top = 'var(--space-major)'
+    when 'minor'
+      assign value_top = 'var(--space-minor)'
+    when 'none'
+      assign value_top = '0px'
+    else
+      assign value_top = 'var(--space-standard)'
+  endcase
+
+  case tier_bottom
+    when 'major'
+      assign value_bottom = 'var(--space-major)'
+    when 'minor'
+      assign value_bottom = 'var(--space-minor)'
+    when 'none'
+      assign value_bottom = '0px'
+    else
+      assign value_bottom = 'var(--space-standard)'
+  endcase
 -%}
 {% style %}
   #shopify-section-{{ id }} {
-    --section-padding-block-start: calc(var(--section-spacing) * {{ top | divided_by: 100.0 }});
-    --section-padding-block-end: calc(var(--section-spacing) * {{ bottom | divided_by: 100.0 }});
+    --section-padding-block-start: {{ value_top }};
+    --section-padding-block-end: {{ value_bottom }};
     {{ extra }}
   }
 {% endstyle %}

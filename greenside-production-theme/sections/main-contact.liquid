@@ -98,9 +98,31 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "t:sections.all.heading", "info": "Leave empty to use the page title." },
     { "type": "richtext", "id": "text", "label": "t:sections.all.content" },
-    { "type": "header", "content": "t:sections.all.padding_header" },
-    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 60 },
-    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+    { "type": "header", "content": "t:sections.all.spacing_header" },
+    {
+      "type": "select",
+      "id": "spacing_top",
+      "label": "t:sections.all.spacing_top",
+      "options": [
+        { "value": "major", "label": "t:sections.all.space_major" },
+        { "value": "standard", "label": "t:sections.all.space_standard" },
+        { "value": "minor", "label": "t:sections.all.space_minor" },
+        { "value": "none", "label": "t:sections.all.space_none" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "spacing_bottom",
+      "label": "t:sections.all.spacing_bottom",
+      "options": [
+        { "value": "major", "label": "t:sections.all.space_major" },
+        { "value": "standard", "label": "t:sections.all.space_standard" },
+        { "value": "minor", "label": "t:sections.all.space_minor" },
+        { "value": "none", "label": "t:sections.all.space_none" }
+      ],
+      "default": "standard"
+    }
   ]
 }
 {% endschema %}

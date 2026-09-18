@@ -318,10 +318,7 @@
     var percent = Math.round((safeSold / total) * 100);
 
     var fill = bar.querySelector('[data-progress-fill]');
-    if (fill) {
-      fill.style.width = percent + '%';
-      fill.classList.toggle('progress__fill--high', percent >= 80);
-    }
+    if (fill) fill.style.width = percent + '%';
 
     var track = bar.querySelector('[role="progressbar"]');
     if (track) {

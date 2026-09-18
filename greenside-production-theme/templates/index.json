@@ -2,32 +2,14 @@
   "sections": {
     "hero": {
       "type": "hero-competition",
-      "blocks": {
-        "stat-1": {
-          "type": "stat",
-          "settings": { "value": "Capped", "label": "Entries per competition" }
-        },
-        "stat-2": {
-          "type": "stat",
-          "settings": { "value": "Published", "label": "Every draw result" }
-        },
-        "stat-3": {
-          "type": "stat",
-          "settings": { "value": "Free route", "label": "On every competition" }
-        }
-      },
-      "block_order": ["stat-1", "stat-2", "stat-3"],
       "settings": {
-        "eyebrow": "This week's headline prize",
-        "text": "<p>Premium golf prizes, entry prices that make sense, and every draw published in full.</p>",
-        "button_label": "Enter now",
-        "secondary_label": "How it works",
+        "eyebrow": "This week",
+        "text": "<p>Real golf kit. Capped entries. Every draw filmed and published.</p>",
+        "button_label": "Enter",
+        "secondary_label": "How the draw works",
         "secondary_link": "/pages/how-it-works",
-        "show_panel": true,
-        "panel_label": "Open now",
-        "overlay_opacity": 70,
-        "height_mobile": 520,
-        "alignment": "left"
+        "overlay_opacity": 55,
+        "height": "tall"
       }
     },
     "trust": {
@@ -37,8 +19,8 @@
           "type": "item",
           "settings": {
             "icon": "shield",
-            "heading": "Free entry route",
-            "text": "On every competition, no purchase needed"
+            "heading": "Every draw filmed",
+            "text": "Published in full, with the entry numbers"
           }
         },
         "trust-2": {
@@ -46,15 +28,15 @@
           "settings": {
             "icon": "ticket",
             "heading": "Capped entries",
-            "text": "Entry numbers published up front"
+            "text": "The total is published before you enter"
           }
         },
         "trust-3": {
           "type": "item",
           "settings": {
-            "icon": "trophy",
-            "heading": "Every winner published",
-            "text": "Results posted after each draw"
+            "icon": "flag",
+            "heading": "Free entry route",
+            "text": "On every competition, no purchase needed"
           }
         },
         "trust-4": {
@@ -69,43 +51,103 @@
       "block_order": ["trust-1", "trust-2", "trust-3", "trust-4"],
       "settings": {
         "colour_scheme": "light",
-        "padding_top": 50,
-        "padding_bottom": 50
+        "spacing_top": "minor",
+        "spacing_bottom": "minor"
       }
     },
-    "closing-soon": {
+    "open-now": {
       "type": "competition-grid",
       "settings": {
-        "eyebrow": "Last chance",
-        "heading": "Closing soon",
-        "subheading": "Entries close on the date shown on each competition.",
-        "heading_size": "h2",
-        "collection": "closing-soon",
-        "products_to_show": 4,
-        "columns_desktop": 4,
-        "mobile_layout": "carousel",
-        "image_ratio": "landscape",
-        "show_view_all": true,
-        "colour_scheme": "cream",
-        "padding_top": 100,
-        "padding_bottom": 60
-      }
-    },
-    "featured": {
-      "type": "competition-grid",
-      "settings": {
-        "heading": "Open competitions",
-        "subheading": "Everything taking entries right now.",
+        "eyebrow": "Open now",
+        "heading": "Four competitions taking entries",
+        "subheading": "",
         "heading_size": "h2",
         "collection": "featured-competitions",
-        "products_to_show": 8,
+        "products_to_show": 4,
         "columns_desktop": 4,
         "mobile_layout": "grid",
-        "image_ratio": "landscape",
+        "image_ratio": "portrait",
         "show_view_all": true,
         "colour_scheme": "cream",
-        "padding_top": 60,
-        "padding_bottom": 100
+        "spacing_top": "major",
+        "spacing_bottom": "major"
+      }
+    },
+    "major-prize": {
+      "type": "major-prize",
+      "blocks": {
+        "point-1": { "type": "point", "settings": { "text": "Cash alternative on every prize" } },
+        "point-2": { "type": "point", "settings": { "text": "Delivered free, anywhere in the UK" } },
+        "point-3": { "type": "point", "settings": { "text": "Draw filmed and published in full" } }
+      },
+      "block_order": ["point-1", "point-2", "point-3"],
+      "settings": {
+        "eyebrow": "The main event",
+        "heading": "The headline competition",
+        "text": "<p>Bigger prize. Same capped entries. Same published draw.</p>",
+        "button_label": "Enter this competition",
+        "media_position": "left",
+        "colour_scheme": "deep",
+        "spacing_top": "major",
+        "spacing_bottom": "major"
+      }
+    },
+    "how": {
+      "type": "how-it-works",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "heading": "Pick a competition",
+            "text": "<p>Every one shows the prize, the entry price and how many entries exist in total.</p>"
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "heading": "Choose your entries",
+            "text": "<p>The price shown is per entry. Take one, or take more.</p>"
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "heading": "Answer the question",
+            "text": "<p>A short golf question before checkout. It is what makes this a competition of skill.</p>"
+          }
+        },
+        "step-4": {
+          "type": "step",
+          "settings": {
+            "heading": "Watch the draw",
+            "text": "<p>Entries close on the published date. The draw is filmed and goes up with the winning number.</p>"
+          }
+        }
+      },
+      "block_order": ["step-1", "step-2", "step-3", "step-4"],
+      "settings": {
+        "eyebrow": "The mechanism",
+        "heading": "Nothing happens off camera",
+        "subheading": "",
+        "button_label": "Read the full rules",
+        "link": "/pages/how-it-works",
+        "alignment": "left",
+        "colour_scheme": "light",
+        "spacing_top": "major",
+        "spacing_bottom": "major"
+      }
+    },
+    "winners": {
+      "type": "winners-rail",
+      "settings": {
+        "eyebrow": "Real people. Real prizes.",
+        "heading": "Winners",
+        "winners_to_show": 4,
+        "link_label": "Every winner",
+        "link": "/pages/winners",
+        "colour_scheme": "cream",
+        "spacing_top": "major",
+        "spacing_bottom": "major"
       }
     },
     "categories": {
@@ -118,132 +160,12 @@
       },
       "block_order": ["cat-1", "cat-2", "cat-3", "cat-4"],
       "settings": {
-        "eyebrow": "By category",
-        "heading": "Browse competitions",
+        "eyebrow": "",
+        "heading": "Browse by category",
         "columns_desktop": 4,
         "colour_scheme": "light",
-        "padding_top": 100,
-        "padding_bottom": 100
-      }
-    },
-    "major-prize": {
-      "type": "major-prize",
-      "blocks": {
-        "point-1": { "type": "point", "settings": { "text": "Cash alternative available on every prize" } },
-        "point-2": { "type": "point", "settings": { "text": "Delivered free, anywhere in the UK" } },
-        "point-3": { "type": "point", "settings": { "text": "Draw livestreamed and published in full" } }
-      },
-      "block_order": ["point-1", "point-2", "point-3"],
-      "settings": {
-        "eyebrow": "The main event",
-        "text": "<p>Our headline competition. Bigger prize, same capped entries, same published draw.</p>",
-        "button_label": "Enter this competition",
-        "media_position": "left",
-        "colour_scheme": "deep",
-        "padding_top": 100,
-        "padding_bottom": 100
-      }
-    },
-    "why": {
-      "type": "value-props",
-      "blocks": {
-        "value-1": {
-          "type": "value",
-          "settings": {
-            "icon": "trophy",
-            "heading": "Prizes worth winning",
-            "text": "<p>Kit from the brands you already play, not whatever was cheapest to source.</p>"
-          }
-        },
-        "value-2": {
-          "type": "value",
-          "settings": {
-            "icon": "ticket",
-            "heading": "Entries that make sense",
-            "text": "<p>Capped entry numbers, published up front, so you always know what you're entering.</p>"
-          }
-        },
-        "value-3": {
-          "type": "value",
-          "settings": {
-            "icon": "shield",
-            "heading": "Draws you can check",
-            "text": "<p>Every draw is recorded and every winner is published. Nothing happens off camera.</p>"
-          }
-        },
-        "value-4": {
-          "type": "value",
-          "settings": {
-            "icon": "users",
-            "heading": "Built by golfers",
-            "text": "<p>We play. That's why the prizes are things we'd want in our own bags.</p>"
-          }
-        }
-      },
-      "block_order": ["value-1", "value-2", "value-3", "value-4"],
-      "settings": {
-        "heading": "Why Greenside",
-        "subheading": "A golf brand that runs competitions, not a competition site with golf pictures.",
-        "alignment": "center",
-        "colour_scheme": "light",
-        "padding_top": 100,
-        "padding_bottom": 100
-      }
-    },
-    "how": {
-      "type": "how-it-works",
-      "blocks": {
-        "step-1": {
-          "type": "step",
-          "settings": {
-            "heading": "Pick a competition",
-            "text": "<p>Browse what's open and find a prize you actually want.</p>"
-          }
-        },
-        "step-2": {
-          "type": "step",
-          "settings": {
-            "heading": "Choose your entries",
-            "text": "<p>The price shown is per entry. Take one or take more — it's up to you.</p>"
-          }
-        },
-        "step-3": {
-          "type": "step",
-          "settings": {
-            "heading": "Answer the question",
-            "text": "<p>A short golf question at checkout. It's what makes this a competition of skill.</p>"
-          }
-        },
-        "step-4": {
-          "type": "step",
-          "settings": {
-            "heading": "Wait for the draw",
-            "text": "<p>Entries close on the published date and the draw follows. Every winner goes up on the winners page.</p>"
-          }
-        }
-      },
-      "block_order": ["step-1", "step-2", "step-3", "step-4"],
-      "settings": {
-        "heading": "How it works",
-        "button_label": "Read the full rules",
-        "link": "/pages/how-it-works",
-        "alignment": "center",
-        "colour_scheme": "cream",
-        "padding_top": 100,
-        "padding_bottom": 100
-      }
-    },
-    "winners": {
-      "type": "winners-rail",
-      "settings": {
-        "eyebrow": "Real people. Real prizes.",
-        "heading": "Recent winners",
-        "winners_to_show": 4,
-        "link_label": "All winners",
-        "link": "/pages/winners",
-        "colour_scheme": "light",
-        "padding_top": 100,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "blog": {
@@ -254,21 +176,19 @@
         "blog": "news",
         "posts_to_show": 3,
         "colour_scheme": "cream",
-        "padding_top": 100,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "major"
       }
     }
   },
   "order": [
     "hero",
     "trust",
-    "closing-soon",
-    "featured",
-    "categories",
+    "open-now",
     "major-prize",
-    "why",
     "how",
     "winners",
+    "categories",
     "blog"
   ]
 }

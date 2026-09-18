@@ -11,8 +11,8 @@
         "colour_scheme": "brand",
         "layout": "split",
         "show_name": true,
-        "padding_top": 100,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "footer": {
@@ -20,19 +20,31 @@
       "blocks": {
         "menu-competitions": {
           "type": "menu",
-          "settings": { "heading": "Competitions", "menu": "footer" }
+          "settings": {
+            "heading": "Competitions",
+            "menu": "footer"
+          }
         },
         "menu-help": {
           "type": "menu",
-          "settings": { "heading": "Help", "menu": "footer" }
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
         }
       },
-      "block_order": ["menu-competitions", "menu-help"],
+      "block_order": [
+        "menu-competitions",
+        "menu-help"
+      ],
       "settings": {
         "show_policy_links": true,
         "show_payment_icons": true
       }
     }
   },
-  "order": ["club-signup", "footer"]
+  "order": [
+    "club-signup",
+    "footer"
+  ]
 }

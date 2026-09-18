@@ -44,10 +44,11 @@
     assign remaining = total | minus: safe_sold
     assign display = style | default: settings.progress_style | default: 'both'
     assign entry_word = settings.entry_word_plural | default: 'entries'
-    assign bar_class = ''
-    if percent >= 80
-      assign bar_class = ' progress__fill--high'
-    endif
+    comment
+      The fill is one neutral colour at every percentage. A bar that turns gold
+      as it fills is the single most recognisable cue in online gambling, and
+      the number already carries the information.
+    endcomment
   -%}
   <div
     class="progress{% if size == 'large' %} progress--large{% endif %}"
@@ -65,19 +66,19 @@
       aria-valuetext="{{ 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word }}"
       aria-label="{{ 'products.competition.progress_label' | t }}"
     >
-      <span class="progress__fill{{ bar_class }}" style="width: {{ percent }}%" data-progress-fill></span>
+      <span class="progress__fill" style="width: {{ percent }}%" data-progress-fill></span>
     </div>
     <div class="progress__labels">
       {%- if display == 'count' or display == 'both' -%}
-        <span class="progress__count" data-progress-count>
+        <span class="progress__count num" data-progress-count>
           {{- 'products.competition.entries_sold' | t: sold: safe_sold, total: total, entry_word: entry_word -}}
         </span>
       {%- endif -%}
       {%- if display == 'percent' or display == 'both' -%}
-        <span data-progress-percent>{{ 'products.competition.entries_percent' | t: percent: percent }}</span>
+        <span class="num" data-progress-percent>{{ 'products.competition.entries_percent' | t: percent: percent }}</span>
       {%- endif -%}
       {%- if display == 'count' and remaining > 0 -%}
-        <span data-progress-remaining>{{ 'products.competition.entries_remaining' | t: count: remaining }}</span>
+        <span class="num" data-progress-remaining>{{ 'products.competition.entries_remaining' | t: count: remaining }}</span>
       {%- endif -%}
     </div>
   </div>

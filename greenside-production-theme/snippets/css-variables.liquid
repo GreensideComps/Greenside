@@ -1,103 +1,118 @@
 {%- comment -%}
-  Turns theme settings into CSS custom properties.
+  Theme settings to CSS custom properties.
 
   Colours are emitted as space separated RGB channels ("27 67 50") so any rule
   can apply an alpha with `rgb(var(--color-brand) / 0.4)`.
 
-  The "on-*" colours are chosen by brightness, so text stays legible even if a
-  merchant swaps the brand colour for something pale.
+  THE COLOUR SYSTEM HAS FIVE ROLES AND EACH COLOUR DOES ONE JOB.
+
+    Ink     the darkest ground, for major moments
+    Green   the brand ground
+    Action  the thing you click, and nothing else
+    Paper   the page
+    Brass   winners and achievement, and nothing else
+
+  Brass is deliberately absent from progress bars, urgency badges and calls to
+  action. A gold meter filling up is the most recognisable cue in online
+  gambling, and this is a golf brand.
 {%- endcomment -%}
 
 {%- liquid
-  assign brand = settings.color_brand | default: '#1b4332'
-  assign brand_deep = settings.color_brand_deep | default: '#102a20'
-  assign accent = settings.color_accent | default: '#417b25'
-  assign highlight = settings.color_highlight | default: '#c9a961'
-  assign page_bg = settings.color_page_background | default: '#f7f6f2'
+  assign green = settings.color_brand | default: '#1b4332'
+  assign ink = settings.color_brand_deep | default: '#0c1f18'
+  assign action = settings.color_accent | default: '#417b25'
+  assign brass = settings.color_highlight | default: '#c9a961'
+  assign paper = settings.color_page_background | default: '#f2f3ef'
   assign surface = settings.color_surface | default: '#ffffff'
-  assign surface_muted = settings.color_surface_muted | default: '#eef1ea'
-  assign text = settings.color_text | default: '#14261f'
+  assign surface_muted = settings.color_surface_muted | default: '#e8eae4'
+  assign text = settings.color_text | default: '#0c1f18'
   assign text_muted = settings.color_text_muted | default: '#5b6b63'
-  assign border = settings.color_border | default: '#dfe4de'
+  assign border = settings.color_border | default: '#d9ddd6'
   assign success = settings.color_success | default: '#2d6a4f'
   assign error = settings.color_error | default: '#a6262c'
 
-  assign accent_dark = accent | color_darken: 8
-  assign brand_tint = brand | color_lighten: 6
+  assign action_dark = action | color_darken: 8
+  assign green_tint = green | color_lighten: 6
 
   comment
     Pick the foreground that actually passes WCAG against each strong colour.
-    color_contrast returns the real contrast ratio, unlike color_brightness,
-    which is a perceptual approximation that over-weights green and will happily
-    call a mid-tone green "dark" when white text on it only reaches 4.1:1.
-    Where neither foreground reaches 4.5:1 the better of the two is used, and
-    the theme editor flags the colour as one to darken.
+    color_contrast returns the real ratio, unlike color_brightness, which is a
+    perceptual approximation that over-weights green and will call a mid-tone
+    green dark enough for white text when it only reaches 4.1:1.
   endcomment
-  assign brand_on_white = brand | color_contrast: '#ffffff'
-  assign accent_on_white = accent | color_contrast: '#ffffff'
-  assign highlight_on_white = highlight | color_contrast: '#ffffff'
+  assign green_on_white = green | color_contrast: '#ffffff'
+  assign green_on_dark = green | color_contrast: '#0c1f18'
+  assign action_on_white = action | color_contrast: '#ffffff'
+  assign action_on_dark = action | color_contrast: '#0c1f18'
+  assign brass_on_white = brass | color_contrast: '#ffffff'
+  assign brass_on_dark = brass | color_contrast: '#1f1705'
 
-  assign brand_on_dark = brand | color_contrast: '#0c1f18'
-  assign accent_on_dark = accent | color_contrast: '#0c1f18'
-  assign highlight_on_dark = highlight | color_contrast: '#1f1705'
-
-  assign on_brand = '#ffffff'
-  if brand_on_dark > brand_on_white
-    assign on_brand = '#0c1f18'
+  assign on_green = '#ffffff'
+  if green_on_dark > green_on_white
+    assign on_green = '#0c1f18'
   endif
 
-  assign on_accent = '#ffffff'
-  if accent_on_dark > accent_on_white
-    assign on_accent = '#0c1f18'
+  assign on_action = '#ffffff'
+  if action_on_dark > action_on_white
+    assign on_action = '#0c1f18'
   endif
 
-  assign on_highlight = '#ffffff'
-  if highlight_on_dark > highlight_on_white
-    assign on_highlight = '#1f1705'
+  assign on_brass = '#ffffff'
+  if brass_on_dark > brass_on_white
+    assign on_brass = '#1f1705'
   endif
+
+  comment
+    Brass on a light ground is roughly 1.9:1, so it can never carry small text
+    there. Everything that needs to read as "achievement" on paper uses this
+    darkened variant instead, and the bright brass stays for dark grounds only.
+    42% is the point at which the default brass clears 4.5:1 on white, on paper
+    and on the muted sage surface — measured, not estimated.
+  endcomment
+  assign brass_on_paper = brass | color_darken: 42
 
   assign page_width = settings.page_width | default: '1320'
   assign heading_scale = settings.heading_scale | default: 100 | divided_by: 100.0
   assign body_scale = settings.body_scale | default: 100 | divided_by: 100.0
-  assign heading_tracking = settings.heading_letter_spacing | default: -1 | divided_by: 100.0
-  assign button_tracking = settings.button_letter_spacing | default: 6 | divided_by: 100.0
+  assign heading_tracking = settings.heading_letter_spacing | default: -2 | divided_by: 100.0
+  assign button_tracking = settings.button_letter_spacing | default: 2 | divided_by: 100.0
 
   assign heading_font = settings.font_heading
   assign body_font = settings.font_body
+  assign mono_font = settings.font_mono
   assign body_font_bold = body_font | font_modify: 'weight', 'bolder'
   assign body_font_italic = body_font | font_modify: 'style', 'italic'
-  comment
-    Several components set font-weight 800 on headings. Loading the bolder
-    variant means the browser uses a real cut rather than synthesising one,
-    which is what makes faux-bold text look cheap.
-  endcomment
-  assign heading_font_bold = heading_font | font_modify: 'weight', 'bolder'
+  assign heading_font_italic = heading_font | font_modify: 'style', 'italic'
+
+  assign spacing = settings.section_spacing | default: 72
 -%}
 
 {{ heading_font | font_face: font_display: 'swap' }}
-{%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+{%- if heading_font_italic -%}{{ heading_font_italic | font_face: font_display: 'swap' }}{%- endif -%}
 {{ body_font | font_face: font_display: 'swap' }}
 {%- if body_font_bold -%}{{ body_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
 {%- if body_font_italic -%}{{ body_font_italic | font_face: font_display: 'swap' }}{%- endif -%}
+{%- if mono_font -%}{{ mono_font | font_face: font_display: 'swap' }}{%- endif -%}
 
 :root {
-  /* Brand */
-  --color-brand: {{ brand | color_extract: 'red' }} {{ brand | color_extract: 'green' }} {{ brand | color_extract: 'blue' }};
-  --color-brand-deep: {{ brand_deep | color_extract: 'red' }} {{ brand_deep | color_extract: 'green' }} {{ brand_deep | color_extract: 'blue' }};
-  --color-brand-tint: {{ brand_tint | color_extract: 'red' }} {{ brand_tint | color_extract: 'green' }} {{ brand_tint | color_extract: 'blue' }};
-  --color-accent: {{ accent | color_extract: 'red' }} {{ accent | color_extract: 'green' }} {{ accent | color_extract: 'blue' }};
-  --color-accent-dark: {{ accent_dark | color_extract: 'red' }} {{ accent_dark | color_extract: 'green' }} {{ accent_dark | color_extract: 'blue' }};
-  --color-highlight: {{ highlight | color_extract: 'red' }} {{ highlight | color_extract: 'green' }} {{ highlight | color_extract: 'blue' }};
+  /* Brand roles */
+  --color-brand: {{ green | color_extract: 'red' }} {{ green | color_extract: 'green' }} {{ green | color_extract: 'blue' }};
+  --color-brand-deep: {{ ink | color_extract: 'red' }} {{ ink | color_extract: 'green' }} {{ ink | color_extract: 'blue' }};
+  --color-brand-tint: {{ green_tint | color_extract: 'red' }} {{ green_tint | color_extract: 'green' }} {{ green_tint | color_extract: 'blue' }};
+  --color-accent: {{ action | color_extract: 'red' }} {{ action | color_extract: 'green' }} {{ action | color_extract: 'blue' }};
+  --color-accent-dark: {{ action_dark | color_extract: 'red' }} {{ action_dark | color_extract: 'green' }} {{ action_dark | color_extract: 'blue' }};
+  --color-highlight: {{ brass | color_extract: 'red' }} {{ brass | color_extract: 'green' }} {{ brass | color_extract: 'blue' }};
+  --color-highlight-ink: {{ brass_on_paper | color_extract: 'red' }} {{ brass_on_paper | color_extract: 'green' }} {{ brass_on_paper | color_extract: 'blue' }};
 
   /* Text on strong colours */
-  --color-on-brand: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }};
-  --color-on-brand-muted: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }} / 0.74;
-  --color-on-brand-border: {{ on_brand | color_extract: 'red' }} {{ on_brand | color_extract: 'green' }} {{ on_brand | color_extract: 'blue' }} / 0.22;
-  --color-on-accent: {{ on_accent | color_extract: 'red' }} {{ on_accent | color_extract: 'green' }} {{ on_accent | color_extract: 'blue' }};
-  --color-on-highlight: {{ on_highlight | color_extract: 'red' }} {{ on_highlight | color_extract: 'green' }} {{ on_highlight | color_extract: 'blue' }};
+  --color-on-brand: {{ on_green | color_extract: 'red' }} {{ on_green | color_extract: 'green' }} {{ on_green | color_extract: 'blue' }};
+  --color-on-brand-muted: {{ on_green | color_extract: 'red' }} {{ on_green | color_extract: 'green' }} {{ on_green | color_extract: 'blue' }} / 0.74;
+  --color-on-brand-border: {{ on_green | color_extract: 'red' }} {{ on_green | color_extract: 'green' }} {{ on_green | color_extract: 'blue' }} / 0.2;
+  --color-on-accent: {{ on_action | color_extract: 'red' }} {{ on_action | color_extract: 'green' }} {{ on_action | color_extract: 'blue' }};
+  --color-on-highlight: {{ on_brass | color_extract: 'red' }} {{ on_brass | color_extract: 'green' }} {{ on_brass | color_extract: 'blue' }};
 
   /* Surfaces */
-  --color-page-background: {{ page_bg | color_extract: 'red' }} {{ page_bg | color_extract: 'green' }} {{ page_bg | color_extract: 'blue' }};
+  --color-page-background: {{ paper | color_extract: 'red' }} {{ paper | color_extract: 'green' }} {{ paper | color_extract: 'blue' }};
   --color-surface: {{ surface | color_extract: 'red' }} {{ surface | color_extract: 'green' }} {{ surface | color_extract: 'blue' }};
   --color-surface-muted: {{ surface_muted | color_extract: 'red' }} {{ surface_muted | color_extract: 'green' }} {{ surface_muted | color_extract: 'blue' }};
   --color-text: {{ text | color_extract: 'red' }} {{ text | color_extract: 'green' }} {{ text | color_extract: 'blue' }};
@@ -107,7 +122,7 @@
   /* Status */
   --color-success: {{ success | color_extract: 'red' }} {{ success | color_extract: 'green' }} {{ success | color_extract: 'blue' }};
   --color-error: {{ error | color_extract: 'red' }} {{ error | color_extract: 'green' }} {{ error | color_extract: 'blue' }};
-  --color-focus: {{ accent | color_extract: 'red' }} {{ accent | color_extract: 'green' }} {{ accent | color_extract: 'blue' }};
+  --color-focus: {{ action | color_extract: 'red' }} {{ action | color_extract: 'green' }} {{ action | color_extract: 'blue' }};
 
   /* Type */
   --font-body-family: {{ body_font.family }}, {{ body_font.fallback_families }};
@@ -116,17 +131,26 @@
   --font-heading-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
   --font-heading-style: {{ heading_font.style }};
   --font-heading-weight: {{ heading_font.weight }};
+  {%- if mono_font %}
+  --font-mono-family: {{ mono_font.family }}, {{ mono_font.fallback_families }};
+  --font-mono-weight: {{ mono_font.weight }};
+  {%- else %}
+  --font-mono-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  --font-mono-weight: 500;
+  {%- endif %}
 
   --heading-scale: {{ heading_scale }};
   --body-scale: {{ body_scale }};
   --heading-tracking: {{ heading_tracking }}em;
-  --heading-case: {{ settings.heading_case | default: 'uppercase' }};
+  --heading-case: {{ settings.heading_case | default: 'none' }};
 
-  --text-h0: calc(clamp(2.5rem, 6.5vw, 4.75rem) * var(--heading-scale));
-  --text-h1: calc(clamp(2.125rem, 4.6vw, 3.5rem) * var(--heading-scale));
-  --text-h2: calc(clamp(1.75rem, 3.4vw, 2.5rem) * var(--heading-scale));
-  --text-h3: calc(clamp(1.375rem, 2.2vw, 1.75rem) * var(--heading-scale));
-  --text-h4: calc(1.25rem * var(--heading-scale));
+  /* A wider range than a conventional scale: the display face is meant to be
+     used at a size that carries a page on its own. */
+  --text-h0: calc(clamp(3rem, 8vw, 6.5rem) * var(--heading-scale));
+  --text-h1: calc(clamp(2.375rem, 5.2vw, 4rem) * var(--heading-scale));
+  --text-h2: calc(clamp(1.875rem, 3.8vw, 2.75rem) * var(--heading-scale));
+  --text-h3: calc(clamp(1.4375rem, 2.4vw, 1.875rem) * var(--heading-scale));
+  --text-h4: calc(1.3125rem * var(--heading-scale));
   --text-h5: calc(1.0625rem * var(--heading-scale));
   --text-h6: calc(0.9375rem * var(--heading-scale));
   --text-lead: calc(clamp(1.0625rem, 1.4vw, 1.1875rem) * var(--body-scale));
@@ -136,34 +160,41 @@
 
   /* Layout */
   --page-width: {{ page_width }}px;
-  --gutter: 1rem;
-  --section-spacing: {{ settings.section_spacing | default: 72 }}px;
-  --section-padding-block-start: var(--section-spacing);
-  --section-padding-block-end: var(--section-spacing);
+  --gutter: 1.25rem;
+
+  /* Three deliberate spacing tiers. Sections pick one; nothing invents its own.
+     Uniform rhythm is what makes a page read as a list rather than a
+     composition, so the tiers are far apart on purpose. */
+  --space-major: {{ spacing | times: 1.75 | round }}px;
+  --space-standard: {{ spacing }}px;
+  --space-minor: {{ spacing | times: 0.5 | round }}px;
+
+  --section-padding-block-start: var(--space-standard);
+  --section-padding-block-end: var(--space-standard);
 
   /* Shape */
-  --card-radius: {{ settings.card_radius | default: 14 }}px;
-  --media-radius: {{ settings.media_radius | default: 10 }}px;
-  --button-radius: {{ settings.button_radius | default: 10 }}px;
-  --input-radius: {{ settings.button_radius | default: 10 }}px;
-  --button-case: {{ settings.button_case | default: 'uppercase' }};
+  --card-radius: {{ settings.card_radius | default: 4 }}px;
+  --media-radius: {{ settings.media_radius | default: 2 }}px;
+  --button-radius: {{ settings.button_radius | default: 2 }}px;
+  --input-radius: {{ settings.button_radius | default: 2 }}px;
+  --button-case: {{ settings.button_case | default: 'none' }};
   --button-tracking: {{ button_tracking }}em;
-  --button-weight: {{ settings.button_weight | default: 700 }};
+  --button-weight: {{ settings.button_weight | default: 600 }};
 
   /* Elevation */
   {%- case settings.card_shadow -%}
-    {%- when 'none' -%}
+    {%- when 'soft' -%}
+      --card-shadow: 0 1px 2px rgb(var(--color-brand-deep) / 0.06);
+      --card-shadow-hover: 0 8px 24px rgb(var(--color-brand-deep) / 0.1);
+    {%- when 'lifted' -%}
+      --card-shadow: 0 4px 16px rgb(var(--color-brand-deep) / 0.1), 0 1px 3px rgb(var(--color-brand-deep) / 0.06);
+      --card-shadow-hover: 0 14px 36px rgb(var(--color-brand-deep) / 0.16);
+    {%- else -%}
       --card-shadow: none;
       --card-shadow-hover: none;
-    {%- when 'lifted' -%}
-      --card-shadow: 0 4px 16px rgb(var(--color-brand) / 0.1), 0 1px 3px rgb(var(--color-brand) / 0.06);
-      --card-shadow-hover: 0 12px 32px rgb(var(--color-brand) / 0.16), 0 2px 6px rgb(var(--color-brand) / 0.08);
-    {%- else -%}
-      --card-shadow: 0 1px 2px rgb(var(--color-brand) / 0.05);
-      --card-shadow-hover: 0 6px 20px rgb(var(--color-brand) / 0.1);
   {%- endcase -%}
 
-  --overlay-shadow: 0 24px 60px rgb(var(--color-brand) / 0.22);
+  --overlay-shadow: 0 24px 60px rgb(var(--color-brand-deep) / 0.28);
 
   /* Select arrow, tinted to the body text colour. */
   --icon-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='rgb({{ text | color_extract: 'red' }},{{ text | color_extract: 'green' }},{{ text | color_extract: 'blue' }})' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -177,9 +208,7 @@
 
 @media screen and (min-width: 750px) {
   :root {
-    --gutter: 2rem;
-    --section-padding-block-start: calc(var(--section-spacing) * 1.25);
-    --section-padding-block-end: calc(var(--section-spacing) * 1.25);
+    --gutter: 2.5rem;
     --header-height: 84px;
   }
 }

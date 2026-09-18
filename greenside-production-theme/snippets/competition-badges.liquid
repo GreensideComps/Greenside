@@ -1,24 +1,33 @@
 {%- comment -%}
-  Badge row for a competition.
+  Badges.
 
-  Order of priority, highest first, so the most decision-relevant badge always
-  survives the `max` cut:
-    1. Closed / fully entered  (blocks entry — must always show)
-    2. Closing soon            (real date, within 48 hours)
-    3. Instant win             (changes the mechanic)
-    4. Merchant badge          (custom.badge_label)
-    5. Featured / New          (marketing)
+  One badge on a card, always. Three urgency signals stacked on one component is
+  how a competition site starts to look like a slot machine, and each one of them
+  being factually true does not change how it reads.
+
+  Priority, highest first, so the most decision-relevant badge survives the cut:
+    1. Closed / fully entered  — blocks entry, so it must always win
+    2. Instant win             — changes the mechanic
+    3. Merchant badge          — custom.badge_label
+    4. Closing soon            — a real date inside 48 hours
+    5. New
+
+  "Featured" is deliberately not a badge. It describes the merchant's opinion,
+  not the competition, and it was appearing on cards inside a section already
+  headed "Featured".
+
+  Brass appears nowhere here. It means winners.
 
   Parameters:
     product  (required)
-    max      maximum badges to render (default: theme setting)
-    context  'card' or 'page'
+    max      maximum badges (default 1; the competition page passes more)
+    context  'card' (default) or 'page'
 {%- endcomment -%}
 
 {%- liquid
-  assign max_badges = max | default: settings.card_max_badges | default: 2
+  assign max_badges = max | default: 1
   if context == 'page'
-    assign max_badges = 6
+    assign max_badges = 4
   endif
 
   assign closing_at = product.metafields.custom.closing_at.value
@@ -47,10 +56,6 @@
     assign badges = badges | append: 'full|'
   endif
 
-  if is_closing_soon and is_closed == false and product.available
-    assign badges = badges | append: 'closing|'
-  endif
-
   if instant_win
     assign badges = badges | append: 'instant|'
   endif
@@ -59,8 +64,8 @@
     assign badges = badges | append: 'custom|'
   endif
 
-  if product.tags contains 'featured'
-    assign badges = badges | append: 'featured|'
+  if is_closing_soon and is_closed == false and product.available
+    assign badges = badges | append: 'closing|'
   endif
 
   if product.tags contains 'new'
@@ -79,15 +84,13 @@
         {%- when 'full' -%}
           <span class="badge badge--closed">{{ 'products.competition.badge_sold_out' | t }}</span>
         {%- when 'closing' -%}
-          <span class="badge badge--highlight">{{ 'products.competition.badge_closing_soon' | t }}</span>
+          <span class="badge badge--quiet">{{ 'products.competition.badge_closing_soon' | t }}</span>
         {%- when 'instant' -%}
-          <span class="badge badge--accent">{{ 'products.competition.badge_instant_win' | t }}</span>
+          <span class="badge badge--quiet">{{ 'products.competition.badge_instant_win' | t }}</span>
         {%- when 'custom' -%}
-          <span class="badge badge--brand">{{ badge_label | escape }}</span>
-        {%- when 'featured' -%}
-          <span class="badge badge--brand">{{ 'products.competition.badge_featured' | t }}</span>
+          <span class="badge badge--quiet">{{ badge_label | escape }}</span>
         {%- when 'new' -%}
-          <span class="badge badge--neutral">{{ 'products.competition.badge_new' | t }}</span>
+          <span class="badge badge--quiet">{{ 'products.competition.badge_new' | t }}</span>
       {%- endcase -%}
     {%- endfor -%}
   </div>

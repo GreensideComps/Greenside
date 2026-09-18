@@ -16,8 +16,8 @@
         "intent": "related",
         "products_to_show": 4,
         "colour_scheme": "cream",
-        "padding_top": 100,
-        "padding_bottom": 60
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "recently-viewed": {
@@ -26,10 +26,14 @@
         "heading": "Recently viewed",
         "products_to_show": 4,
         "colour_scheme": "cream",
-        "padding_top": 40,
-        "padding_bottom": 100
+        "spacing_top": "minor",
+        "spacing_bottom": "standard"
       }
     }
   },
-  "order": ["main", "related", "recently-viewed"]
+  "order": [
+    "main",
+    "related",
+    "recently-viewed"
+  ]
 }

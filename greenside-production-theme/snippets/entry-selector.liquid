@@ -120,7 +120,11 @@
               </span>
             </span>
             {%- if is_best -%}
-              <span class="badge badge--highlight entry-bundle__badge">
+              {%- comment -%}
+                A neutral outline, not brass. This is a computed fact about
+                per-entry price, not an achievement, and brass means winners.
+              {%- endcomment -%}
+              <span class="badge badge--outline entry-bundle__badge">
                 {{- 'products.competition.best_value' | t -}}
               </span>
             {%- endif -%}

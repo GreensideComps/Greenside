@@ -10,8 +10,8 @@
 {%- assign grid_style = '--columns-desktop: ' | append: columns | append: ';' -%}
 {%- render 'section-styles',
   id: section.id,
-  padding_top: section.settings.padding_top,
-  padding_bottom: section.settings.padding_bottom,
+  top: section.settings.spacing_top,
+  bottom: section.settings.spacing_bottom,
   extra: grid_style
 -%}
 
@@ -32,7 +32,12 @@
         </div>
 
         <div class="section-header__actions flow-gap">
-          {%- if section.settings.show_view_all and collection != blank and count > 0 -%}
+          {%- comment -%}
+            The header link only appears when the grid already shows everything.
+            When there is more to see, the button below the grid does that job,
+            and two "view all" controls in one section is one too many.
+          {%- endcomment -%}
+          {%- if section.settings.show_view_all and collection != blank and count > 0 and count <= limit -%}
             <a class="link" href="{{ collection.url }}">
               {{- 'general.view_all' | t }}
               {%- render 'icon', icon: 'arrow-right', size: 16 -%}
@@ -181,9 +186,31 @@
       ],
       "default": "cream"
     },
-    { "type": "header", "content": "t:sections.all.padding_header" },
-    { "type": "range", "id": "padding_top", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_top", "default": 100 },
-    { "type": "range", "id": "padding_bottom", "min": 0, "max": 200, "step": 10, "unit": "%", "label": "t:sections.all.padding_bottom", "default": 100 }
+    { "type": "header", "content": "t:sections.all.spacing_header" },
+    {
+      "type": "select",
+      "id": "spacing_top",
+      "label": "t:sections.all.spacing_top",
+      "options": [
+        { "value": "major", "label": "t:sections.all.space_major" },
+        { "value": "standard", "label": "t:sections.all.space_standard" },
+        { "value": "minor", "label": "t:sections.all.space_minor" },
+        { "value": "none", "label": "t:sections.all.space_none" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "spacing_bottom",
+      "label": "t:sections.all.spacing_bottom",
+      "options": [
+        { "value": "major", "label": "t:sections.all.space_major" },
+        { "value": "standard", "label": "t:sections.all.space_standard" },
+        { "value": "minor", "label": "t:sections.all.space_minor" },
+        { "value": "none", "label": "t:sections.all.space_none" }
+      ],
+      "default": "standard"
+    }
   ],
   "presets": [{ "name": "Competition grid" }]
 }

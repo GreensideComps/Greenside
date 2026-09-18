@@ -3,28 +3,84 @@
     "steps": {
       "type": "how-it-works",
       "blocks": {
-        "s1": { "type": "step", "settings": { "heading": "Find a competition", "text": "<p>Browse everything that's open. Each competition shows the prize, the entry price, how many entries have been taken and the date entries close.</p>" } },
-        "s2": { "type": "step", "settings": { "heading": "Choose your entries", "text": "<p>The price shown is per entry. Pick how many you want — some competitions cap how many one person can take, and that cap is shown on the page.</p>" } },
-        "s3": { "type": "step", "settings": { "heading": "Answer the question", "text": "<p>Where a competition has a skill question, you answer it before checkout. Answering correctly is what puts you in the draw.</p>" } },
-        "s4": { "type": "step", "settings": { "heading": "Check out", "text": "<p>Pay securely through Shopify. Your entries are confirmed by email straight away.</p>" } },
-        "s5": { "type": "step", "settings": { "heading": "Entries close", "text": "<p>Entries close on the published date, or once every entry has been taken — whichever comes first.</p>" } },
-        "s6": { "type": "step", "settings": { "heading": "The draw takes place", "text": "<p>The winner is selected according to the published rules for that competition.</p>" } },
-        "s7": { "type": "step", "settings": { "heading": "The winner gets the prize", "text": "<p>We contact the winner directly, and publish the result on our winners page.</p>" } }
+        "s1": {
+          "type": "step",
+          "settings": {
+            "heading": "Find a competition",
+            "text": "<p>Browse everything that's open. Each competition shows the prize, the entry price, how many entries have been taken and the date entries close.</p>"
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "heading": "Choose your entries",
+            "text": "<p>The price shown is per entry. Pick how many you want — some competitions cap how many one person can take, and that cap is shown on the page.</p>"
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "heading": "Answer the question",
+            "text": "<p>Where a competition has a skill question, you answer it before checkout. Answering correctly is what puts you in the draw.</p>"
+          }
+        },
+        "s4": {
+          "type": "step",
+          "settings": {
+            "heading": "Check out",
+            "text": "<p>Pay securely through Shopify. Your entries are confirmed by email straight away.</p>"
+          }
+        },
+        "s5": {
+          "type": "step",
+          "settings": {
+            "heading": "Entries close",
+            "text": "<p>Entries close on the published date, or once every entry has been taken — whichever comes first.</p>"
+          }
+        },
+        "s6": {
+          "type": "step",
+          "settings": {
+            "heading": "The draw takes place",
+            "text": "<p>The winner is selected according to the published rules for that competition.</p>"
+          }
+        },
+        "s7": {
+          "type": "step",
+          "settings": {
+            "heading": "The winner gets the prize",
+            "text": "<p>We contact the winner directly, and publish the result on our winners page.</p>"
+          }
+        }
       },
-      "block_order": ["s1", "s2", "s3", "s4", "s5", "s6", "s7"],
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "s7"
+      ],
       "settings": {
         "heading": "How it works",
         "subheading": "Seven steps, no small print surprises.",
         "alignment": "left",
         "colour_scheme": "light",
-        "padding_top": 60,
-        "padding_bottom": 100
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "page-content": {
       "type": "main-page",
-      "settings": { "narrow": true, "show_breadcrumbs": false }
+      "settings": {
+        "narrow": true,
+        "show_breadcrumbs": false
+      }
     }
   },
-  "order": ["steps", "page-content"]
+  "order": [
+    "steps",
+    "page-content"
+  ]
 }

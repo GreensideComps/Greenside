@@ -141,19 +141,21 @@
 
 .competition-page__value-amount {
   display: block;
-  font-family: var(--font-heading-family);
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1875rem;
   line-height: 1.1;
 }
 
 .competition-page__value-label {
   display: block;
+  font-family: var(--font-mono-family);
   font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgb(var(--color-text-muted));
-  margin-top: 0.2rem;
+  margin-top: 0.25rem;
 }
 
 .competition-page__dates {
@@ -172,16 +174,18 @@
 }
 
 .competition-page__price-amount {
-  font-family: var(--font-heading-family);
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
+  font-variant-numeric: tabular-nums;
   font-size: clamp(2rem, 5vw, 2.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
 .competition-page__price-label {
-  font-size: var(--text-sm);
-  letter-spacing: 0.06em;
+  font-family: var(--font-mono-family);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgb(var(--color-text-muted));
 }
@@ -202,11 +206,12 @@
 .entry-selector__fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 0.85rem; }
 
 .entry-selector__legend {
-  font-family: var(--font-heading-family);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono-family);
+  font-size: var(--text-xs);
+  font-weight: var(--font-mono-weight);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: rgb(var(--color-text-muted));
   padding: 0;
 }
 
@@ -243,9 +248,9 @@
 }
 
 .entry-preset__count {
-  font-family: var(--font-heading-family);
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
   font-size: var(--text-sm);
-  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -304,15 +309,16 @@
 }
 
 .entry-bundle__count {
-  font-family: var(--font-heading-family);
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
   font-size: 1rem;
-  font-weight: 700;
 }
 
 .entry-bundle__price {
-  font-family: var(--font-heading-family);
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
+  font-variant-numeric: tabular-nums;
   font-size: 1.125rem;
-  font-weight: 800;
   text-align: end;
 }
 
@@ -334,17 +340,20 @@
 }
 
 .entry-total__label {
-  font-family: var(--font-heading-family);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono-family);
+  font-size: var(--text-xs);
+  font-weight: var(--font-mono-weight);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: rgb(var(--color-text-muted));
 }
 
 .entry-total__value {
-  font-family: var(--font-heading-family);
+  font-family: var(--font-mono-family);
+  font-weight: var(--font-mono-weight);
+  font-variant-numeric: tabular-nums;
   font-size: 1.5rem;
-  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 /* --------------------------------------------------------------------------
@@ -365,11 +374,12 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: var(--font-heading-family);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono-family);
+  font-size: var(--text-xs);
+  font-weight: var(--font-mono-weight);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: rgb(var(--color-text-muted));
   padding: 0;
 }
 
@@ -464,11 +474,11 @@
 .share { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
 .share__label {
+  font-family: var(--font-mono-family);
   font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgb(var(--color-text-muted));
-  font-weight: 600;
 }
 
 .share__links { display: flex; align-items: center; gap: 0.25rem; }
@@ -507,10 +517,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1.15rem 0;
-  font-family: var(--font-heading-family);
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-family: var(--font-body-family);
+  font-size: 1.0625rem;
+  font-weight: 600;
   list-style: none;
 }
 

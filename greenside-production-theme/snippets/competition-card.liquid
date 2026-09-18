@@ -1,10 +1,18 @@
 {%- comment -%}
-  The competition card. Used on the homepage, collections, search, the cart and
-  related-competition rails.
+  The competition card.
 
-  Hierarchy is fixed and deliberate: prize, then price, then the action. Badges
-  sit on the image so they never push the price around, and the theme setting
-  caps how many appear so a card cannot turn into badge soup.
+  Four things, in this order: the image, the prize, the entry price, the action.
+  Everything else belongs on the competition page.
+
+  Deliberate omissions, each of which was previously on the card:
+    - No progress bar by default. On a card it is pressure; on the competition
+      page there is room for it to be information.
+    - One badge maximum, never two. Three urgency signals on one card is how a
+      competition site starts to look like a slot machine.
+    - No gold anywhere. Brass means winners and nothing else.
+    - The "Win a" prefix is trimmed, because the card already sits under a
+      heading that supplies the context, and those two words were occupying the
+      most visible line of the most repeated component on the site.
 
   Parameters:
     product          (required)
@@ -21,10 +29,10 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign ratio = image_ratio | default: settings.card_image_ratio | default: 'landscape'
+  assign ratio = image_ratio | default: settings.card_image_ratio | default: 'portrait'
   assign heading = heading_tag | default: 'h3'
   assign img_loading = loading | default: 'lazy'
-  assign img_sizes = sizes | default: '(min-width: 990px) 320px, (min-width: 600px) 45vw, 78vw'
+  assign img_sizes = sizes | default: '(min-width: 990px) 340px, (min-width: 600px) 45vw, 45vw'
 
   assign with_progress = show_progress
   if with_progress == nil
@@ -60,10 +68,48 @@
     assign can_enter = false
   endif
 
-  assign cta_label = settings.entry_cta_label | default: 'Enter now'
+  assign cta_label = settings.entry_cta_label | default: 'Enter'
   unless can_enter
     assign cta_label = 'products.competition.view_competition' | t
   endunless
+
+  comment
+    Trim a leading "Win a" / "Win an" / "Win the". The card sits under a heading
+    that already establishes what these are, and those two words were occupying
+    the most visible line of the most repeated component on the site.
+
+    Only the first character is raised. The `capitalize` filter lowercases
+    everything after it, which turns "TaylorMade Qi10" into "Taylormade qi10" —
+    unacceptable on a site whose entire proposition is the brand of the prize.
+  endcomment
+  assign card_title = product.title
+  if settings.card_trim_win_prefix
+    assign lower_title = card_title | downcase
+    if lower_title contains 'win a '
+      assign card_title = card_title | remove_first: 'Win a ' | remove_first: 'win a ' | remove_first: 'WIN A '
+    elsif lower_title contains 'win an '
+      assign card_title = card_title | remove_first: 'Win an ' | remove_first: 'win an ' | remove_first: 'WIN AN '
+    elsif lower_title contains 'win the '
+      assign card_title = card_title | remove_first: 'Win the ' | remove_first: 'win the ' | remove_first: 'WIN THE '
+    endif
+
+    assign title_length = card_title | size
+    if title_length > 1
+      assign first_letter = card_title | slice: 0 | upcase
+      assign remainder = card_title | slice: 1, title_length
+      assign card_title = first_letter | append: remainder
+    endif
+  endif
+
+  comment
+    Whole pounds. metafield_text formats a money metafield correctly whatever the
+    underlying precision; the trailing ".00" is then noise at card size, while a
+    genuine ".50" survives.
+  endcomment
+  assign prize_value_text = ''
+  if prize_value != blank
+    assign prize_value_text = prize_value | metafield_text | remove: '.00'
+  endif
 
   assign card_alt = product.featured_media.alt | default: product.title
 -%}
@@ -80,24 +126,18 @@
         alt: card_alt,
         sizes: img_sizes,
         loading: img_loading,
-        widths: '320,420,540,720,900,1080'
+        widths: '340,440,560,720,900,1080'
       -%}
     {%- else -%}
       {%- render 'placeholder', name: 'product-1' -%}
     {%- endif -%}
 
     {%- if with_badges -%}
-      {%- render 'competition-badges', product: product -%}
+      {%- render 'competition-badges', product: product, max: 1 -%}
     {%- endif -%}
   </div>
 
   <div class="competition-card__body">
-    {%- if with_prize_value and prize_value != blank -%}
-      <p class="competition-card__value">
-        {{- 'products.competition.prize_value' | t }} {{ prize_value | metafield_text -}}
-      </p>
-    {%- endif -%}
-
     <{{ heading }} class="competition-card__title">
       <a
         class="competition-card__link"
@@ -105,26 +145,34 @@
         data-track="competition_card_click"
         data-track-payload='{"product_id":{{ product.id }},"position":{{ index | default: 0 }}}'
       >
-        {{- product.title | escape -}}
+        {{- card_title | escape -}}
       </a>
     </{{ heading }}>
 
-    {%- if with_progress -%}
-      {%- render 'competition-progress', product: product -%}
+    {%- if with_prize_value and prize_value_text != blank -%}
+      <p class="competition-card__value num">{{ prize_value_text }} value</p>
     {%- endif -%}
 
     {%- if with_closing -%}
-      {%- capture closing_markup -%}{%- render 'competition-closing', product: product -%}{%- endcapture -%}
+      {%- capture closing_markup -%}{%- render 'competition-closing', product: product, icon: false -%}{%- endcapture -%}
       {%- if closing_markup != blank -%}
-        <div class="competition-card__meta">{{ closing_markup }}</div>
+        <p class="competition-card__closing num">{{ closing_markup }}</p>
       {%- endif -%}
     {%- endif -%}
 
+    {%- if with_progress -%}
+      {%- render 'competition-progress', product: product, size: 'small' -%}
+    {%- endif -%}
+
+    {%- comment -%}
+      The spacer sits above the footer so that every card in a row lands its
+      price and action on the same baseline, whatever optional lines it carries.
+    {%- endcomment -%}
     <div class="competition-card__spacer"></div>
 
     <div class="competition-card__footer">
       <p class="competition-card__price">
-        <span class="competition-card__price-amount">
+        <span class="competition-card__price-amount num">
           {%- if product.price_varies -%}
             {{- 'products.product.from_price' | t: price: product.price_min | money -}}
           {%- else -%}
@@ -136,8 +184,9 @@
         </span>
       </p>
 
-      <span class="competition-card__cta button button--primary button--small" aria-hidden="true">
-        {{- cta_label -}}
+      <span class="competition-card__cta" aria-hidden="true">
+        {{- cta_label }}
+        {%- render 'icon', icon: 'arrow-right', size: 14 -%}
       </span>
     </div>
   </div>

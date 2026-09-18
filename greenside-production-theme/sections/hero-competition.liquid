@@ -1,3 +1,14 @@
+{%- comment -%}
+  The hero.
+
+  One competition, at scale. The page's job in the first screen is to present a
+  single prize as though it matters, not to offer a choice of twelve.
+
+  Everything shown is real: the price comes from the product, the closing date
+  from custom.closing_at, and the entry line only appears when the competition
+  is genuinely open. Nothing counts down.
+{%- endcomment -%}
+
 {%- liquid
   assign featured = all_products[section.settings.product]
   assign has_featured = false
@@ -14,9 +25,8 @@
   endif
 
   comment
-    The homepage must always carry exactly one h1. Fall back through the
-    featured competition, then the brand tagline, then the shop name, so a
-    freshly installed theme still has a heading.
+    The heading falls through so the page always carries exactly one h1, even on
+    a freshly installed theme with nothing selected.
   endcomment
   assign heading = section.settings.heading
   if heading == blank and has_featured
@@ -29,10 +39,6 @@
     assign heading = shop.name
   endif
 
-  comment
-    The primary call to action always needs somewhere to go. Prefer the chosen
-    link, then the featured competition, then the full competition listing.
-  endcomment
   assign hero_link = section.settings.link
   if hero_link == blank and has_featured
     assign hero_link = featured.url
@@ -41,22 +47,28 @@
     assign hero_link = routes.all_products_collection_url
   endif
 
+  assign closing_at = featured.metafields.custom.closing_at.value
+  assign is_closed = false
+  if closing_at != blank
+    assign now_stamp = 'now' | date: '%s' | times: 1
+    assign close_stamp = closing_at | date: '%s' | times: 1
+    if close_stamp <= now_stamp
+      assign is_closed = true
+    endif
+  endif
+  assign can_enter = false
+  if has_featured and featured.available and is_closed == false
+    assign can_enter = true
+  endif
+
   assign overlay = section.settings.overlay_opacity | divided_by: 100.0
   assign hero_alt = image_desktop.alt | default: heading
+  assign hero_style = '--hero-overlay: ' | append: overlay | append: ';'
 -%}
 
-{%- assign hero_style = '--hero-overlay: ' | append: overlay | append: ';' -%}
-{%- render 'section-styles',
-  id: section.id,
-  padding_top: 0,
-  padding_bottom: 0,
-  extra: hero_style
--%}
+{%- render 'section-styles', id: section.id, top: 'none', bottom: 'none', extra: hero_style -%}
 
-<section
-  class="hero hero--{{ section.settings.alignment }}{% if has_featured and section.settings.show_panel %} hero--split{% endif %}"
-  style="min-height: {{ section.settings.height_mobile }}px;"
->
+<section class="hero hero--{{ section.settings.height }}" data-hero>
   <div class="hero__media">
     {%- if image_desktop != blank -%}
       <picture>
@@ -68,12 +80,12 @@
           >
         {%- endif -%}
         <img
-          src="{{ image_desktop | image_url: width: 1800 }}"
+          src="{{ image_desktop | image_url: width: 2000 }}"
           srcset="
-            {{ image_desktop | image_url: width: 900 }} 900w,
-            {{ image_desktop | image_url: width: 1400 }} 1400w,
-            {{ image_desktop | image_url: width: 1800 }} 1800w,
-            {{ image_desktop | image_url: width: 2400 }} 2400w
+            {{ image_desktop | image_url: width: 1000 }} 1000w,
+            {{ image_desktop | image_url: width: 1500 }} 1500w,
+            {{ image_desktop | image_url: width: 2000 }} 2000w,
+            {{ image_desktop | image_url: width: 2600 }} 2600w
           "
           sizes="100vw"
           alt="{{ hero_alt | escape }}"
@@ -89,73 +101,69 @@
     <div class="hero__overlay"></div>
   </div>
 
-  <div class="hero__content page-width">
-    <div class="hero__inner">
-      {%- if section.settings.eyebrow != blank -%}
-        <span class="eyebrow eyebrow--highlight">{{ section.settings.eyebrow | escape }}</span>
-      {%- endif -%}
-
-      <h1 class="hero__title h0">{{ heading | escape }}</h1>
-
-      {%- if section.settings.text != blank -%}
-        <div class="hero__text rte">{{ section.settings.text }}</div>
-      {%- endif -%}
-
-      <div class="hero__actions">
-        {%- if hero_link != blank and section.settings.button_label != blank -%}
-          <a
-            class="button button--primary button--large"
-            href="{{ hero_link }}"
-            data-track="hero_cta_click"
-          >
-            {{- section.settings.button_label | escape -}}
-          </a>
+  <div class="hero__content">
+    <div class="page-width">
+      <div class="hero__inner">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="eyebrow hero__eyebrow">{{ section.settings.eyebrow | escape }}</span>
         {%- endif -%}
 
-        {%- if section.settings.secondary_link != blank and section.settings.secondary_label != blank -%}
-          <a class="button button--secondary button--large" href="{{ section.settings.secondary_link }}">
-            {{- section.settings.secondary_label | escape -}}
-          </a>
+        <h1 class="hero__title h0">{{ heading | escape }}</h1>
+
+        {%- if section.settings.text != blank -%}
+          <div class="hero__text rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- comment -%}
+          One entry line: price, closing date, action. No progress bar, no
+          counter, no badge. The prize is the hero; this is the caption.
+        {%- endcomment -%}
+        {%- if has_featured -%}
+          <div class="hero__entry">
+            {%- if can_enter -%}
+              <p class="hero__price">
+                <span class="hero__price-amount num">{{ featured.price | money }}</span>
+                <span class="hero__price-label">{{ 'products.competition.per_entry' | t }}</span>
+              </p>
+            {%- endif -%}
+
+            <div class="hero__actions">
+              <a class="button button--primary button--large" href="{{ hero_link }}" data-track="hero_cta_click">
+                {%- if can_enter -%}
+                  {{ section.settings.button_label | default: 'Enter' | escape }}
+                {%- else -%}
+                  {{ 'products.competition.view_competition' | t }}
+                {%- endif -%}
+              </a>
+
+              {%- if section.settings.secondary_link != blank and section.settings.secondary_label != blank -%}
+                <a class="button button--ghost-light button--large" href="{{ section.settings.secondary_link }}">
+                  {{- section.settings.secondary_label | escape -}}
+                </a>
+              {%- endif -%}
+            </div>
+
+            {%- capture hero_closing -%}
+              {%- render 'competition-closing', product: featured, icon: false -%}
+            {%- endcapture -%}
+            {%- if hero_closing != blank -%}
+              <p class="hero__closing num">{{ hero_closing }}</p>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          <div class="hero__actions">
+            <a class="button button--primary button--large" href="{{ hero_link }}" data-track="hero_cta_click">
+              {{- section.settings.button_label | default: 'Browse competitions' | escape -}}
+            </a>
+            {%- if section.settings.secondary_link != blank and section.settings.secondary_label != blank -%}
+              <a class="button button--ghost-light button--large" href="{{ section.settings.secondary_link }}">
+                {{- section.settings.secondary_label | escape -}}
+              </a>
+            {%- endif -%}
+          </div>
         {%- endif -%}
       </div>
-
-      {%- if section.blocks.size > 0 -%}
-        <ul class="hero__stats">
-          {%- for block in section.blocks -%}
-            <li {{ block.shopify_attributes }}>
-              <span class="hero__stat-value">{{ block.settings.value | escape }}</span>
-              <span class="hero__stat-label">{{ block.settings.label | escape }}</span>
-            </li>
-          {%- endfor -%}
-        </ul>
-      {%- endif -%}
     </div>
-
-    {%- if has_featured and section.settings.show_panel -%}
-      <div class="hero__panel">
-        <p class="eyebrow" style="margin-bottom: 0;">{{ section.settings.panel_label | escape }}</p>
-        <p class="h4" style="margin: 0;">{{ featured.title | escape }}</p>
-
-        {%- render 'competition-progress', product: featured, size: 'large' -%}
-
-        {%- capture hero_closing -%}
-          {%- render 'competition-closing', product: featured -%}
-        {%- endcapture -%}
-        {%- if hero_closing != blank -%}
-          <div class="competition-card__meta">{{ hero_closing }}</div>
-        {%- endif -%}
-
-        <div class="feature__price-row" style="padding: 0.75rem 0 0; border: 0; background: none;">
-          <span class="competition-card__price">
-            <span class="competition-card__price-amount">{{ featured.price | money }}</span>
-            <span class="competition-card__price-label">{{ 'products.competition.per_entry' | t }}</span>
-          </span>
-          <a class="button button--primary" href="{{ featured.url }}" style="margin-inline-start: auto;">
-            {{- settings.entry_cta_label | default: 'Enter now' -}}
-          </a>
-        </div>
-      </div>
-    {%- endif -%}
   </div>
 </section>
 
@@ -164,40 +172,29 @@
   "name": "Hero competition",
   "tag": "section",
   "class": "section-hero",
-  "max_blocks": 4,
   "settings": [
     {
       "type": "paragraph",
-      "content": "Leave the heading, image or link empty and the featured competition fills them in automatically."
+      "content": "One competition, at full scale. Leave the heading, image or link empty and the featured competition fills them in. Nothing here counts down or shows a progress bar — the hero presents the prize, the competition page does the detail."
     },
     { "type": "product", "id": "product", "label": "Featured competition" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "This week's headline prize" },
+    { "type": "text", "id": "eyebrow", "label": "t:sections.all.eyebrow", "default": "This week" },
     {
       "type": "text",
       "id": "heading",
       "label": "t:sections.all.heading",
-      "info": "Leave empty to use the featured competition's own title.",
-      "default": "Premium prizes. Affordable entries."
+      "info": "Leave empty to use the featured competition's own title."
     },
     {
       "type": "richtext",
       "id": "text",
       "label": "t:sections.all.content",
-      "default": "<p>Real golf kit, capped entry numbers, and every draw published in full.</p>"
+      "default": "<p>Real golf kit. Capped entries. Every draw filmed and published.</p>"
     },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Enter now" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Enter" },
     { "type": "url", "id": "link", "label": "Button link" },
-    { "type": "text", "id": "secondary_label", "label": "Second button label", "default": "How it works" },
+    { "type": "text", "id": "secondary_label", "label": "Second button label", "default": "How the draw works" },
     { "type": "url", "id": "secondary_link", "label": "Second button link" },
-    { "type": "header", "content": "Featured panel" },
-    {
-      "type": "checkbox",
-      "id": "show_panel",
-      "label": "Show the entry panel",
-      "info": "Displays live price, entry progress and closing date for the featured competition. Progress only appears when the entry metafields hold real values.",
-      "default": true
-    },
-    { "type": "text", "id": "panel_label", "label": "Panel label", "default": "Open now" },
     { "type": "header", "content": "Media" },
     { "type": "image_picker", "id": "image", "label": "t:sections.all.image" },
     { "type": "image_picker", "id": "image_mobile", "label": "t:sections.all.image_mobile" },
@@ -210,43 +207,18 @@
       "unit": "%",
       "label": "Image darkening",
       "info": "Higher values keep the headline readable over a busy photograph.",
-      "default": 70
-    },
-    {
-      "type": "range",
-      "id": "height_mobile",
-      "min": 380,
-      "max": 720,
-      "step": 20,
-      "unit": "px",
-      "label": "Minimum height on mobile",
-      "default": 520
+      "default": 55
     },
     {
       "type": "select",
-      "id": "alignment",
-      "label": "t:sections.all.alignment",
+      "id": "height",
+      "label": "Height",
       "options": [
-        { "value": "left", "label": "t:sections.all.align_left" },
-        { "value": "center", "label": "t:sections.all.align_center" }
+        { "value": "tall", "label": "Tall" },
+        { "value": "full", "label": "Full screen" },
+        { "value": "standard", "label": "Standard" }
       ],
-      "default": "left"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "stat",
-      "name": "Statistic",
-      "settings": [
-        {
-          "type": "text",
-          "id": "value",
-          "label": "Value",
-          "info": "Only publish figures you can evidence.",
-          "default": "£0"
-        },
-        { "type": "text", "id": "label", "label": "Label", "default": "In prizes won" }
-      ]
+      "default": "tall"
     }
   ],
   "presets": [{ "name": "Hero competition" }]

@@ -26,6 +26,7 @@ gs-facets[data-loading] .collection-results { opacity: 0.45; pointer-events: non
 .facets-bar__toggle { flex: none; }
 
 .facets-bar__count {
+  font-family: var(--font-mono-family);
   display: inline-grid;
   place-items: center;
   min-width: 20px;
