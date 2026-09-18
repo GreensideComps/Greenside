@@ -557,3 +557,40 @@ test('no output tag contains a brace inside a string literal', () => {
     `Output tags with a brace inside a string literal will not parse on Shopify:\n${offenders.join('\n')}`,
   );
 });
+
+// A rich_text_field metafield holds a JSON document, not HTML. Printing its
+// `.value` renders the raw structure onto the page — the FAQ shipped that way
+// and showed customers `{"type"=>"root", "children"=>[...]}` where the answer
+// should have been. `metafield_tag` converts it to HTML.
+test('rich text metafields render through metafield_tag, not .value', () => {
+  const richTextFields = ['whats_included', 'how_drawn', 'eligibility', 'answer'];
+  const offenders = [];
+
+  for (const [dir, ext] of [
+    ['snippets', '.liquid'],
+    ['sections', '.liquid'],
+  ]) {
+    for (const name of listFiles(dir, ext)) {
+      const rel = `${dir}/${name}`;
+      const body = readMarkup(rel);
+
+      for (const field of richTextFields) {
+        // An output tag printing the field's `.value` with no filter after it.
+        const printed = new RegExp(
+          `\\{\\{-?\\s*[\\w.\\[\\]']*\\b${field}\\.value\\s*(\\|\\s*(?!metafield_tag)[\\w]+\\s*)*-?\\}\\}`,
+        );
+        const match = body.match(printed);
+        if (match) {
+          const line = body.slice(0, match.index).split('\n').length;
+          offenders.push(`${rel}:${line} -> ${match[0].trim()}`);
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(
+    offenders,
+    [],
+    `Rich text printed raw instead of through metafield_tag:\n${offenders.join('\n')}`,
+  );
+});

@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "spacing_top": "standard",
+        "spacing_bottom": "none"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "",
+        "heading": "",
+        "source": "metaobject",
+        "colour_scheme": "light",
+        "spacing_top": "minor",
+        "spacing_bottom": "standard"
+      }
+    },
+    "signup": {
+      "type": "email-signup",
+      "settings": {
+        "eyebrow": "The Greenside Club",
+        "heading": "Still got a question?",
+        "text": "<p>Ask us directly, or join the Club and we'll email when a competition opens.</p>",
+        "button_label": "Join the Club",
+        "analytics_label": "faq",
+        "colour_scheme": "brand",
+        "layout": "split",
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "faq",
+    "signup"
+  ]
+}

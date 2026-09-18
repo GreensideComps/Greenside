@@ -43,7 +43,7 @@
                 <span>{{ faq.question.value | escape }}</span>
                 {%- render 'icon', icon: 'chevron-down', size: 18 -%}
               </summary>
-              <div class="accordion__panel rte">{{ faq.answer.value }}</div>
+              <div class="accordion__panel rte">{{ faq.answer | metafield_tag }}</div>
             </details>
           {%- endif -%}
         {%- endfor -%}
@@ -77,12 +77,14 @@
   {%- if use_metaobject -%}
     {%- for faq in metaobject_faqs -%}
       {%- if faq.question.value != blank and faq.answer.value != blank -%}
+        {%- capture faq_answer_html -%}{{ faq.answer | metafield_tag }}{%- endcapture -%}
+        {%- assign faq_answer_text = faq_answer_html | strip_html | strip -%}
         {
           "@type": "Question",
           "name": {{ faq.question.value | json }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": {{ faq.answer.value | strip_html | json }}
+            "text": {{ faq_answer_text | json }}
           }
         }{% unless forloop.last %},{% endunless %}
       {%- endif -%}
