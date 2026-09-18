@@ -68,18 +68,23 @@
 
 .header__inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.5rem;
   min-height: var(--header-height);
   padding-block: 0.5rem;
 }
 
+/* Grid children default to min-content width, which lets a long shop name or a
+   wide action row push the header past the viewport. */
+.header__inner > * { min-width: 0; }
+
 .header__logo {
   display: inline-flex;
   align-items: center;
   justify-self: start;
-  max-width: 60vw;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .header__logo img {
@@ -88,12 +93,18 @@
   object-fit: contain;
 }
 
+/* Falls back to the shop name when no logo is uploaded. It must be able to
+   shrink: a long name is otherwise the widest thing on a 320px screen. */
 .header__logo-text {
   font-family: var(--font-heading-family);
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: clamp(0.9375rem, 3.6vw, 1.25rem);
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  line-height: 1.15;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -104,6 +115,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.15rem;
+  flex: none;
 }
 
 .header__action {
@@ -304,16 +316,24 @@
    Overlays: drawers and modals
    -------------------------------------------------------------------------- */
 
-gs-overlay {
+/* Every overlay carries the `overlay` class. Styling by class rather than by
+   element name matters: gs-cart-drawer and gs-search-modal extend gs-overlay in
+   JavaScript, but CSS element selectors do not follow that inheritance, so an
+   element-name rule would leave them unpositioned and visible in the page. */
+.overlay {
   position: fixed;
   inset: 0;
   z-index: var(--z-drawer);
   display: block;
   pointer-events: none;
   visibility: hidden;
+  /* A closed panel is translated off-screen. Without clipping it still counts
+     towards the document's scroll width and creates sideways scroll on every
+     page, so the overlay clips its own children. */
+  overflow: hidden;
 }
 
-gs-overlay[open] {
+.overlay[open] {
   pointer-events: auto;
   visibility: visible;
 }
@@ -326,7 +346,7 @@ gs-overlay[open] {
   transition: opacity 0.25s ease;
 }
 
-gs-overlay[open] .overlay__scrim { opacity: 1; }
+.overlay[open] .overlay__scrim { opacity: 1; }
 
 .overlay__panel {
   position: absolute;
@@ -347,7 +367,7 @@ gs-overlay[open] .overlay__scrim { opacity: 1; }
   transform: translateX(100%);
 }
 
-gs-overlay[open] .overlay__panel--end { transform: translateX(0); }
+.overlay[open] .overlay__panel--end { transform: translateX(0); }
 
 /* Left-hand drawer (mobile menu) */
 .overlay__panel--start {
@@ -357,7 +377,7 @@ gs-overlay[open] .overlay__panel--end { transform: translateX(0); }
   transform: translateX(-100%);
 }
 
-gs-overlay[open] .overlay__panel--start { transform: translateX(0); }
+.overlay[open] .overlay__panel--start { transform: translateX(0); }
 
 /* Top sheet (search) */
 .overlay__panel--top {
@@ -369,7 +389,7 @@ gs-overlay[open] .overlay__panel--start { transform: translateX(0); }
   border-radius: 0 0 var(--card-radius) var(--card-radius);
 }
 
-gs-overlay[open] .overlay__panel--top { transform: translateY(0); }
+.overlay[open] .overlay__panel--top { transform: translateY(0); }
 
 /* Bottom sheet (mobile filters) */
 .overlay__panel--bottom {
@@ -380,7 +400,7 @@ gs-overlay[open] .overlay__panel--top { transform: translateY(0); }
   border-radius: var(--card-radius) var(--card-radius) 0 0;
 }
 
-gs-overlay[open] .overlay__panel--bottom { transform: translateY(0); }
+.overlay[open] .overlay__panel--bottom { transform: translateY(0); }
 
 @media screen and (min-width: 750px) {
   .overlay__panel--bottom {
@@ -390,7 +410,7 @@ gs-overlay[open] .overlay__panel--bottom { transform: translateY(0); }
     transform: translateX(100%);
     border-radius: 0;
   }
-  gs-overlay[open] .overlay__panel--bottom { transform: translateX(0); }
+  .overlay[open] .overlay__panel--bottom { transform: translateX(0); }
 }
 
 .overlay__header {
@@ -946,13 +966,25 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  /* Explicit, because a stretched flex item with a max-width does not align
+     predictably across engines and was centring the hero copy. */
+  align-items: flex-start;
   padding-block: clamp(3rem, 8vw, 6rem);
   color: rgb(var(--color-on-brand));
+
+  /* The hero sits on a dark overlay but is not inside a scheme wrapper, so it
+     has to redefine the tokens itself. Without this, anything reading
+     --color-text (secondary buttons, borders) renders dark on dark. */
+  --color-text: var(--color-on-brand);
+  --color-text-muted: var(--color-on-brand-muted);
+  --color-border: var(--color-on-brand-border);
+  --color-surface: var(--color-brand);
 }
 
 .hero--center .hero__content { justify-content: center; text-align: center; align-items: center; }
+.hero--center .hero__actions { justify-content: center; }
 
-.hero__inner { max-width: 640px; }
+.hero__inner { max-width: 660px; width: 100%; }
 .hero--center .hero__inner { margin-inline: auto; }
 
 .hero__title { margin-bottom: 1rem; }
@@ -982,7 +1014,10 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
   list-style: none;
 }
 
+/* Value above label. Without an explicit block they sit inline, which makes
+   each item wide enough to force the row to wrap into a column. */
 .hero__stat-value {
+  display: block;
   font-family: var(--font-heading-family);
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
@@ -990,6 +1025,7 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
 }
 
 .hero__stat-label {
+  display: block;
   font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1694,8 +1730,8 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
    Header logo centring on mobile
    -------------------------------------------------------------------------- */
 
-.header__logo--mobile { justify-self: center; }
-.header__start { display: flex; align-items: center; gap: 0.25rem; }
+.header__logo--mobile { justify-self: center; min-width: 0; }
+.header__start { display: flex; align-items: center; gap: 0.25rem; min-width: 0; }
 
 @media screen and (min-width: 990px) {
   .header__logo--mobile { display: none; }

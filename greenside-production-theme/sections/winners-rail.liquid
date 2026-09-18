@@ -21,8 +21,9 @@
   <div class="page-width">
     <div class="section-header">
       <div class="section-header__text">
+        {%- assign winners_eyebrow = 'winners.eyebrow' | t -%}
         <span class="eyebrow eyebrow--highlight">
-          {{- section.settings.eyebrow | default: 'winners.eyebrow' | t | escape -}}
+          {{- section.settings.eyebrow | default: winners_eyebrow | escape -}}
         </span>
         {%- if section.settings.heading != blank -%}
           <h2 class="h2">{{ section.settings.heading | escape }}</h2>
@@ -33,8 +34,9 @@
       </div>
 
       {%- if section.settings.link != blank and winners.size > 0 -%}
+        {%- assign winners_link_label = 'general.view_all' | t -%}
         <a class="link" href="{{ section.settings.link }}">
-          {{- section.settings.link_label | default: 'general.view_all' | t | escape }}
+          {{- section.settings.link_label | default: winners_link_label | escape }}
           {%- render 'icon', icon: 'arrow-right', size: 16 -%}
         </a>
       {%- endif -%}

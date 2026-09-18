@@ -24,8 +24,9 @@
 
     <header class="section-header section-header--center">
       <div class="section-header__text">
+        {%- assign winners_eyebrow = 'winners.eyebrow' | t -%}
         <span class="eyebrow eyebrow--highlight">
-          {{- section.settings.eyebrow | default: 'winners.eyebrow' | t | escape -}}
+          {{- section.settings.eyebrow | default: winners_eyebrow | escape -}}
         </span>
         <h1 class="h1">{{ section.settings.heading | default: page.title | escape }}</h1>
         {%- if section.settings.text != blank -%}

@@ -41,7 +41,6 @@
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  list-style: none;
 }
 
 .gallery__track::-webkit-scrollbar { display: none; }
@@ -104,9 +103,15 @@
 .gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .gallery__thumb:hover { opacity: 1; }
 
-.gallery__thumb[aria-selected='true'] {
+.gallery__thumb[aria-pressed='true'] {
   opacity: 1;
   border-color: rgb(var(--color-accent));
+}
+
+/* The rail is focusable so it can be scrolled from the keyboard. */
+.gallery__track:focus-visible {
+  outline: 3px solid rgb(var(--color-focus));
+  outline-offset: -3px;
 }
 
 @media screen and (min-width: 750px) {
@@ -527,8 +532,11 @@
    Recommendations
    -------------------------------------------------------------------------- */
 
+/* No reserved height: the rail lazy-loads 300px before it enters the viewport,
+   so there is nothing to reserve against, and a fixed height would leave a
+   permanent gap whenever the engine returns no recommendations. */
 .recommendations__skeleton {
-  min-height: 320px;
+  min-height: 0;
 }
 
 gs-recommendations,

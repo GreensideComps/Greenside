@@ -6,6 +6,21 @@
   extra: tile_style
 -%}
 
+{%- comment -%}
+  A tile only renders when it resolves to a URL, so count them before drawing
+  the heading: a heading with nothing beneath it looks broken on a new store.
+{%- endcomment -%}
+{%- liquid
+  assign resolvable_tiles = 0
+  for block in section.blocks
+    assign block_collection = collections[block.settings.collection]
+    if block.settings.link != blank or block_collection != blank
+      assign resolvable_tiles = resolvable_tiles | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if resolvable_tiles > 0 -%}
 <div class="section scheme-{{ section.settings.colour_scheme }}">
   <div class="page-width">
     {%- if section.settings.heading != blank -%}
@@ -72,6 +87,7 @@
     {%- endif -%}
   </div>
 </div>
+{%- endif -%}
 
 {% schema %}
 {

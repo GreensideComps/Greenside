@@ -64,8 +64,9 @@
       </div>
 
       <button type="submit" class="button button--primary">
+        {%- assign submit_label = 'general.newsletter.submit' | t -%}
         <span class="button__label">
-          {{- button_label | default: 'general.newsletter.submit' | t -}}
+          {{- button_label | default: submit_label -}}
         </span>
       </button>
 

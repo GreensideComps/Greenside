@@ -74,8 +74,9 @@
           {%- endif -%}
 
           {%- if form.errors -%}
+            {%- assign comment_error = 'contact.error' | t -%}
             <p class="form-status form-status--error" role="alert">
-              {{ form.errors.messages.form | default: 'contact.error' | t }}
+              {{ form.errors.messages.form | default: comment_error }}
             </p>
           {%- endif -%}
 

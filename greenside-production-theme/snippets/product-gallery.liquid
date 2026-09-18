@@ -1,9 +1,17 @@
 {%- comment -%}
   Prize gallery.
 
-  A scroll-snap rail with thumbnail buttons implemented as a tablist, so the
-  whole gallery is operable by keyboard and works with no JavaScript at all —
-  without JS the rail is still scrollable and every image is reachable.
+  A scroll-snap rail with thumbnail buttons.
+
+  The thumbnails are toggle buttons with aria-pressed rather than an ARIA
+  tablist. A tablist implies only one panel is present at a time, which is not
+  true of a scroller where every image is in the document and reachable by
+  swiping — and the mismatch produced real axe violations. Toggle buttons
+  describe what these controls actually do.
+
+  The rail itself is focusable and labelled, so a keyboard user can scroll it
+  directly. With JavaScript disabled the rail still scrolls and every image is
+  reachable.
 
   Parameters:
     product (required)
@@ -14,19 +22,18 @@
 <gs-gallery class="gallery" data-gallery>
   {%- if media_items.size > 0 -%}
     <div class="gallery__viewport">
-      <ul class="gallery__track" data-gallery-track role="list">
+      <div
+        class="gallery__track"
+        data-gallery-track
+        {% if media_items.size > 1 %}
+          tabindex="0"
+          role="group"
+          aria-label="{{ 'products.product.gallery_thumbnail' | t: index: media_items.size }}"
+        {% endif %}
+      >
         {%- for media in media_items -%}
           {%- assign media_alt = media.alt | default: product.title -%}
-          <li
-            class="gallery__slide"
-            id="GalleryPanel-{{ media.id }}"
-            data-gallery-slide
-            data-media-id="{{ media.id }}"
-            {% if media_items.size > 1 %}
-              role="tabpanel"
-              aria-label="{{ 'products.product.media_of' | t: index: forloop.index, total: media_items.size }}"
-            {% endif %}
-          >
+          <div class="gallery__slide" data-gallery-slide data-media-id="{{ media.id }}">
             {%- case media.media_type -%}
               {%- when 'image' -%}
                 {%- render 'responsive-image',
@@ -45,9 +52,9 @@
               {%- else -%}
                 {{ media | media_tag }}
             {%- endcase -%}
-          </li>
+          </div>
         {%- endfor -%}
-      </ul>
+      </div>
 
       {%- if media_items.size > 1 -%}
         <button
@@ -70,28 +77,20 @@
     </div>
 
     {%- if media_items.size > 1 -%}
-      <ul
-        class="gallery__thumbs"
-        data-gallery-thumbs
-        role="tablist"
-        aria-label="{{ 'general.accessibility.carousel' | t }}"
-      >
+      <ul class="gallery__thumbs" data-gallery-thumbs role="list">
         {%- for media in media_items -%}
           <li>
             <button
               type="button"
               class="gallery__thumb"
-              role="tab"
-              id="GalleryTab-{{ media.id }}"
-              aria-controls="GalleryPanel-{{ media.id }}"
-              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
               data-gallery-thumb
               data-media-id="{{ media.id }}"
+              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="{{ 'products.product.media_of' | t: index: forloop.index, total: media_items.size }}"
             >
               <img
                 src="{{ media.preview_image | image_url: width: 160, height: 160, crop: 'center' }}"
-                alt="{{ 'products.product.gallery_thumbnail' | t: index: forloop.index }}"
+                alt=""
                 width="80"
                 height="80"
                 loading="lazy"

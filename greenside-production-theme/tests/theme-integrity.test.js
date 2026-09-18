@@ -14,6 +14,13 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+
+// Markup checks must not trip over example markup inside documentation
+// comments, so strip Liquid comments before scanning.
+const readMarkup = (p) =>
+  read(p)
+    .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '')
+    .replace(/\{%-?\s*#[\s\S]*?-?%\}/g, '');
 const listFiles = (dir, ext) => {
   const full = path.join(ROOT, dir);
   if (!fs.existsSync(full)) return [];
@@ -291,4 +298,138 @@ test('JavaScript assets parse', () => {
       `assets/${file} has a syntax error`
     );
   }
+});
+
+test('no translation filter is applied after a default', () => {
+  // Liquid applies filters left to right, so `value | default: 'some.key' | t`
+  // runs the translation over the merchant's own text whenever they have set
+  // one, producing "translation missing" on the storefront. Translate the
+  // fallback into a variable first, then default to it.
+  const offenders = [];
+  const dirs = ['sections', 'snippets', 'layout', 'blocks'];
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const content = read(path.join(dir, file));
+      content.split('\n').forEach((line, i) => {
+        if (/\|\s*default:[^|]*\|\s*t\b/.test(line)) {
+          offenders.push(`${dir}/${file}:${i + 1}`);
+        }
+      });
+    }
+  }
+
+  assert.deepEqual(offenders, [], `default applied before t:\n${offenders.join('\n')}`);
+});
+
+test('interactive controls carry an accessible name', () => {
+  // A bare icon button announces as "button" to a screen reader. Every button
+  // in the theme must have visible text, aria-label, or aria-labelledby.
+  const offenders = [];
+  const dirs = ['sections', 'snippets', 'blocks'];
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const content = readMarkup(path.join(dir, file));
+
+      for (const match of content.matchAll(/<button\b([\s\S]*?)>([\s\S]*?)<\/button>/g)) {
+        const attrs = match[1];
+        const inner = match[2];
+        const hasLabel = /aria-label|aria-labelledby/.test(attrs);
+        // Text that is not solely a render of an icon snippet.
+        const withoutIcons = inner.replace(/\{%-?\s*render\s+'icon'[\s\S]*?-?%\}/g, '');
+        const hasText = /[A-Za-z]/.test(withoutIcons.replace(/\{%[\s\S]*?%\}/g, '')) ||
+          /\{\{/.test(withoutIcons);
+        if (!hasLabel && !hasText) {
+          offenders.push(`${dir}/${file}: ${match[0].slice(0, 70).replace(/\s+/g, ' ')}`);
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(offenders, [], `buttons with no accessible name:\n${offenders.join('\n')}`);
+});
+
+test('every image tag has an alt attribute', () => {
+  const offenders = [];
+  const dirs = ['sections', 'snippets', 'blocks', 'layout'];
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const content = readMarkup(path.join(dir, file));
+      for (const match of content.matchAll(/<img\b([\s\S]*?)>/g)) {
+        if (!/\balt=/.test(match[1])) {
+          offenders.push(`${dir}/${file}: ${match[0].slice(0, 70).replace(/\s+/g, ' ')}`);
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(offenders, [], `images with no alt attribute:\n${offenders.join('\n')}`);
+});
+
+test('no inline event handler attributes are used', () => {
+  // Inline handlers cannot be covered by a content security policy and mix
+  // behaviour into markup. One exception is allowed and asserted explicitly.
+  const offenders = [];
+  const dirs = ['sections', 'snippets', 'blocks', 'layout'];
+  const allowed = new Set(['sections/referral.liquid']);
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const rel = `${dir}/${file}`;
+      const content = readMarkup(rel);
+      for (const match of content.matchAll(/\son(click|change|submit|load|error|input)=/g)) {
+        if (!allowed.has(rel)) offenders.push(`${rel}: on${match[1]}`);
+      }
+    }
+  }
+
+  assert.deepEqual(offenders, [], `inline handlers:\n${offenders.join('\n')}`);
+});
+
+test('every overlay element carries the shared overlay class', () => {
+  // Overlay positioning is bound to the `overlay` class, not to the element
+  // name, because gs-cart-drawer and gs-search-drawer extend gs-overlay in
+  // JavaScript and CSS element selectors do not follow that inheritance.
+  // An overlay without the class renders inline in the page.
+  const offenders = [];
+  const dirs = ['sections', 'snippets'];
+
+  for (const dir of dirs) {
+    for (const file of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!file.endsWith('.liquid')) continue;
+      const content = readMarkup(path.join(dir, file));
+      for (const match of content.matchAll(/<(gs-[a-z-]*(?:overlay|drawer|modal))\b([^>]*)>/g)) {
+        const attrs = match[2];
+        if (!/class="[^"]*\boverlay\b/.test(attrs)) {
+          offenders.push(`${dir}/${file}: <${match[1]}> has no "overlay" class`);
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(offenders, [], offenders.join('\n'));
+});
+
+test('overlay styles are defined by class, not element name', () => {
+  const css = read('assets/components.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.ok(/^\.overlay\s*\{/m.test(css), 'no .overlay rule found');
+  assert.ok(!/^gs-overlay\s*[{[]/m.test(css), 'overlay is still styled by element name');
+});
+
+test('the hero always produces a heading, so the homepage has an h1', () => {
+  // A page with no h1 is both an SEO and a screen-reader problem, and the
+  // freshly installed state (no featured competition selected) used to produce
+  // exactly that.
+  const hero = read('sections/hero-competition.liquid');
+  assert.match(hero, /<h1[^>]*>\{\{ heading \| escape \}\}<\/h1>/);
+  assert.ok(
+    /assign heading = shop\.name/.test(hero),
+    'hero must fall back to the shop name so a heading always exists'
+  );
 });

@@ -57,8 +57,9 @@
 
           {%- when 'newsletter' -%}
             <div class="footer__column footer__column--newsletter" {{ block.shopify_attributes }}>
+              {%- assign newsletter_heading = 'footer.newsletter_heading' | t -%}
               <h2 class="footer__heading">
-                {{- block.settings.heading | default: 'footer.newsletter_heading' | t | escape -}}
+                {{- block.settings.heading | default: newsletter_heading | escape -}}
               </h2>
               {%- if block.settings.text != blank -%}
                 <div class="footer__tagline rte">{{ block.settings.text }}</div>

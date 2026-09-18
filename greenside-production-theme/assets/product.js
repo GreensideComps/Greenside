@@ -14,9 +14,10 @@
   /* ------------------------------------------------------------------ *
    * <gs-gallery>
    *
-   * Thumbnails are a tablist: arrow keys move between them following the
-   * roving tabindex pattern, and selecting one scrolls the matching slide
-   * into view.
+   * Thumbnails are toggle buttons carrying aria-pressed. Arrow keys move
+   * between them as a convenience; unlike a tablist every thumbnail stays in
+   * the tab order, which matches the fact that every slide is really present
+   * in the scroller rather than swapped in and out.
    * ------------------------------------------------------------------ */
 
   class GsGallery extends HTMLElement {
@@ -92,9 +93,7 @@
     setActive(index) {
       this.index = index;
       this.thumbs.forEach(function (thumb, i) {
-        var selected = i === index;
-        thumb.setAttribute('aria-selected', selected ? 'true' : 'false');
-        thumb.tabIndex = selected ? 0 : -1;
+        thumb.setAttribute('aria-pressed', i === index ? 'true' : 'false');
       });
       this.updateButtons();
     }

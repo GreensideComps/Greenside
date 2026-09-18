@@ -13,14 +13,32 @@
     assign image_mobile = featured.featured_media.preview_image
   endif
 
+  comment
+    The homepage must always carry exactly one h1. Fall back through the
+    featured competition, then the brand tagline, then the shop name, so a
+    freshly installed theme still has a heading.
+  endcomment
   assign heading = section.settings.heading
   if heading == blank and has_featured
     assign heading = featured.title
   endif
+  if heading == blank
+    assign heading = settings.brand_tagline
+  endif
+  if heading == blank
+    assign heading = shop.name
+  endif
 
+  comment
+    The primary call to action always needs somewhere to go. Prefer the chosen
+    link, then the featured competition, then the full competition listing.
+  endcomment
   assign hero_link = section.settings.link
   if hero_link == blank and has_featured
     assign hero_link = featured.url
+  endif
+  if hero_link == blank
+    assign hero_link = routes.all_products_collection_url
   endif
 
   assign overlay = section.settings.overlay_opacity | divided_by: 100.0
@@ -77,9 +95,7 @@
         <span class="eyebrow eyebrow--highlight">{{ section.settings.eyebrow | escape }}</span>
       {%- endif -%}
 
-      {%- if heading != blank -%}
-        <h1 class="hero__title h0">{{ heading | escape }}</h1>
-      {%- endif -%}
+      <h1 class="hero__title h0">{{ heading | escape }}</h1>
 
       {%- if section.settings.text != blank -%}
         <div class="hero__text rte">{{ section.settings.text }}</div>
@@ -156,12 +172,18 @@
     },
     { "type": "product", "id": "product", "label": "Featured competition" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "This week's headline prize" },
-    { "type": "text", "id": "heading", "label": "t:sections.all.heading" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.all.heading",
+      "info": "Leave empty to use the featured competition's own title.",
+      "default": "Premium prizes. Affordable entries."
+    },
     {
       "type": "richtext",
       "id": "text",
       "label": "t:sections.all.content",
-      "default": "<p>Premium prizes. Affordable entries. Every draw published in full.</p>"
+      "default": "<p>Real golf kit, capped entry numbers, and every draw published in full.</p>"
     },
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Enter now" },
     { "type": "url", "id": "link", "label": "Button link" },

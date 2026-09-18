@@ -11,7 +11,7 @@
 {%- liquid
   assign brand = settings.color_brand | default: '#1b4332'
   assign brand_deep = settings.color_brand_deep | default: '#102a20'
-  assign accent = settings.color_accent | default: '#4a8c2a'
+  assign accent = settings.color_accent | default: '#417b25'
   assign highlight = settings.color_highlight | default: '#c9a961'
   assign page_bg = settings.color_page_background | default: '#f7f6f2'
   assign surface = settings.color_surface | default: '#ffffff'
@@ -26,25 +26,33 @@
   assign brand_tint = brand | color_lighten: 6
 
   comment
-    color_brightness returns 0-255. 145 sits near the point where white text
-    stops meeting AA contrast, so anything brighter gets dark text instead.
+    Pick the foreground that actually passes WCAG against each strong colour.
+    color_contrast returns the real contrast ratio, unlike color_brightness,
+    which is a perceptual approximation that over-weights green and will happily
+    call a mid-tone green "dark" when white text on it only reaches 4.1:1.
+    Where neither foreground reaches 4.5:1 the better of the two is used, and
+    the theme editor flags the colour as one to darken.
   endcomment
-  assign brand_brightness = brand | color_brightness
-  assign accent_brightness = accent | color_brightness
-  assign highlight_brightness = highlight | color_brightness
+  assign brand_on_white = brand | color_contrast: '#ffffff'
+  assign accent_on_white = accent | color_contrast: '#ffffff'
+  assign highlight_on_white = highlight | color_contrast: '#ffffff'
+
+  assign brand_on_dark = brand | color_contrast: '#0c1f18'
+  assign accent_on_dark = accent | color_contrast: '#0c1f18'
+  assign highlight_on_dark = highlight | color_contrast: '#1f1705'
 
   assign on_brand = '#ffffff'
-  if brand_brightness > 145
+  if brand_on_dark > brand_on_white
     assign on_brand = '#0c1f18'
   endif
 
   assign on_accent = '#ffffff'
-  if accent_brightness > 145
+  if accent_on_dark > accent_on_white
     assign on_accent = '#0c1f18'
   endif
 
   assign on_highlight = '#ffffff'
-  if highlight_brightness > 145
+  if highlight_on_dark > highlight_on_white
     assign on_highlight = '#1f1705'
   endif
 

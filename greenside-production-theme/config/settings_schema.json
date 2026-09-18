@@ -96,7 +96,7 @@
         "type": "color",
         "id": "color_accent",
         "label": "t:settings.colors.accent",
-        "default": "#4a8c2a"
+        "default": "#417b25"
       },
       {
         "type": "color",

@@ -36,7 +36,11 @@
       assign safe_sold = 0
     endif
 
-    assign percent = safe_sold | times: 100 | divided_by: total
+    comment
+      Round explicitly rather than relying on integer division, so the figure is
+      a whole number whatever the underlying metafield types are.
+    endcomment
+    assign percent = safe_sold | times: 100.0 | divided_by: total | round
     assign remaining = total | minus: safe_sold
     assign display = style | default: settings.progress_style | default: 'both'
     assign entry_word = settings.entry_word_plural | default: 'entries'

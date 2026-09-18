@@ -13,7 +13,8 @@
   assign story = winner.story.value
   assign video_url = winner.video_url.value
   assign winner_name = winner.name.value
-  assign photo_alt = winner_name | default: 'winners.title' | t
+  assign photo_alt_fallback = 'winners.title' | t
+  assign photo_alt = winner_name | default: photo_alt_fallback
 -%}
 <article class="winner-card">
   {%- if photo != blank -%}
