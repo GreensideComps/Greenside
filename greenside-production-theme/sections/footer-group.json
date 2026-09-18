@@ -29,13 +29,21 @@
           "type": "menu",
           "settings": {
             "heading": "Help",
-            "menu": "greenside-production-footer"
+            "menu": "greenside-footer-help"
+          }
+        },
+        "menu-brand": {
+          "type": "menu",
+          "settings": {
+            "heading": "Greenside",
+            "menu": "greenside-footer-brand"
           }
         }
       },
       "block_order": [
         "menu-competitions",
-        "menu-help"
+        "menu-help",
+        "menu-brand"
       ],
       "settings": {
         "show_policy_links": true,

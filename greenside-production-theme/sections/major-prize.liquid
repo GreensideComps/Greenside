@@ -31,7 +31,12 @@
   bottom: section.settings.spacing_bottom
 -%}
 
-{%- if has_featured or heading != blank -%}
+{%- comment -%}
+  No featured competition means no section. Everything here — the heading, the
+  supporting points, the "Enter this competition" button — describes a specific
+  prize, so rendering it without one asserts a competition that does not exist.
+{%- endcomment -%}
+{%- if has_featured -%}
 <div class="section scheme-{{ section.settings.colour_scheme }}">
   <div class="page-width">
     <div class="feature{% if section.settings.media_position == 'right' %} feature--reverse{% endif %}">

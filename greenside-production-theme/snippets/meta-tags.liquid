@@ -6,9 +6,27 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign og_title = page_title
+  comment
+    Shopify names its built-in all-products collection "Products", which reaches
+    the browser tab and the social cards as well as the page. Same swap as
+    snippets/collection-title.liquid, applied to the metadata.
+  endcomment
+  assign display_title = page_title
+  if request.page_type == 'collection' and collection.handle == 'all'
+    assign display_title = 'collections.all_title' | t
+  endif
+
+  assign og_title = display_title
   assign og_type = 'website'
-  assign og_description = page_description | default: shop.description | default: shop.name
+
+  comment
+    Shopify only fills page_description where the merchant has written one, so
+    without a fallback the homepage ships no description at all and the social
+    cards fall back to the shop name. The chain ends on the brand tagline, which
+    is merchant-entered copy rather than anything invented here.
+  endcomment
+  assign meta_description = page_description | default: shop.description | default: settings.meta_description | default: settings.brand_tagline
+  assign og_description = meta_description | default: shop.name
 
   if request.page_type == 'product'
     assign og_type = 'product'
@@ -20,17 +38,17 @@
 -%}
 
 <title>
-  {{ page_title }}
+  {{ display_title }}
   {%- if current_tags -%}
     {%- assign tag_list = current_tags | join: ', ' -%}
     &ndash; {{ 'general.meta.tags' | t: tags: tag_list }}
   {%- endif -%}
   {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
-  {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  {%- unless display_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
-{%- if page_description -%}
-  <meta name="description" content="{{ page_description | escape }}">
+{%- if meta_description != blank -%}
+  <meta name="description" content="{{ meta_description | escape }}">
 {%- endif -%}
 
 <meta property="og:site_name" content="{{ shop.name | escape }}">

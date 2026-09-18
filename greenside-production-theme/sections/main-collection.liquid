@@ -24,7 +24,8 @@
     {%- render 'breadcrumbs' -%}
 
     <header class="collection-header">
-      <h1 class="h1">{{ collection.title | escape }}</h1>
+      {%- capture collection_display_title -%}{%- render 'collection-title', collection: collection -%}{%- endcapture -%}
+      <h1 class="h1">{{ collection_display_title | strip | escape }}</h1>
       {%- if section.settings.show_description and collection.description != blank -%}
         <div class="collection-header__description rte">{{ collection.description }}</div>
       {%- endif -%}
@@ -147,14 +148,9 @@
               </a>
             </div>
           {%- else -%}
-            <div class="empty-state">
-              <span class="empty-state__icon">{%- render 'icon', icon: 'golf-flag', size: 28 -%}</span>
-              <p class="h4">{{ 'products.empty.collection_title' | t }}</p>
-              <p class="empty-state__text">{{ 'products.empty.collection_body' | t }}</p>
-              <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
-                {{- 'products.empty.browse_all' | t -}}
-              </a>
-            </div>
+            <p class="h4 center">{{ 'products.empty.collection_title' | t }}</p>
+            {%- assign empty_body = 'products.empty.collection_body' | t -%}
+            {%- render 'empty-state', body: empty_body, current_url: collection.url -%}
           {%- endif -%}
         </div>
       </gs-facets>

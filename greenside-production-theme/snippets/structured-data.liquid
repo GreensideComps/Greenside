@@ -40,6 +40,12 @@
 </script>
 
 {%- if request.page_type == 'index' -%}
+  {%- comment -%}
+    The `{search_term_string}` placeholder is written as literal text, outside any
+    output tag. Inside one, Shopify's Liquid parser ends the tag at the first `}`
+    of the placeholder and prints the rest of the tag as an error onto the page.
+  {%- endcomment -%}
+  {%- assign search_target = shop.url | append: routes.search_url -%}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -48,7 +54,7 @@
       "url": {{ shop.url | append: routes.root_url | json }},
       "potentialAction": {
         "@type": "SearchAction",
-        "target": {{ shop.url | append: routes.search_url | append: "?q={search_term_string}" | json }},
+        "target": "{{ search_target }}?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }

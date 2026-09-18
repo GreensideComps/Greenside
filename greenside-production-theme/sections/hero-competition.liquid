@@ -104,7 +104,12 @@
   <div class="hero__content">
     <div class="page-width">
       <div class="hero__inner">
-        {%- if section.settings.eyebrow != blank -%}
+        {%- comment -%}
+          The eyebrow is typically a timeframe ("This week"), which only means
+          something when a competition is actually selected. With none, it is a
+          claim about nothing, so it is dropped rather than shown.
+        {%- endcomment -%}
+        {%- if section.settings.eyebrow != blank and has_featured -%}
           <span class="eyebrow hero__eyebrow">{{ section.settings.eyebrow | escape }}</span>
         {%- endif -%}
 

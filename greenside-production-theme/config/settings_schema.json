@@ -66,6 +66,12 @@
         "id": "brand_tagline",
         "label": "t:settings.brand.tagline",
         "default": "Premium Prizes. Affordable Entries."
+      },
+      {
+        "type": "textarea",
+        "id": "meta_description",
+        "label": "t:settings.brand.meta_description",
+        "info": "t:settings.brand.meta_description_info"
       }
     ]
   },
@@ -696,6 +702,17 @@
         "id": "legal_free_entry_url",
         "label": "t:settings.legal.free_entry_url",
         "info": "t:settings.legal.free_entry_url_info"
+      },
+      {
+        "type": "url",
+        "id": "url_how_it_works",
+        "label": "t:settings.legal.how_it_works_url",
+        "info": "t:settings.legal.how_it_works_url_info"
+      },
+      {
+        "type": "url",
+        "id": "url_club",
+        "label": "t:settings.legal.club_url"
       },
       {
         "type": "text",

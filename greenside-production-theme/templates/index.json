@@ -48,7 +48,12 @@
           }
         }
       },
-      "block_order": ["trust-1", "trust-2", "trust-3", "trust-4"],
+      "block_order": [
+        "trust-1",
+        "trust-2",
+        "trust-3",
+        "trust-4"
+      ],
       "settings": {
         "colour_scheme": "light",
         "spacing_top": "minor",
@@ -59,7 +64,7 @@
       "type": "competition-grid",
       "settings": {
         "eyebrow": "Open now",
-        "heading": "Four competitions taking entries",
+        "heading": "Open competitions",
         "subheading": "",
         "heading_size": "h2",
         "collection": "featured-competitions",
@@ -70,17 +75,38 @@
         "show_view_all": true,
         "colour_scheme": "cream",
         "spacing_top": "major",
-        "spacing_bottom": "major"
+        "spacing_bottom": "major",
+        "empty_heading": "Competitions coming soon",
+        "empty_text": "We're preparing the next Greenside competitions. Join the Greenside Club and we'll tell you the moment the next prize goes live."
       }
     },
     "major-prize": {
       "type": "major-prize",
       "blocks": {
-        "point-1": { "type": "point", "settings": { "text": "Cash alternative on every prize" } },
-        "point-2": { "type": "point", "settings": { "text": "Delivered free, anywhere in the UK" } },
-        "point-3": { "type": "point", "settings": { "text": "Draw filmed and published in full" } }
+        "point-1": {
+          "type": "point",
+          "settings": {
+            "text": "Cash alternative on every prize"
+          }
+        },
+        "point-2": {
+          "type": "point",
+          "settings": {
+            "text": "Delivered free, anywhere in the UK"
+          }
+        },
+        "point-3": {
+          "type": "point",
+          "settings": {
+            "text": "Draw filmed and published in full"
+          }
+        }
       },
-      "block_order": ["point-1", "point-2", "point-3"],
+      "block_order": [
+        "point-1",
+        "point-2",
+        "point-3"
+      ],
       "settings": {
         "eyebrow": "The main event",
         "heading": "The headline competition",
@@ -124,7 +150,12 @@
           }
         }
       },
-      "block_order": ["step-1", "step-2", "step-3", "step-4"],
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3",
+        "step-4"
+      ],
       "settings": {
         "eyebrow": "The mechanism",
         "heading": "Nothing happens off camera",
@@ -153,12 +184,37 @@
     "categories": {
       "type": "category-tiles",
       "blocks": {
-        "cat-1": { "type": "category", "settings": { "show_count": false } },
-        "cat-2": { "type": "category", "settings": { "show_count": false } },
-        "cat-3": { "type": "category", "settings": { "show_count": false } },
-        "cat-4": { "type": "category", "settings": { "show_count": false } }
+        "cat-1": {
+          "type": "category",
+          "settings": {
+            "show_count": false
+          }
+        },
+        "cat-2": {
+          "type": "category",
+          "settings": {
+            "show_count": false
+          }
+        },
+        "cat-3": {
+          "type": "category",
+          "settings": {
+            "show_count": false
+          }
+        },
+        "cat-4": {
+          "type": "category",
+          "settings": {
+            "show_count": false
+          }
+        }
       },
-      "block_order": ["cat-1", "cat-2", "cat-3", "cat-4"],
+      "block_order": [
+        "cat-1",
+        "cat-2",
+        "cat-3",
+        "cat-4"
+      ],
       "settings": {
         "eyebrow": "",
         "heading": "Browse by category",

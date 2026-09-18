@@ -1,0 +1,59 @@
+{%- comment -%}
+  An empty state with contextual navigation.
+
+  The rule this enforces: never offer a route to the page the visitor is already
+  on. "Browse all competitions" on /collections/all sends someone back to the
+  empty page they are reading, which is a dead end dressed up as a next step.
+  Pass `current_url` and that route is dropped.
+
+  Accepts:
+  - body        {String}  the explanatory line. Required.
+  - current_url {String}  the URL of the page being rendered. Optional.
+  - icon        {String}  icon name. Defaults to the golf flag.
+
+  Links only render when their destination is configured, so a store that has
+  not set a How it works page never ships a button pointing at nothing.
+{%- endcomment -%}
+
+{%- liquid
+  assign all_url = routes.all_products_collection_url
+  assign how_url = settings.url_how_it_works
+  assign club_url = settings.url_club
+  assign icon_name = icon | default: 'golf-flag'
+
+  assign show_all = true
+  if current_url == all_url
+    assign show_all = false
+  endif
+-%}
+
+<div class="empty-state">
+  <span class="empty-state__icon">{%- render 'icon', icon: icon_name, size: 28 -%}</span>
+
+  {%- if body != blank -%}
+    <p class="empty-state__text">{{ body }}</p>
+  {%- endif -%}
+
+  <div class="empty-state__actions">
+    {%- if show_all -%}
+      <a class="button button--primary" href="{{ all_url }}">
+        {{- 'products.empty.browse_all' | t -}}
+      </a>
+    {%- endif -%}
+
+    {%- if how_url != blank -%}
+      <a class="button button--secondary" href="{{ how_url }}">
+        {{- 'products.empty.how_it_works' | t -}}
+      </a>
+    {%- endif -%}
+
+    {%- if club_url != blank -%}
+      <a class="link" href="{{ club_url }}">
+        {{- 'products.empty.join_club' | t -}}
+      </a>
+    {%- elsif show_all == false and how_url == blank -%}
+      {%- comment -%} Always leave at least one way out. {%- endcomment -%}
+      <a class="link" href="{{ routes.root_url }}">{{ 'products.empty.home' | t }}</a>
+    {%- endif -%}
+  </div>
+</div>

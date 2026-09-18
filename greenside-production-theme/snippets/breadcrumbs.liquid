@@ -14,14 +14,16 @@
         {%- when 'product' -%}
           {%- if collection.url -%}
             <li>
-              <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+              {%- capture bc_collection_title -%}{%- render 'collection-title', collection: collection -%}{%- endcapture -%}
+              <a href="{{ collection.url }}">{{ bc_collection_title | strip | escape }}</a>
               {%- render 'icon', icon: 'chevron-right', size: 12 -%}
             </li>
           {%- endif -%}
           <li><span aria-current="page">{{ product.title | escape | truncate: 60 }}</span></li>
 
         {%- when 'collection' -%}
-          <li><span aria-current="page">{{ collection.title | escape }}</span></li>
+          {%- capture bc_collection_title -%}{%- render 'collection-title', collection: collection -%}{%- endcapture -%}
+          <li><span aria-current="page">{{ bc_collection_title | strip | escape }}</span></li>
 
         {%- when 'page' -%}
           <li><span aria-current="page">{{ page.title | escape }}</span></li>

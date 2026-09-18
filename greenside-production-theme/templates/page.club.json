@@ -1,0 +1,100 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "spacing_top": "standard",
+        "spacing_bottom": "minor"
+      }
+    },
+    "club": {
+      "type": "club-tiers",
+      "blocks": {
+        "benefit-1": {
+          "type": "benefit",
+          "settings": {
+            "icon": "clock",
+            "heading": "Early access",
+            "text": "<p>See new competitions before they go public.</p>"
+          }
+        },
+        "benefit-2": {
+          "type": "benefit",
+          "settings": {
+            "icon": "ticket",
+            "heading": "Club competitions",
+            "text": "<p>Competitions we only open to members.</p>"
+          }
+        },
+        "benefit-3": {
+          "type": "benefit",
+          "settings": {
+            "icon": "trophy",
+            "heading": "Results first",
+            "text": "<p>Every draw result, straight to your inbox.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "benefit-1",
+        "benefit-2",
+        "benefit-3"
+      ],
+      "settings": {
+        "eyebrow": "Membership",
+        "heading": "The Greenside Club",
+        "text": "<p>Free to join. Built for people who'd rather hear about a competition before everyone else does.</p>",
+        "button_label": "Join the Club",
+        "note": "Free to join. Unsubscribe any time.",
+        "colour_scheme": "deep",
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
+      }
+    },
+    "how": {
+      "type": "how-it-works",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "heading": "Join with your email",
+            "text": "<p>No card, no membership fee, no commitment.</p>"
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "heading": "Hear it first",
+            "text": "<p>We email when a competition opens, not on a schedule.</p>"
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "heading": "Leave whenever",
+            "text": "<p>Every email carries an unsubscribe link that works immediately.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3"
+      ],
+      "settings": {
+        "eyebrow": "What joining means",
+        "heading": "No points, no tiers, no catch",
+        "subheading": "",
+        "alignment": "left",
+        "colour_scheme": "cream",
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "club",
+    "how"
+  ]
+}

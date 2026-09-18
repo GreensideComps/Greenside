@@ -13,7 +13,9 @@
       "social_header": "Social sharing",
       "share_image": "Default sharing image",
       "share_image_info": "Used when a page has no image of its own. 1200 x 630px works best.",
-      "tagline": "Brand tagline"
+      "tagline": "Brand tagline",
+      "meta_description": "Default search description",
+      "meta_description_info": "Used on pages that have no description of their own, including the homepage. Aim for 150-160 characters."
     },
     "colors": {
       "name": "Colours",
@@ -159,7 +161,10 @@
       "free_entry_url": "Free entry route page",
       "free_entry_url_info": "Link to your postal or online free entry route. Shown on every competition page when set.",
       "min_age": "Minimum entry age",
-      "min_age_info": "Displayed as an eligibility note. Leave empty to hide."
+      "min_age_info": "Displayed as an eligibility note. Leave empty to hide.",
+      "how_it_works_url": "How it works page",
+      "how_it_works_url_info": "Used by empty states and help links when no competition is open.",
+      "club_url": "The Club page"
     }
   },
   "sections": {
@@ -205,7 +210,19 @@
       "space_standard": "Standard",
       "space_minor": "Minor",
       "space_none": "None",
-      "eyebrow": "Eyebrow"
+      "eyebrow": "Eyebrow",
+      "empty_header": "When nothing is open",
+      "empty_intro": "Shown instead of the heading above when this collection has no competitions in it, so the page never promises a number it cannot show.",
+      "empty_heading": "Empty heading",
+      "empty_text": "Empty message"
+    },
+    "contact": {
+      "details_header": "Contact details",
+      "show_details": "Show contact details",
+      "email": "Contact email",
+      "email_info": "Leave empty to use the store's own contact email.",
+      "details": "Other details",
+      "details_info": "Postal address, opening hours or how long a reply usually takes. Only state a response time you can keep."
     }
   },
   "blocks": {

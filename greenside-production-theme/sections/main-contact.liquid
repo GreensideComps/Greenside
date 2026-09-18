@@ -13,6 +13,42 @@
       <div class="rte" style="margin-bottom: 2rem;">{{ page.content }}</div>
     {%- endif -%}
 
+    {%- comment -%}
+      A form on its own asks the visitor to trust that someone is on the other
+      end. The email address comes from the store's own contact settings, so
+      nothing here is invented; anything else is merchant-entered.
+
+      No response time is stated unless the merchant writes one, because a
+      promise the business has not made is not the theme's to make.
+    {%- endcomment -%}
+    {%- liquid
+      assign contact_email = section.settings.contact_email | default: shop.email
+      assign show_details = false
+      if section.settings.show_contact_details
+        if contact_email != blank
+          assign show_details = true
+        endif
+        if section.settings.contact_details != blank
+          assign show_details = true
+        endif
+      endif
+    -%}
+
+    {%- if show_details -%}
+      <aside class="contact-details">
+        <h2 class="h4">{{ 'contact.details_heading' | t }}</h2>
+        {%- if contact_email != blank -%}
+          <p class="contact-details__line">
+            {%- render 'icon', icon: 'mail', size: 16 -%}
+            <a class="link" href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+          </p>
+        {%- endif -%}
+        {%- if section.settings.contact_details != blank -%}
+          <div class="rte contact-details__body">{{ section.settings.contact_details }}</div>
+        {%- endif -%}
+      </aside>
+    {%- endif -%}
+
     {%- form 'contact', class: 'contact-form', novalidate: 'novalidate' -%}
       {%- if form.posted_successfully? -%}
         <p class="form-status form-status--success" role="status">
@@ -98,6 +134,10 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "t:sections.all.heading", "info": "Leave empty to use the page title." },
     { "type": "richtext", "id": "text", "label": "t:sections.all.content" },
+    { "type": "header", "content": "t:sections.contact.details_header" },
+    { "type": "checkbox", "id": "show_contact_details", "label": "t:sections.contact.show_details", "default": true },
+    { "type": "text", "id": "contact_email", "label": "t:sections.contact.email", "info": "t:sections.contact.email_info" },
+    { "type": "richtext", "id": "contact_details", "label": "t:sections.contact.details", "info": "t:sections.contact.details_info" },
     { "type": "header", "content": "t:sections.all.spacing_header" },
     {
       "type": "select",

@@ -218,9 +218,12 @@
       "no_results_body": "Try removing a filter, or clear them all to see everything that's open."
     },
     "empty": {
-      "collection_title": "Nothing open here yet",
-      "collection_body": "New competitions go live regularly. Join the Greenside Club and we'll tell you the moment this category has something in it.",
-      "browse_all": "Browse all competitions"
+      "collection_title": "Competitions coming soon",
+      "collection_body": "We're preparing the next Greenside competitions. Join the Greenside Club and we'll tell you the moment the next prize goes live.",
+      "browse_all": "Browse all competitions",
+      "how_it_works": "How it works",
+      "join_club": "Join the Greenside Club",
+      "home": "Return home"
     }
   },
   "cart": {
@@ -431,7 +434,8 @@
     "message": "Message",
     "submit": "Send message",
     "success": "Thanks — we'll come back to you shortly.",
-    "error": "Please check the highlighted fields and try again."
+    "error": "Please check the highlighted fields and try again.",
+    "details_heading": "Ways to reach us"
   },
   "gift_cards": {
     "issued": {
@@ -465,5 +469,8 @@
     "links": {
       "powered_by_shopify": "Powered by Shopify"
     }
+  },
+  "collections": {
+    "all_title": "All competitions"
   }
 }

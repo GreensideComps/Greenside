@@ -58,7 +58,11 @@
     "sections": {},
     "search_shortcuts_menu": "greenside-search-shortcuts",
     "legal_competition_rules_url": "/pages/competition-rules",
-    "legal_free_entry_url": "/pages/free-entry"
+    "legal_free_entry_url": "/pages/free-entry",
+    "url_how_it_works": "/pages/how-it-works",
+    "url_club": "/pages/club",
+    "meta_description": "Premium golf prizes with capped entries and affordable entry prices. Every Greenside draw is filmed and published in full, and every competition has a free entry route.",
+    "legal_footer_text": "<p>Greenside Competitions is a trading name of [BUSINESS INFORMATION REQUIRED: registered company name]. Registered in England and Wales, company number [BUSINESS INFORMATION REQUIRED: company number]. Registered office: [BUSINESS INFORMATION REQUIRED: registered address].</p><p>Entrants must be 18 or over and resident in the UK. Every competition has a free entry route.</p>"
   },
   "presets": {
     "Greenside": {

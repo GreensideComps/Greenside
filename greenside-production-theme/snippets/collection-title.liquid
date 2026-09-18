@@ -1,0 +1,19 @@
+{%- comment -%}
+  The display title for a collection.
+
+  Shopify's built-in all-products collection is called "Products" and cannot be
+  renamed in the admin. On a site that sells competition entries that word is
+  wrong everywhere it appears — the h1, the breadcrumb and the browser tab — so
+  it is swapped for the brand's own term. Every other collection keeps the title
+  the merchant gave it.
+
+  Accepts: collection
+  Returns: the title as plain text, ready to escape at the call site.
+{%- endcomment -%}
+{%- liquid
+  assign title = collection.title
+  if collection.handle == 'all'
+    assign title = 'collections.all_title' | t
+  endif
+  echo title
+-%}

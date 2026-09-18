@@ -5,6 +5,22 @@
   assign count = products.size
   assign columns = section.settings.columns_desktop | default: 4
   assign mobile_layout = section.settings.mobile_layout | default: 'carousel'
+
+  comment
+    A heading is merchant-entered copy and can name a quantity ("Four
+    competitions taking entries"). When the collection is empty that heading
+    becomes a false claim sitting directly above an empty state saying the
+    opposite, so the empty case takes its own heading instead of the merchant's.
+  endcomment
+  assign heading = section.settings.heading
+  assign eyebrow = section.settings.eyebrow
+  assign subheading = section.settings.subheading
+  if count == 0
+    assign empty_heading_default = 'products.empty.collection_title' | t
+    assign heading = section.settings.empty_heading | default: empty_heading_default
+    assign eyebrow = ''
+    assign subheading = ''
+  endif
 -%}
 
 {%- assign grid_style = '--columns-desktop: ' | append: columns | append: ';' -%}
@@ -17,17 +33,17 @@
 
 <div class="section scheme-{{ section.settings.colour_scheme }}">
   <div class="page-width">
-    {%- if section.settings.heading != blank or section.settings.eyebrow != blank -%}
+    {%- if heading != blank or eyebrow != blank -%}
       <div class="section-header">
         <div class="section-header__text">
-          {%- if section.settings.eyebrow != blank -%}
-            <span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>
+          {%- if eyebrow != blank -%}
+            <span class="eyebrow">{{ eyebrow | escape }}</span>
           {%- endif -%}
-          {%- if section.settings.heading != blank -%}
-            <h2 class="{{ section.settings.heading_size }}">{{ section.settings.heading | escape }}</h2>
+          {%- if heading != blank -%}
+            <h2 class="{{ section.settings.heading_size }}">{{ heading | escape }}</h2>
           {%- endif -%}
-          {%- if section.settings.subheading != blank -%}
-            <p class="text-muted">{{ section.settings.subheading | escape }}</p>
+          {%- if subheading != blank -%}
+            <p class="text-muted">{{ subheading | escape }}</p>
           {%- endif -%}
         </div>
 
@@ -101,14 +117,9 @@
         </p>
       {%- endif -%}
     {%- else -%}
-      <div class="empty-state">
-        <span class="empty-state__icon">{%- render 'icon', icon: 'golf-flag', size: 28 -%}</span>
-        <p class="h4">{{ 'products.empty.collection_title' | t }}</p>
-        <p class="empty-state__text">{{ 'products.empty.collection_body' | t }}</p>
-        <a class="button button--primary" href="{{ routes.all_products_collection_url }}">
-          {{- 'products.empty.browse_all' | t -}}
-        </a>
-      </div>
+      {%- assign empty_body_default = 'products.empty.collection_body' | t -%}
+      {%- assign empty_body = section.settings.empty_text | default: empty_body_default -%}
+      {%- render 'empty-state', body: empty_body -%}
     {%- endif -%}
   </div>
 </div>
@@ -122,6 +133,10 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
     { "type": "text", "id": "heading", "label": "t:sections.all.heading", "default": "Open competitions" },
     { "type": "text", "id": "subheading", "label": "t:sections.all.subheading" },
+    { "type": "header", "content": "t:sections.all.empty_header" },
+    { "type": "paragraph", "content": "t:sections.all.empty_intro" },
+    { "type": "text", "id": "empty_heading", "label": "t:sections.all.empty_heading" },
+    { "type": "textarea", "id": "empty_text", "label": "t:sections.all.empty_text" },
     {
       "type": "select",
       "id": "heading_size",

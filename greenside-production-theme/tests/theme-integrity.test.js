@@ -512,3 +512,48 @@ test('every value in settings_data is valid against settings_schema', () => {
 
   assert.deepEqual(problems, [], `invalid theme settings:\n${problems.join('\n')}`);
 });
+
+/* -------------------------------------------------------------------------- *
+ * Liquid parsing hazards
+ * -------------------------------------------------------------------------- */
+
+// Shopify's Liquid lexer ends an output tag at the first `}` it meets, even
+// inside a quoted string. `{{ x | append: "?q={search_term_string}" }}` therefore
+// does not parse: Shopify prints the unterminated tag onto the page as an error
+// and drops whatever followed it. This shipped once, in the JSON-LD SearchAction,
+// and put a raw parser message above the header on every page.
+//
+// Local Liquid implementations tolerate it, so only a rule like this catches it
+// before Shopify does. Braces belong in the literal text outside the tag.
+test('no output tag contains a brace inside a string literal', () => {
+  const offenders = [];
+
+  for (const [dir, ext] of [
+    ['snippets', '.liquid'],
+    ['sections', '.liquid'],
+    ['layout', '.liquid'],
+    ['templates', '.liquid'],
+  ]) {
+    for (const name of listFiles(dir, ext)) {
+      const rel = `${dir}/${name}`;
+      const body = readMarkup(rel);
+
+      for (const match of body.matchAll(/\{\{-?([\s\S]*?)-?\}\}/g)) {
+        const inner = match[1];
+        for (const str of inner.matchAll(/"([^"]*)"|'([^']*)'/g)) {
+          const literal = str[1] ?? str[2] ?? '';
+          if (/[{}]/.test(literal)) {
+            const line = body.slice(0, match.index).split('\n').length;
+            offenders.push(`${rel}:${line} -> ${literal}`);
+          }
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(
+    offenders,
+    [],
+    `Output tags with a brace inside a string literal will not parse on Shopify:\n${offenders.join('\n')}`,
+  );
+});

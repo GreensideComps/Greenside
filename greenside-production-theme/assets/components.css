@@ -1513,7 +1513,38 @@ gs-carousel[data-scrollable] .carousel-controls { display: flex; }
 
 .empty-state__icon svg { width: 28px; height: 28px; }
 .empty-state__text { color: rgb(var(--color-text-muted)); }
-.empty-state .button { margin-top: 0.75rem; }
+
+/* Wraps rather than overflows when an empty state offers two or three routes
+   onward at 320px. */
+.empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.empty-state__actions:empty { display: none; }
+
+.contact-details {
+  display: grid;
+  gap: 0.5rem;
+  padding: var(--space-minor, 1rem);
+  margin-bottom: 2rem;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: var(--radius-card, 8px);
+  background-color: rgb(var(--color-surface-muted));
+}
+
+.contact-details__line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.contact-details__body { color: rgb(var(--color-text-muted)); }
 
 /* --------------------------------------------------------------------------
    Quantity selector
