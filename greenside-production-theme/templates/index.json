@@ -4,12 +4,14 @@
       "type": "hero-competition",
       "settings": {
         "eyebrow": "This week",
-        "text": "<p>Real golf kit. Capped entries. Every draw filmed and published.</p>",
-        "button_label": "Enter",
+        "text": "<p>Entries from £2.49. Every competition publishes its entry cap before you enter, and every one has a free entry route.</p>",
+        "button_label": "Browse competitions",
         "secondary_label": "How the draw works",
         "secondary_link": "/pages/how-it-works",
         "overlay_opacity": 55,
-        "height": "tall"
+        "height": "standard",
+        "heading": "Real golf kit. Capped entries. Every draw filmed.",
+        "price_note": ""
       }
     },
     "trust": {
@@ -74,8 +76,8 @@
         "image_ratio": "portrait",
         "show_view_all": true,
         "colour_scheme": "cream",
-        "spacing_top": "major",
-        "spacing_bottom": "major",
+        "spacing_top": "standard",
+        "spacing_bottom": "standard",
         "empty_heading": "Competitions coming soon",
         "empty_text": "We're preparing the next Greenside competitions. Join the Greenside Club and we'll tell you the moment the next prize goes live."
       }
@@ -114,8 +116,8 @@
         "button_label": "Enter this competition",
         "media_position": "left",
         "colour_scheme": "deep",
-        "spacing_top": "major",
-        "spacing_bottom": "major"
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "how": {
@@ -164,8 +166,8 @@
         "link": "/pages/how-it-works",
         "alignment": "left",
         "colour_scheme": "light",
-        "spacing_top": "major",
-        "spacing_bottom": "major"
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "winners": {
@@ -177,7 +179,7 @@
         "link_label": "Every winner",
         "link": "/pages/winners",
         "colour_scheme": "cream",
-        "spacing_top": "major",
+        "spacing_top": "standard",
         "spacing_bottom": "major"
       }
     },

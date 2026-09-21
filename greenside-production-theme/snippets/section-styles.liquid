@@ -15,26 +15,38 @@
   assign tier_top = top | default: 'standard'
   assign tier_bottom = bottom | default: 'standard'
 
+  comment
+    The tiers are fixed pixel tokens, which meant `major` was the same gap on a
+    1440px desktop and a 390px phone. Two stacked major sections then put some
+    266px of empty space between them, over two thirds of a phone screen
+    showing nothing at all.
+
+    Each tier is therefore clamped between a floor and a vw share rather than
+    used raw. The vw term only wins on narrow viewports, so the desktop rhythm is
+    exactly the designed token and the phone gets a proportional share of the
+    screen instead of a fixed pixel count. The tokens themselves are left
+    alone, so anything reading --space-* directly is unaffected.
+  endcomment
   case tier_top
     when 'major'
-      assign value_top = 'var(--space-major)'
+      assign value_top = 'max(2.75rem, min(var(--space-major), 11vw))'
     when 'minor'
-      assign value_top = 'var(--space-minor)'
+      assign value_top = 'max(1.25rem, min(var(--space-minor), 4vw))'
     when 'none'
       assign value_top = '0px'
     else
-      assign value_top = 'var(--space-standard)'
+      assign value_top = 'max(2rem, min(var(--space-standard), 7vw))'
   endcase
 
   case tier_bottom
     when 'major'
-      assign value_bottom = 'var(--space-major)'
+      assign value_bottom = 'max(2.75rem, min(var(--space-major), 11vw))'
     when 'minor'
-      assign value_bottom = 'var(--space-minor)'
+      assign value_bottom = 'max(1.25rem, min(var(--space-minor), 4vw))'
     when 'none'
       assign value_bottom = '0px'
     else
-      assign value_bottom = 'var(--space-standard)'
+      assign value_bottom = 'max(2rem, min(var(--space-standard), 7vw))'
   endcase
 -%}
 {% style %}

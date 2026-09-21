@@ -63,7 +63,7 @@
         "s7"
       ],
       "settings": {
-        "heading": "How it works",
+        "heading": "Step by step",
         "subheading": "Seven steps, no small print surprises.",
         "alignment": "left",
         "colour_scheme": "light",
@@ -80,7 +80,7 @@
     }
   },
   "order": [
-    "steps",
-    "page-content"
+    "page-content",
+    "steps"
   ]
 }

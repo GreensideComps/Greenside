@@ -68,7 +68,44 @@
 
 {%- render 'section-styles', id: section.id, top: 'none', bottom: 'none', extra: hero_style -%}
 
-<section class="hero hero--{{ section.settings.height }}" data-hero>
+{%- comment -%}
+  Two rules that only ever apply to this section, so they live with it rather
+  than in the shared component sheet.
+{%- endcomment -%}
+{% style %}
+  /* No photography yet: size to content instead of reserving a picture's worth
+     of empty colour. Overrides every height variant, so changing the height
+     setting has no effect until an image exists -- which is the point. */
+  #shopify-section-{{ section.id }} .hero--no-media { min-height: 0; }
+  #shopify-section-{{ section.id }} .hero--no-media .hero__content {
+    padding-block: clamp(2.5rem, 9vw, 5.5rem);
+  }
+
+  /* Pre-launch stand-in for .hero__price, used when no competition is selected
+     to quote a real price from. Sized between the lead text and the price
+     amount so it reads as information rather than as a promotion. */
+  #shopify-section-{{ section.id }} .hero__price-note {
+    font-size: var(--text-lead);
+    color: rgb(var(--color-on-brand));
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+{% endstyle %}
+
+{%- comment -%}
+  A hero with no image is reserving height for a picture that is not there. At
+  78vh of flat colour that reads as a page that failed to load rather than as a
+  composition, and on a phone it pushes the value proposition below the fold
+  behind the cookie banner. Until real photography exists the hero sizes itself
+  to its own content; the moment an image is set, the designed height returns.
+{%- endcomment -%}
+{%- liquid
+  assign hero_classes = 'hero hero--' | append: section.settings.height
+  if image_desktop == blank
+    assign hero_classes = hero_classes | append: ' hero--no-media'
+  endif
+-%}
+<section class="{{ hero_classes }}" data-hero>
   <div class="hero__media">
     {%- if image_desktop != blank -%}
       <picture>
@@ -156,6 +193,18 @@
             {%- endif -%}
           </div>
         {%- else -%}
+          {%- comment -%}
+            With no competition selected the hero has no real price to quote, and
+            "affordable" on its own is a claim the visitor cannot check. This line
+            states the starting entry price in words instead. It is a setting, not
+            a hard-coded figure, and it disappears the moment a featured
+            competition exists — from then on the price above comes from the
+            product itself. Keep it in step with the cheapest live entry.
+          {%- endcomment -%}
+          {%- if section.settings.price_note != blank -%}
+            <p class="hero__price-note num">{{ section.settings.price_note | escape }}</p>
+          {%- endif -%}
+
           <div class="hero__actions">
             <a class="button button--primary button--large" href="{{ hero_link }}" data-track="hero_cta_click">
               {{- section.settings.button_label | default: 'Browse competitions' | escape -}}
@@ -195,6 +244,13 @@
       "id": "text",
       "label": "t:sections.all.content",
       "default": "<p>Real golf kit. Capped entries. Every draw filmed and published.</p>"
+    },
+    {
+      "type": "text",
+      "id": "price_note",
+      "label": "Starting entry price",
+      "default": "Entries from £2.49",
+      "info": "Shown only while no featured competition is selected. Once one is, the hero shows that competition's real price instead. Keep this in step with your cheapest live entry."
     },
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Enter" },
     { "type": "url", "id": "link", "label": "Button link" },

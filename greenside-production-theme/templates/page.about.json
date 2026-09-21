@@ -1,0 +1,28 @@
+{
+  "sections": {
+    "page-content": {
+      "type": "main-page",
+      "settings": {
+        "narrow": true,
+        "show_breadcrumbs": true
+      }
+    },
+    "founder": {
+      "type": "content-feature",
+      "settings": {
+        "eyebrow": "Who runs Greenside",
+        "heading": "The person behind the competitions",
+        "text": "<p>Full founder details and a photograph will be published here before the first competition opens.</p>",
+        "media_position": "left",
+        "button_style": "secondary",
+        "colour_scheme": "cream",
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
+      }
+    }
+  },
+  "order": [
+    "page-content",
+    "founder"
+  ]
+}

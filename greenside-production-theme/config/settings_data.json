@@ -2,7 +2,7 @@
   "current": {
     "logo_width": 170,
     "logo_width_mobile": 125,
-    "brand_tagline": "Premium Prizes. Affordable Entries.",
+    "brand_tagline": "Real golf kit. Capped entries. Every draw filmed.",
     "color_brand_deep": "#0c1f18",
     "color_brand": "#1b4332",
     "color_accent": "#417b25",
@@ -62,7 +62,7 @@
     "url_how_it_works": "/pages/how-it-works",
     "url_club": "/pages/club",
     "meta_description": "Premium golf prizes with capped entries and affordable entry prices. Every Greenside draw is filmed and published in full, and every competition has a free entry route.",
-    "legal_footer_text": "<p>Greenside Competitions is a trading name of [BUSINESS INFORMATION REQUIRED: registered company name]. Registered in England and Wales, company number [BUSINESS INFORMATION REQUIRED: company number]. Registered office: [BUSINESS INFORMATION REQUIRED: registered address].</p><p>Entrants must be 18 or over and resident in the UK. Every competition has a free entry route.</p>",
+    "legal_footer_text": "<p>Entrants must be 18 or over and resident in the UK. Every competition has a free entry route.</p>",
     "show_odds": false,
     "entry_numbers_issued": false
   },
