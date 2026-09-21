@@ -2,33 +2,6 @@
   "type": "header",
   "name": "Header",
   "sections": {
-    "announcement-bar": {
-      "type": "announcement-bar",
-      "blocks": {
-        "message-1": {
-          "type": "announcement",
-          "settings": {
-            "text": "Every competition has a free entry route",
-            "icon": "shield"
-          }
-        },
-        "message-2": {
-          "type": "announcement",
-          "settings": {
-            "text": "Winners published in full after every draw",
-            "icon": "trophy"
-          }
-        }
-      },
-      "block_order": [
-        "message-1",
-        "message-2"
-      ],
-      "settings": {
-        "colour_scheme": "deep",
-        "rotate_speed": 6
-      }
-    },
     "header": {
       "type": "header",
       "settings": {
@@ -40,7 +13,6 @@
     }
   },
   "order": [
-    "announcement-bar",
     "header"
   ]
 }

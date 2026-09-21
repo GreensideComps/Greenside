@@ -1,0 +1,185 @@
+{%- comment -%}
+  The competition ticker.
+
+  A thin moving strip at the very top of the page whose only job is to show a
+  visitor, before they have scrolled or decided anything, that there is real
+  golf kit here and what an entry costs.
+
+  EVERYTHING IN IT IS REAL. Each item is one open competition from a real
+  collection, carrying that product's own title and its own Shopify price, and
+  linking to its own page. There is nothing to hard-code and nothing to invent:
+  with no open competitions the section renders nothing at all, because a
+  ticker scrolling past an empty catalogue is worse than no ticker.
+
+  WHY IT IS NOT A COUNTDOWN.
+
+  Movement here is navigational, not temporal. It exposes more competitions
+  than fit on one line; it does not tick towards anything, does not change
+  colour, and does not speed up. Nothing in it implies that waiting costs the
+  visitor something. That distinction is the whole reason this is acceptable
+  in a brand that bans countdown timers.
+
+  ACCESSIBILITY AND MOTION.
+
+    - prefers-reduced-motion turns the animation off and leaves a strip the
+      visitor can scroll themselves, rather than freezing it and hiding the
+      items that were off-screen.
+    - It pauses on hover and on keyboard focus, so a moving target never
+      escapes a pointer or a tab stop.
+    - Every item is a real link with its own accessible name.
+    - The duplicate track that makes the loop seamless is aria-hidden and
+      removed from the tab order, so the list is announced once, not twice.
+    - The wrapper clips its own overflow, so a track wider than the viewport
+      can never scroll the page sideways.
+{%- endcomment -%}
+
+{%- liquid
+  assign collection = collections[section.settings.collection]
+  assign limit = section.settings.items_to_show | default: 8
+
+  comment
+    Only competitions a visitor can actually enter. A sold-out or closed
+    competition in a promotional strip is an advert for a dead end.
+  endcomment
+  assign open_items = ''
+  assign now_stamp = 'now' | date: '%s' | times: 1
+-%}
+
+{%- capture items_markup -%}
+  {%- for product in collection.products limit: limit -%}
+    {%- liquid
+      assign is_closed = false
+      assign closing_at = product.metafields.custom.closing_at.value
+      if closing_at != blank
+        assign close_stamp = closing_at | date: '%s' | times: 1
+        if close_stamp <= now_stamp
+          assign is_closed = true
+        endif
+      endif
+    -%}
+    {%- if product.available and is_closed == false -%}
+      {%- liquid
+        comment
+          Most competition titles already begin "Win a ...". Prefixing those
+          again would read "Win a Win a TaylorMade Qi10 Driver", so the prefix
+          is only added when the title does not already carry it.
+        endcomment
+        assign lower_title = product.title | downcase
+        assign already_win = false
+        if lower_title contains 'win a ' or lower_title contains 'win the ' or lower_title contains 'win an '
+          assign already_win = true
+        endif
+
+        if already_win
+          assign win_text = product.title
+        else
+          assign win_text = 'products.competition.ticker_win' | t: title: product.title
+        endif
+
+        assign price_text = product.price | money
+        if product.price_varies
+          assign price_text = product.price_min | money
+        endif
+        assign price_line = 'products.competition.ticker_price' | t: price: price_text
+      -%}
+      <li class="ticker__item">
+        <a class="ticker__link" href="{{ product.url }}" data-track="ticker_click">
+          <span class="ticker__prize">{{ win_text | escape }}</span>
+          <span class="ticker__sep" aria-hidden="true">&middot;</span>
+          <span class="ticker__price num">{{ price_line }}</span>
+          <span class="ticker__sep" aria-hidden="true">&middot;</span>
+          <span class="ticker__cta">
+            {{- 'products.competition.enter_now' | t -}}
+            {%- render 'icon', icon: 'arrow-right', size: 12 -%}
+          </span>
+        </a>
+      </li>
+      {%- assign open_items = open_items | append: 'x' -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- assign open_count = open_items | size -%}
+
+{%- if open_count > 0 -%}
+  {%- comment -%}
+    One loop of the track should take roughly the same time per item however
+    many there are, so a single competition does not crawl and eight do not
+    race. The duration is the item count times a per-item seconds setting.
+  {%- endcomment -%}
+  {%- assign duration = open_count | times: section.settings.seconds_per_item -%}
+
+  {% style %}
+    #shopify-section-{{ section.id }} .ticker { --ticker-duration: {{ duration }}s; }
+  {% endstyle %}
+
+  <div class="ticker ticker--{{ section.settings.colour_scheme }}" data-ticker>
+    <div class="ticker__viewport">
+      <ul class="ticker__track" role="list">
+        {{ items_markup }}
+      </ul>
+      {%- comment -%}
+        The second copy is what makes the loop seamless: each track translates
+        by its own full width, at which point copy two sits where copy one
+        started.
+
+        It is decorative duplication, so it is hidden from assistive technology
+        and taken out of the tab order. `inert` does both in current browsers,
+        but where it is unsupported a link inside an aria-hidden container is
+        still reachable by keyboard -- a tab stop that announces nothing and
+        moves while you are on it. Every anchor in the clone therefore carries
+        its own tabindex="-1" as well, rather than relying on the container.
+      {%- endcomment -%}
+      {%- assign clone_markup = items_markup | replace: '<a class="ticker__link"', '<a tabindex="-1" aria-hidden="true" class="ticker__link"' -%}
+      <ul class="ticker__track" role="none" aria-hidden="true" inert>
+        {{ clone_markup }}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Competition ticker",
+  "tag": "section",
+  "class": "section-ticker",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "A moving strip of the competitions that are open right now, taken from a collection. Each item shows that competition's real title and price. With no open competitions the strip does not render at all."
+    },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    {
+      "type": "range",
+      "id": "items_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Maximum competitions",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "seconds_per_item",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "unit": "s",
+      "label": "Seconds per competition",
+      "info": "How long one competition takes to cross the strip. Higher is slower and calmer.",
+      "default": 9
+    },
+    {
+      "type": "select",
+      "id": "colour_scheme",
+      "label": "t:sections.all.colour_scheme",
+      "options": [
+        { "value": "deep", "label": "Deep green" },
+        { "value": "brand", "label": "Brand green" }
+      ],
+      "default": "deep"
+    }
+  ],
+  "presets": [{ "name": "Competition ticker" }]
+}
+{% endschema %}

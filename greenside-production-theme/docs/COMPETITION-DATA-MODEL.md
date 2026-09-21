@@ -29,8 +29,8 @@ not exist.
 |---|---|---|
 | `closing_at` | `date_time` | Closing date, "closing soon" badge, closed state |
 | `draw_at` | `date_time` | Draw date line |
-| `entries_total` | `number_integer` | Progress bar denominator |
-| `entries_sold` | `number_integer` | Progress bar numerator |
+| `entries_total` | `number_integer` | The published entry cap. Denominator for availability and for the competition-page progress bar |
+| `entries_sold` | `number_integer` | **Competition-page progress bar only. Never customer-facing availability** — see below |
 | `prize_value` | `money` | Prize value on cards and the competition page |
 | `cash_alternative` | `money` | Cash alternative on the competition page |
 | `max_entries_per_person` | `number_integer` | Caps the quantity input and preset list |
@@ -47,6 +47,49 @@ not exist.
 
 The progress bar needs **both** `entries_total` and `entries_sold`, and
 `entries_total` must be greater than zero. Anything less and no bar renders.
+
+### Availability comes from inventory, not from `entries_sold`
+
+`entries_sold` is hand-maintained and nothing writes to it. It still read `0`
+while a real paid order existed against a competition. Any customer-facing
+figure built on it is therefore wrong as soon as the business is trading.
+
+Customer-facing availability — on cards, in the hero, anywhere a visitor makes
+a decision — is derived from live Shopify inventory instead, in
+`snippets/competition-availability.liquid`:
+
+```
+remaining = variant.inventory_quantity
+taken     = entries_total - variant.inventory_quantity
+```
+
+Inventory is decremented transactionally by Shopify on every order and the cap
+is enforced against it at checkout, so it is the only figure that is right
+without anyone remembering to update it. Nothing renders unless `entries_total`
+is above zero and the variant is tracked by Shopify.
+
+**Do not build a second availability system.** If a figure is needed somewhere
+new, render this snippet.
+
+### How each order path moves inventory
+
+The two paths do not behave identically, and the difference is the reason the
+figures are clamped.
+
+| Path | Decrements inventory | Respects the `DENY` cap |
+|---|---|---|
+| Customer checkout | Yes | **Yes** — refused with `MERCHANDISE_OUT_OF_STOCK` |
+| Postal entry (Draft Order) | Yes | **No** — verified overselling to `-1` |
+
+A postal entry accepted after the cap is reached drives inventory negative. So
+`inventory_quantity` can legitimately be negative, and the availability snippet
+clamps `remaining` to zero and reports **"Fully entered"** rather than quoting
+a negative number. It also clamps at the top, for a restock or a raised cap.
+
+Clamping stops a customer seeing something absurd. **It does not fix the
+oversell** — the entry still exists and still has to be honoured or resolved.
+That is why capacity must be checked before a postal entry is processed, per
+the constraint above.
 
 ## Variant metafields
 

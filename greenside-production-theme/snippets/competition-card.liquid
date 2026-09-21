@@ -4,15 +4,19 @@
   Four things, in this order: the image, the prize, the entry price, the action.
   Everything else belongs on the competition page.
 
-  Deliberate omissions, each of which was previously on the card:
-    - No progress bar by default. On a card it is pressure; on the competition
-      page there is room for it to be information.
+  The card carries a live availability count, taken from Shopify inventory
+  rather than the hand-maintained entries_sold metafield. It is a number and
+  never a bar: a count is information, a filling meter is pressure.
+
+  Still deliberately absent:
+    - No progress bar. See above, and docs/PERSUASION.md.
     - One badge maximum, never two. Three urgency signals on one card is how a
       competition site starts to look like a slot machine.
     - No gold anywhere. Brass means winners and nothing else.
-    - The "Win a" prefix is trimmed, because the card already sits under a
-      heading that supplies the context, and those two words were occupying the
-      most visible line of the most repeated component on the site.
+
+  The "Win a" prefix is trimmed only when settings.card_trim_win_prefix is on.
+  It ships off: "Win a TaylorMade Qi10 Driver" is the thing the visitor wants,
+  and stating it plainly is the whole commercial proposition of the card.
 
   Parameters:
     product          (required)
@@ -21,6 +25,7 @@
     loading          'lazy' (default) or 'eager'
     sizes            sizes attribute for the image
     show_progress    override the theme setting
+    show_availability override the theme setting
     show_prize_value override the theme setting
     show_closing     override the theme setting
     show_badges      override the theme setting
@@ -49,6 +54,16 @@
   assign with_badges = show_badges
   if with_badges == nil
     assign with_badges = settings.card_show_badges
+  endif
+  comment
+    Availability has no theme setting behind it, unlike the other card fields.
+    The snippet renders nothing unless a real cap exists and Shopify is
+    tracking inventory, so a switch could only ever hide a figure that is
+    true. Pass show_availability: false to suppress it in a specific context.
+  endcomment
+  assign with_availability = show_availability
+  if with_availability == nil
+    assign with_availability = true
   endif
 
   assign prize_value = product.metafields.custom.prize_value
@@ -158,6 +173,16 @@
       {%- if closing_markup != blank -%}
         <p class="competition-card__closing num">{{ closing_markup }}</p>
       {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%}
+      How many entries are left, from live inventory rather than the
+      hand-maintained entries_sold metafield. A count, never a filling bar:
+      the number is the information, the meter is the pressure. See
+      docs/PERSUASION.md and snippets/competition-availability.liquid.
+    {%- endcomment -%}
+    {%- if with_availability -%}
+      {%- render 'competition-availability', product: product, mode: 'left' -%}
     {%- endif -%}
 
     {%- if with_progress -%}

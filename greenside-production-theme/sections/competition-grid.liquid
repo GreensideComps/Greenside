@@ -95,14 +95,32 @@
           </ul>
         </gs-carousel>
       {%- else -%}
-        <ul class="competition-grid" role="list">
+        {%- comment -%}
+          One competition in a four-column grid reads as a catalogue that
+          failed to load, and the single-competition state is the realistic
+          launch state rather than an edge case. At a count of one the list
+          takes a modifier that lays the card out full width, image beside
+          detail, at feature scale. Same card markup either way, so there is
+          no second component to keep in step.
+        {%- endcomment -%}
+        {%- if count == 1 -%}
+          {%- assign grid_class = 'competition-grid competition-grid--single' -%}
+          {%- assign card_sizes = '(min-width: 750px) 50vw, 92vw' -%}
+          {%- assign card_loading = 'eager' -%}
+        {%- else -%}
+          {%- assign grid_class = 'competition-grid' -%}
+          {%- assign card_sizes = '(min-width: 990px) 320px, (min-width: 600px) 45vw, 92vw' -%}
+          {%- assign card_loading = 'lazy' -%}
+        {%- endif -%}
+        <ul class="{{ grid_class }}" role="list">
           {%- for product in products limit: limit -%}
             <li>
               {%- render 'competition-card',
                 product: product,
                 index: forloop.index,
                 image_ratio: section.settings.image_ratio,
-                sizes: '(min-width: 990px) 320px, (min-width: 600px) 45vw, 92vw'
+                loading: card_loading,
+                sizes: card_sizes
               -%}
             </li>
           {%- endfor -%}

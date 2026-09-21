@@ -33,7 +33,7 @@
     "button_letter_spacing": 2,
     "button_weight": 600,
     "card_image_ratio": "portrait",
-    "card_trim_win_prefix": true,
+    "card_trim_win_prefix": false,
     "card_show_prize_value": true,
     "card_show_progress": false,
     "card_show_closing": true,

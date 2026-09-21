@@ -282,3 +282,128 @@ test('entry counts are grouped with thousands separators', () => {
   assert.match(body, /sold: sold_text/, 'the visible count must use the formatted value');
   assert.match(body, /total: total_text/, 'the visible total must use the formatted value');
 });
+
+/* -------------------------------------------------------------------------- *
+ * The competition ticker
+ * -------------------------------------------------------------------------- */
+
+// A moving strip is one edit away from being a countdown. What makes this one
+// acceptable is that its motion is navigational: it exposes more competitions
+// than fit on a line, and implies nothing about time running out.
+test('the ticker moves to show more, never to imply time running out', () => {
+  const body = readMarkup('sections/competition-ticker.liquid');
+
+  assert.doesNotMatch(body, /\bcountdown\b/i, 'the ticker must never count down');
+  assert.doesNotMatch(
+    body,
+    /\b(hurry|ending soon|last chance|almost gone|don't miss|selling fast)\b/i,
+    'the ticker must not carry urgency wording',
+  );
+
+  // Every figure in it has to come from the product, not from the section.
+  assert.match(body, /product\.price/, 'the price must come from the product');
+  assert.match(body, /product\.url/, 'each item must link to its own competition');
+  assert.doesNotMatch(
+    body,
+    /£\s*\d/,
+    'no price may be hard-coded into the ticker markup',
+  );
+});
+
+// A ticker advertising an empty catalogue is worse than no ticker, and an
+// unavailable competition in a promotional strip is an advert for a dead end.
+test('the ticker renders nothing without real open competitions', () => {
+  const body = readMarkup('sections/competition-ticker.liquid');
+  assert.match(body, /open_count > 0/, 'the section must render only when items exist');
+  assert.match(body, /product\.available/, 'only enterable competitions may appear');
+  assert.match(body, /is_closed/, 'closed competitions must be excluded');
+});
+
+// Motion preferences are an accessibility requirement, and a marquee that
+// escapes its container scrolls the whole page sideways.
+test('the ticker respects reduced motion and cannot overflow the page', () => {
+  const css = read('assets/component-commerce.css');
+
+  assert.match(css, /prefers-reduced-motion/, 'the ticker must honour reduced motion');
+  const reduced = css.slice(css.indexOf('prefers-reduced-motion'));
+  assert.match(reduced, /animation:\s*none/, 'reduced motion must stop the animation');
+
+  assert.match(css, /\.ticker\s*\{[^}]*overflow:\s*hidden/, '.ticker must clip its own track');
+  assert.match(
+    css,
+    /animation-play-state:\s*paused/,
+    'the ticker must pause on hover and focus',
+  );
+});
+
+/* -------------------------------------------------------------------------- *
+ * Availability comes from inventory, and is clamped
+ * -------------------------------------------------------------------------- */
+
+// entries_sold is hand-maintained and nothing writes to it, so it is wrong in
+// public the moment a real order exists. Inventory is decremented by Shopify
+// on every order, which is why it is the customer-facing source of truth.
+test('availability is derived from live inventory, never from entries_sold', () => {
+  const body = readMarkup('snippets/competition-availability.liquid');
+
+  assert.match(body, /inventory_quantity/, 'availability must read live inventory');
+  assert.match(body, /entries_total/, 'availability must read the published cap');
+  assert.doesNotMatch(
+    body,
+    /entries_sold/,
+    'availability must not use the hand-maintained entries_sold metafield',
+  );
+  assert.match(
+    body,
+    /inventory_management == 'shopify'/,
+    'availability must require that Shopify is tracking inventory',
+  );
+});
+
+// Draft Orders bypass the inventory DENY cap -- two completed against a stock
+// of 1 left inventory at -1 on the live store. Postal entries are Draft
+// Orders, so negative inventory is a real state and must never surface as
+// "-1 entries left".
+test('a negative inventory from a postal entry never reaches the customer', () => {
+  const body = readMarkup('snippets/competition-availability.liquid');
+
+  assert.match(body, /if remaining < 0/, 'remaining must be clamped at zero');
+  assert.match(body, /if remaining > total/, 'remaining must be clamped at the cap');
+  assert.match(
+    body,
+    /fully_entered/,
+    'a competition at or past its cap must say so rather than quote a number',
+  );
+});
+
+/* -------------------------------------------------------------------------- *
+ * A count, not a meter
+ * -------------------------------------------------------------------------- */
+
+// The distinction the whole commercial redesign rests on: the number is
+// information a customer can check, the filling bar is the visual signature of
+// online gambling. Cards get the number and never the bar.
+test('cards carry an availability count and never a progress bar', () => {
+  assert.notEqual(
+    settings.card_show_progress,
+    true,
+    'the progress bar must stay off on cards',
+  );
+
+  const card = readMarkup('snippets/competition-card.liquid');
+  assert.match(card, /render 'competition-availability'/, 'the card must show the count');
+
+  const availability = readMarkup('snippets/competition-availability.liquid');
+  assert.doesNotMatch(
+    availability,
+    /progress|<meter|--fill|width:\s*\{\{/,
+    'the availability snippet must render text, never a bar or a fill',
+  );
+
+  const css = read('assets/component-commerce.css');
+  assert.doesNotMatch(
+    css,
+    /\.competition-availability[^{]*\{[^}]*(background-image|linear-gradient)/,
+    'the availability line must not be dressed up as a meter',
+  );
+});

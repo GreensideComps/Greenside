@@ -169,6 +169,14 @@
               </p>
             {%- endif -%}
 
+            {%- comment -%}
+              How many entries exist, and how many are left, from live
+              inventory. The visitor's three questions in the first screen are
+              what can I win, what does it cost, and how do I enter -- this is
+              the second half of the second one. No bar, no percentage.
+            {%- endcomment -%}
+            {%- render 'competition-availability', product: featured, mode: 'left' -%}
+
             <div class="hero__actions">
               <a class="button button--primary button--large" href="{{ hero_link }}" data-track="hero_cta_click">
                 {%- if can_enter -%}

@@ -1,0 +1,106 @@
+{%- comment -%}
+  How many entries are left, taken from live Shopify inventory.
+
+  THE INVENTORY IS THE SOURCE OF TRUTH, NOT custom.entries_sold.
+
+  `entries_sold` is a hand-maintained metafield. Nothing writes to it, so it
+  still reads 0 while real orders exist against a competition. A figure that
+  only moves when someone remembers to move it is a figure that will be wrong
+  in public, on the most repeated component on the site. Inventory, by
+  contrast, is decremented transactionally by Shopify on every order, and the
+  cap is enforced against it at checkout. So:
+
+      taken     = entries_total - inventory_quantity
+      remaining = inventory_quantity
+
+  POSTAL ENTRIES AND THE OVERSELL CASE.
+
+  Not every order path respects the cap. A customer checkout does: Shopify
+  refuses a checkout whose stock has gone, with MERCHANDISE_OUT_OF_STOCK.
+  A Draft Order does not — completing two against a stock of 1 succeeded and
+  left inventory at -1, verified against the live store. Postal entries are
+  processed as Draft Orders, so a postal entry taken after the cap is reached
+  will drive inventory negative.
+
+  That makes a negative `inventory_quantity` a real state, not a theoretical
+  one, and it must never reach a customer as "-1 entries left". Both figures
+  are therefore clamped: remaining never drops below zero, and taken never
+  exceeds the published cap. A competition at or past its cap reports itself
+  as fully entered instead of quoting a number.
+
+  The reverse case is clamped too. Raising a cap, or restocking, can leave
+  inventory above entries_total, which would otherwise render a negative
+  number taken.
+
+  Nothing renders unless the cap is a real number above zero AND Shopify is
+  tracking inventory for the variant. No cap, no tracking, no output — there
+  is no fallback and no estimate.
+
+  Parameters:
+    product  (required)
+    mode     'left'  "2,570 of 4,000 entries left"   (default, used on cards)
+             'cap'   "4,000 entries"                  (the published total only)
+    class    extra class names for the wrapper
+{%- endcomment -%}
+
+{%- liquid
+  assign total = product.metafields.custom.entries_total.value
+  assign variant = product.selected_or_first_available_variant
+  assign tracked = false
+  if variant.inventory_management == 'shopify'
+    assign tracked = true
+  endif
+
+  assign show = false
+  if total != blank and total > 0
+    assign show = true
+  endif
+-%}
+
+{%- if show -%}
+  {%- liquid
+    assign display_mode = mode | default: 'left'
+    capture total_text
+      render 'format-number', value: total
+    endcapture
+
+    comment
+      Without tracking there is no live figure to quote, so only the published
+      cap can be stated. It is still true, it just says nothing about what is
+      left.
+    endcomment
+    if tracked == false
+      assign display_mode = 'cap'
+    endif
+
+    if display_mode != 'cap'
+      assign stock = variant.inventory_quantity
+
+      comment
+        Clamp both ends. Below zero is the Draft Order oversell case described
+        above; above the cap is a restock or a raised cap.
+      endcomment
+      assign remaining = stock
+      if remaining < 0
+        assign remaining = 0
+      endif
+      if remaining > total
+        assign remaining = total
+      endif
+
+      capture remaining_text
+        render 'format-number', value: remaining
+      endcapture
+    endif
+  -%}
+
+  <p class="competition-availability num {{ class }}">
+    {%- if display_mode == 'cap' -%}
+      {{ 'products.competition.entry_cap' | t: total: total_text }}
+    {%- elsif remaining == 0 -%}
+      {{ 'products.competition.fully_entered' | t }}
+    {%- else -%}
+      {{ 'products.competition.entries_left' | t: remaining: remaining_text, total: total_text }}
+    {%- endif -%}
+  </p>
+{%- endif -%}

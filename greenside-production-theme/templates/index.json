@@ -3,7 +3,7 @@
     "hero": {
       "type": "hero-competition",
       "settings": {
-        "eyebrow": "This week",
+        "eyebrow": "Featured competition",
         "text": "<p>Entries from £2.49. Every competition publishes its entry cap before you enter, and every one has a free entry route.</p>",
         "button_label": "Browse competitions",
         "secondary_label": "How the draw works",
@@ -58,14 +58,14 @@
       ],
       "settings": {
         "colour_scheme": "light",
-        "spacing_top": "minor",
-        "spacing_bottom": "minor"
+        "spacing_top": "standard",
+        "spacing_bottom": "standard"
       }
     },
     "open-now": {
       "type": "competition-grid",
       "settings": {
-        "eyebrow": "Open now",
+        "eyebrow": "Enter now",
         "heading": "Open competitions",
         "subheading": "",
         "heading_size": "h2",
@@ -80,44 +80,6 @@
         "spacing_bottom": "standard",
         "empty_heading": "Competitions coming soon",
         "empty_text": "We're preparing the next Greenside competitions. Join the Greenside Club and we'll tell you the moment the next prize goes live."
-      }
-    },
-    "major-prize": {
-      "type": "major-prize",
-      "blocks": {
-        "point-1": {
-          "type": "point",
-          "settings": {
-            "text": "Cash alternative on every prize"
-          }
-        },
-        "point-2": {
-          "type": "point",
-          "settings": {
-            "text": "Delivered free, anywhere in the UK"
-          }
-        },
-        "point-3": {
-          "type": "point",
-          "settings": {
-            "text": "Draw filmed and published in full"
-          }
-        }
-      },
-      "block_order": [
-        "point-1",
-        "point-2",
-        "point-3"
-      ],
-      "settings": {
-        "eyebrow": "The main event",
-        "heading": "The headline competition",
-        "text": "<p>Bigger prize. Same capped entries. Same published draw.</p>",
-        "button_label": "Enter this competition",
-        "media_position": "left",
-        "colour_scheme": "deep",
-        "spacing_top": "standard",
-        "spacing_bottom": "standard"
       }
     },
     "how": {
@@ -183,70 +145,38 @@
         "spacing_bottom": "major"
       }
     },
-    "categories": {
-      "type": "category-tiles",
-      "blocks": {
-        "cat-1": {
-          "type": "category",
-          "settings": {
-            "show_count": false
-          }
-        },
-        "cat-2": {
-          "type": "category",
-          "settings": {
-            "show_count": false
-          }
-        },
-        "cat-3": {
-          "type": "category",
-          "settings": {
-            "show_count": false
-          }
-        },
-        "cat-4": {
-          "type": "category",
-          "settings": {
-            "show_count": false
-          }
-        }
-      },
-      "block_order": [
-        "cat-1",
-        "cat-2",
-        "cat-3",
-        "cat-4"
-      ],
+    "ticker": {
+      "type": "competition-ticker",
       "settings": {
-        "eyebrow": "",
-        "heading": "Browse by category",
-        "columns_desktop": 4,
-        "colour_scheme": "light",
-        "spacing_top": "standard",
-        "spacing_bottom": "standard"
+        "collection": "featured-competitions",
+        "items_to_show": 8,
+        "seconds_per_item": 9,
+        "colour_scheme": "deep"
       }
     },
-    "blog": {
-      "type": "blog-rail",
+    "about": {
+      "type": "content-feature",
       "settings": {
-        "eyebrow": "Golf, not just competitions",
-        "heading": "From the clubhouse",
-        "blog": "news",
-        "posts_to_show": 3,
+        "eyebrow": "About Greenside",
+        "heading": "Competitions a golfer can check",
+        "text": "<p>Every competition publishes its entry cap before anyone enters, every draw is filmed and published in full with the winning number, and every competition has a free entry route.</p>",
+        "button_label": "More about Greenside",
+        "link": "/pages/about",
+        "button_style": "secondary",
+        "media_position": "right",
         "colour_scheme": "cream",
         "spacing_top": "standard",
-        "spacing_bottom": "major"
+        "spacing_bottom": "standard"
       }
     }
   },
   "order": [
+    "ticker",
     "hero",
-    "trust",
     "open-now",
-    "major-prize",
+    "trust",
     "how",
     "winners",
-    "categories",
-    "blog"
+    "about"
   ]
 }

@@ -27,29 +27,109 @@ is the end of a competition brand.
 
 ## Scarcity — the entry cap
 
-**What is shown:** `2,570 of 4,000 entries`, `1,430 entries left`.
+**What is shown:** `2,570 of 4,000 entries left` on cards, in the hero, and on
+the competition page.
 
 **Why it is legitimate:** the cap is a real, finite allocation published before
 anyone enters. Running out is a genuine consequence, not a manufactured one.
 
-**How it is protected:**
+### The count is the information. The bar is the pressure.
 
-- `snippets/competition-progress.liquid` renders only when **both**
-  `custom.entries_total` and `custom.entries_sold` hold real values and the
-  total is above zero. There is deliberately no fallback. A competition with no
-  entry data shows no progress at all, rather than an invented bar.
-- Neither metafield may be given a `| default:`. A defaulted cap is a fabricated
-  cap. A test asserts this.
-- The bar is one neutral colour at every percentage. A fill that turns gold as
-  it approaches full is the most recognisable cue in online gambling, and the
-  number already carries the information.
-- Cards do not show the progress bar (`card_show_progress` is off). Twelve
-  filling bars in a grid is a slot machine, whatever each individual bar says.
+This is the distinction the commercial design rests on, and it is finer than it
+looks.
 
-**Never do:** show a percentage without the underlying counts; animate the bar
-on load; add "almost gone" wording above a threshold.
+A **number** is a fact the entrant can check: it says how many entries remain
+out of a total that was published in advance, and it is as true at 10% sold as
+at 90%. A **filling meter** is a different object. It converts the same fact
+into a visual approaching completion, it grows more insistent the fuller it
+gets, and it is the single most recognisable cue in online gambling. The number
+informs a decision; the bar applies a force to it.
+
+So **competition cards carry the count and never the bar.** `card_show_progress`
+ships off and a test asserts it. The competition page may render a bar, where
+there is room for it to sit as one fact among many rather than as the loudest
+thing in a grid of twelve.
+
+### Where the figure comes from: inventory, not a metafield
+
+`custom.entries_sold` is hand-maintained. Nothing writes to it. It still read
+`0` while a real paid order existed against a competition, which means any
+customer-facing figure built on it is wrong the moment the business is actually
+trading — in public, on the most repeated component on the site.
+
+Shopify inventory is decremented transactionally on every order, and the cap is
+enforced against it at checkout. It is therefore the source of truth:
+
+```
+remaining = variant.inventory_quantity
+taken     = entries_total - variant.inventory_quantity
+```
+
+`snippets/competition-availability.liquid` renders nothing unless a real cap
+exists above zero **and** Shopify is tracking inventory for the variant. There
+is no fallback and no estimate.
+
+### The postal-entry case, and why both ends are clamped
+
+Not every order path respects the cap. A customer checkout does — Shopify
+refuses a checkout whose stock has gone, with `MERCHANDISE_OUT_OF_STOCK`,
+verified against the live store. **A Draft Order does not.** Two completed in
+parallel against a stock of 1 both succeeded and left inventory at `-1`.
+
+Postal entries are processed as Draft Orders. A postal entry accepted after the
+cap is reached will therefore drive inventory negative. That makes a negative
+`inventory_quantity` a real state rather than a theoretical one, and it must
+never reach a customer as "-1 entries left".
+
+Both ends are clamped, and a test asserts it:
+
+- **remaining never drops below zero** — the oversell case above
+- **remaining never exceeds the cap** — a restock, or a raised cap
+- a competition at or past its cap reports **"Fully entered"** rather than
+  quoting a number
+
+See `docs/COMPETITION-DATA-MODEL.md` for how postal entries are processed and
+why the capacity check before processing them is not optional.
+
+**Never do:** show a percentage without the underlying counts; animate the
+count on load; turn the figure gold as it approaches the cap; add "almost gone"
+wording above a threshold; or quote availability from `entries_sold`.
 
 ---
+
+## The competition ticker
+
+**What is shown:** a thin moving strip of the competitions that are open right
+now — `WIN A TAYLORMADE Qi10 DRIVER · £2.49 PER ENTRY · ENTER NOW →`.
+
+**Why it is legitimate:** every item is one real product, carrying its own
+title, its own Shopify price and a link to its own page. With no open
+competitions the section renders nothing at all, because a ticker scrolling
+past an empty catalogue is worse than no ticker.
+
+**Why movement is allowed here when countdown timers are banned.** The two
+look superficially similar and are opposites. Motion in the ticker is
+**navigational**: it exposes more competitions than fit on one line. It does
+not tick towards anything, does not change colour, does not accelerate, and
+nothing in it implies that waiting costs the visitor something. A countdown
+does the reverse — it exists only to convert a real deadline into pressure.
+
+**How it is protected:**
+
+- Only competitions that are `available` and not past `closing_at` appear. An
+  unavailable competition in a promotional strip is an advert for a dead end.
+- No price may be hard-coded into the markup. A test greps for it.
+- `prefers-reduced-motion` stops the animation and leaves a strip the visitor
+  scrolls themselves, rather than freezing it and hiding whatever was
+  off-screen. The duplicate track is removed in that mode so the list is not
+  read out twice.
+- It pauses on hover and on keyboard focus, so a moving target never escapes a
+  pointer or a tab stop.
+- The wrapper clips its own overflow, so a track wider than the viewport can
+  never scroll the page sideways.
+
+**Never do:** add a timer to it; make it faster as a competition fills; put a
+sold percentage in it; or let it carry a competition nobody can enter.
 
 ## Urgency and loss aversion — the closing date
 
@@ -208,5 +288,7 @@ inconsistent half.
 3. Can the entrant verify it after the draw?
 4. If it is a promise, what sends it?
 5. Does it still read as honest to someone who did not win?
+6. Is it stating the fact, or applying a force to it? A count informs; a
+   filling meter, a ticking clock or a reddening figure pushes.
 
 If any answer is uncomfortable, the element does not ship.
