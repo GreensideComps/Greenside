@@ -113,3 +113,77 @@ entrant, so a real chance can only be better than the number shown.
 by default. Allocation needs Shopify Flow or a small app writing numbers to an
 order metafield or line item property. Until that exists, leaving this off keeps
 the storefront from promising a number the entrant never receives.
+
+## Postal entries — two verified constraints
+
+Postal entries ("no purchase necessary") are processed as **£0 Shopify orders**
+through the Draft Order workflow, so they share the customer record, order
+system, competition identification, entry allocation and draw pool with paid
+entries. There is deliberately no separate postal-entry database.
+
+Both rules below come from tests run against the live store on 2026-09-21, not
+from documentation. The evidence is recorded in `docs/QA.md`.
+
+### 1. Draft orders bypass the inventory cap — check capacity before processing
+
+Shopify's entry cap is enforced by variant inventory set to **`DENY` + tracked**.
+That enforcement is real for customers: a checkout whose stock has gone is
+refused with `MERCHANDISE_OUT_OF_STOCK`, even when the cart was built while
+stock still existed.
+
+**It does not apply to draft orders.** Two draft orders completed in parallel
+against a stock of 1 both succeeded, leaving inventory at `available: -1`,
+`committed: 2`, `onHand: 1`. Shopify allows this by design, on the basis that a
+merchant creating an order manually knows what they are doing.
+
+Postal entries are draft orders. So the one route that is free to enter is also
+the only route that can push a competition past its published cap, silently and
+with no warning.
+
+> **Before processing a postal entry, check the competition's remaining
+> capacity.** Never process a batch blindly.
+
+Policy for postal entries received *after* the cap is reached is a legal and
+fairness question, not a technical one, and is to be settled with Ben's adviser.
+Do not build an automated workaround until that policy exists — the correct
+behaviour (reject, refund-equivalent, roll to the next competition, or raise the
+cap) changes what the code should do.
+
+### 2. Use a 100% line-item discount, not an order-level discount
+
+Both placements produce a £0 order total. They do not produce the same record.
+
+| Discount placement | Order total | Line item `discountedTotal` |
+|---|---|---|
+| Order level | £0.00 | **£2.49** — wrong |
+| **Line item level** | £0.00 | £0.00 — correct |
+
+An order-level discount leaves the line item still claiming the full entry
+price, so anything reading line items — revenue reporting, entry-value figures,
+reconciliation — will count a free entry as a paid one.
+
+Apply the discount to the **line item**:
+
+```
+lineItems: [{
+  variantId: "...",
+  quantity: 1,
+  appliedDiscount: { title: "Postal entry", value: 100, valueType: PERCENTAGE },
+  customAttributes: [{ key: "Skill answer", value: "..." }]
+}]
+```
+
+### What a correct postal entry order looks like
+
+Verified on a real £0 order:
+
+- Total **£0.00**, `financial_status: paid`, and **no transaction record** — so
+  an allocator filtering on `financial_status == paid` picks it up alongside
+  paid entries, which is what we want.
+- Tagged `postal-entry`.
+- Line item properties carry the skill answer, the question asked, and
+  `_entry_route: postal`.
+- Order attributes carry the date received, the date processed and who
+  processed it; the order note carries the full audit trail.
+- **Inventory decrements**, so a postal entry consumes one of the published
+  entries — correct, and the reason constraint 1 above matters.

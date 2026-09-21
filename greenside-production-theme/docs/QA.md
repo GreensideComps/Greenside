@@ -123,3 +123,86 @@ promised entry numbers for months while nothing allocated them.
 
 When adding persuasive copy, work through the checklist at the end of
 `docs/PERSUASION.md` first.
+
+---
+
+## Live-store verification — 2026-09-21
+
+Three assumptions underpinning the launch architecture were tested against the
+real store rather than assumed. All three held, with two caveats now recorded in
+`docs/COMPETITION-DATA-MODEL.md`.
+
+### 1. Entry purchase requires no delivery address — PASS
+
+With `requiresShipping: false` on the entry variant, the real storefront
+returned `requires_shipping: false` from `/cart.js` at both cart and line-item
+level, and the real checkout's own proposal payload carried
+`deliveryMethodTypes: ["NONE"]` with an already-resolved
+`CompleteDeliveryStrategy` and no destination address.
+
+Controlled against the same cart with `requiresShipping: true`, which produced
+`delivery: UnavailableTerms` — delivery blocked pending an address. The only
+variable changed was the flag.
+
+### 2. Inventory enforces the entry cap for customers — PASS
+
+Fixture at stock 1, `DENY`, tracked:
+
+- Three independent browser sessions each added one entry. Stock stayed
+  `available: 1, committed: 0` — **carts do not reserve inventory**, so the race
+  is real and must be resolved later than the cart.
+- Requesting quantity 2 returned HTTP 422, *"Only 1 item was added to your cart
+  due to availability."*
+- With stock exhausted, a session holding a cart created *while stock existed*
+  was refused at checkout with `MERCHANDISE_OUT_OF_STOCK` as a
+  `RemoveTermViolation`. Zero such violations in the in-stock control.
+- A fresh session was refused at 422, *"already sold out."*
+
+**Not verified:** two simultaneous completed card payments. The store has no
+Shopify Payments account, so no test gateway was available. The enforcement
+point — checkout refusing a stale cart — is verified; the final payment-capture
+race is not.
+
+**Verified to fail:** the same cap does *not* hold for draft orders. See
+`docs/COMPETITION-DATA-MODEL.md`.
+
+### 3. £0 postal entry via Draft Order — PASS
+
+A real £0 order was created and inspected. Total £0.00, `financial_status: paid`,
+no transaction record, `postal-entry` tag, skill answer and question stored as
+line-item properties, audit dates in order attributes, correct competition, and
+inventory decremented by one.
+
+The order-level discount placement was found to misreport the line item; the
+line-item placement is correct. Both are documented in
+`docs/COMPETITION-DATA-MODEL.md`.
+
+## Browser QA tooling
+
+Chromium-based QA runs through Playwright, driving the real storefront.
+
+Chromium on Linux does not read the system CA store — it reads NSS at
+`$HOME/.pki/nssdb`. In a sandboxed environment whose HTTPS egress goes through a
+TLS-terminating proxy, that store starts empty and every navigation fails with
+`ERR_CERT_AUTHORITY_INVALID`. The fix is to trust the proxy CA properly rather
+than to disable certificate verification:
+
+```sh
+apt-get update -qq && apt-get install -y libnss3-tools
+for f in /usr/local/share/ca-certificates/*.crt; do
+  certutil -d sql:"$HOME/.pki/nssdb" -A -t "C,," -n "ccr-$(basename "$f" .crt)" -i "$f"
+done
+```
+
+Launch against the pre-installed browser, with the proxy passed explicitly:
+
+```js
+chromium.launch({
+  executablePath: '/opt/pw-browsers/chromium',
+  proxy: { server: process.env.HTTPS_PROXY },
+  args: ['--no-sandbox', '--disable-dev-shm-usage'],
+});
+```
+
+Never use `ignoreHTTPSErrors` to work around this. It disables verification for
+every request in the context, including the ones a QA pass is meant to trust.
