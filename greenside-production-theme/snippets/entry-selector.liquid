@@ -18,7 +18,8 @@
     per-entry price is identical at every preset, no value badges are shown —
     labelling one as better would be untrue.
 
-  Both modes respect `custom.max_entries_per_person` as a hard cap.
+  `custom.max_entries_per_person` caps the input, but is NOT enforceable and
+  is deliberately not stated to the customer. See the note further down.
 
   Parameters:
     product (required)
@@ -219,12 +220,23 @@
       </div>
     {%- endif -%}
 
-    {%- if max_per_person != blank and max_per_person > 0 -%}
-      <p class="entry-selector__cap text-xs text-muted">
-        {%- render 'icon', icon: 'info', size: 14 -%}
-        {{ 'products.competition.max_per_person' | t: count: max_per_person }}
-      </p>
-    {%- endif -%}
+    {%- comment -%}
+      THE PER-PERSON CAP IS NOT SHOWN, BECAUSE IT CANNOT BE ENFORCED.
+
+      custom.max_entries_per_person still drives the `max` attribute on the
+      quantity input above, which is a form affordance and nothing more. It was
+      also stated to the customer as a rule -- "Max 50 per person" -- and that
+      claim was false: verified against the live store, a direct POST to
+      /cart/add.js ignores it completely. Both QA competitions stopped at 50
+      regardless of their own cap, because 50 is a Shopify platform default,
+      not our data. A competition capped at 25 accepted 50.
+
+      Enforcing it needs validation between the cart and the order, which on
+      Shopify Basic means Shopify Functions, which needs Plus. Until that
+      exists the storefront states nothing it cannot hold to. The metafield is
+      retained so the cap can be enforced post-payment alongside the skill
+      answer, and so the claim can be restored the moment it becomes true.
+    {%- endcomment -%}
   </fieldset>
 
   <div class="entry-total" data-entry-total-row>

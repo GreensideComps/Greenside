@@ -230,3 +230,67 @@ Verified on a real £0 order:
   processed it; the order note carries the full audit trail.
 - **Inventory decrements**, so a postal entry consumes one of the published
   entries — correct, and the reason constraint 1 above matters.
+
+
+## Entry properties — the canonical shape
+
+Both entry routes write the same three line-item properties. They were not
+always identical: the storefront once wrote a single property keyed on the
+section heading (`Skill question: Bunker`) that held the answer and never
+recorded the question, while the postal route wrote the documented shape. Two
+routes producing two order shapes is a bug in the audit trail, not a detail.
+
+| Property | Value | Visible to the customer |
+|---|---|---|
+| `Skill answer` | The answer the entrant gave | Yes — cart, checkout, order, confirmation |
+| `_skill_question` | The exact question text they were shown | No |
+| `_entry_route` | `online` or `postal` | No |
+
+The leading underscore is Shopify's convention for a property hidden from cart
+and checkout, so the answer is visible for the entrant to check and the
+bookkeeping is not.
+
+**The question text is carried on the order, not looked up afterwards.** The
+`skill_question` metafield can be edited while entries exist, so resolving it
+later would describe the question as it is now rather than as the entrant saw
+it. An order has to be able to prove what it was actually asked.
+
+## The per-person limit is not enforceable
+
+`custom.max_entries_per_person` still caps the quantity input, but it is **not
+stated to the customer anywhere**, because it cannot be held to.
+
+Verified against the live store: a direct `POST /cart/add.js` ignores it
+completely. Two QA competitions with caps of 50 and 25 both accepted exactly
+50 — that 50 is a Shopify platform default, not the metafield. A competition
+capped at 25 took 50 entries.
+
+Enforcing it requires validation between cart and order, which on Shopify
+Basic means Shopify Functions, which requires Plus. Until then the storefront
+claims nothing it cannot enforce. The metafield is kept so the cap can be
+checked post-payment alongside the skill answer, and so the claim can be
+restored the moment it becomes true.
+
+## Allocator eligibility
+
+An order is eligible for the draw when **both** are true:
+
+```
+financial_status == paid  AND  cancelled_at == null
+```
+
+The second condition is not optional. A cancelled order **keeps** its
+financial status: QA order #1003 was cancelled and still reports
+`financial_status: paid`. Filtering on payment alone would put cancelled and
+refunded entries into the draw pool.
+
+Two further notes for whoever builds the allocator:
+
+- A **manual payment method creates orders as `pending`, not `paid`**, and they
+  become paid only when someone marks them so in admin. The allocator must
+  read status at the point it runs, not assume it at the point of order.
+- **Wrong skill answers are not blocked before payment.** Shopify Basic has no
+  pre-payment validation, so eligibility is checked after the fact: the
+  allocator compares each order's `Skill answer` against the competition's
+  correct answer, and excludes the ones that do not match. This is the
+  documented and intended design, not a gap to be closed at the cart layer.

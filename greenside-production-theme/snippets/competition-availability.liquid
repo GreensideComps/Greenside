@@ -51,8 +51,25 @@
     assign tracked = true
   endif
 
+  comment
+    A closed competition has no entries left to advertise. Quoting "618 of 750
+    entries left" beside a Closed badge invites someone to try, and describes
+    an opportunity that no longer exists. Closing is a harder fact than stock:
+    whatever the inventory says, the competition is over, so the count is
+    suppressed entirely and the closed state speaks for itself.
+  endcomment
+  assign is_closed = false
+  assign closing_at = product.metafields.custom.closing_at.value
+  if closing_at != blank
+    assign now_stamp = 'now' | date: '%s' | times: 1
+    assign close_stamp = closing_at | date: '%s' | times: 1
+    if close_stamp <= now_stamp
+      assign is_closed = true
+    endif
+  endif
+
   assign show = false
-  if total != blank and total > 0
+  if total != blank and total > 0 and is_closed == false
     assign show = true
   endif
 -%}

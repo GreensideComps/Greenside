@@ -61,11 +61,11 @@
         {%- liquid
           assign prize_value_text = ''
           if prize_value != blank
-            assign prize_value_text = prize_value | metafield_text | remove: '.00'
+            assign prize_value_text = prize_value.value.amount | money | remove: '.00'
           endif
           assign cash_alternative_text = ''
           if cash_alternative != blank
-            assign cash_alternative_text = cash_alternative | metafield_text | remove: '.00'
+            assign cash_alternative_text = cash_alternative.value.amount | money | remove: '.00'
           endif
         -%}
         {%- if prize_value_text != blank or cash_alternative_text != blank -%}
@@ -126,6 +126,22 @@
               {%- render 'entry-selector', product: product -%}
 
               {%- if skill_question != blank -%}
+                {%- comment -%}
+                  The order must record three things, identically to the postal
+                  route (docs/COMPETITION-DATA-MODEL.md): the answer given, the
+                  question that was actually asked, and which route the entry
+                  came in by. The question text is carried on the order rather
+                  than looked up later, because the metafield can be edited
+                  after entries exist -- an order has to prove what its entrant
+                  was actually shown.
+
+                  Keys prefixed with an underscore are hidden from the customer
+                  in cart and checkout by Shopify convention, so the answer
+                  shows and the bookkeeping does not.
+                {%- endcomment -%}
+                <input type="hidden" name="properties[_skill_question]" value="{{ skill_question | escape }}">
+                <input type="hidden" name="properties[_entry_route]" value="online">
+
                 <fieldset class="skill-question">
                   <legend class="skill-question__legend">
                     {%- render 'icon', icon: 'question', size: 16 -%}
@@ -140,7 +156,7 @@
                           <input
                             id="SkillAnswer-{{ forloop.index }}"
                             type="radio"
-                            name="properties[{{ 'products.competition.question_heading' | t }}]"
+                            name="properties[Skill answer]"
                             value="{{ answer | escape }}"
                             required
                             data-skill-answer
@@ -162,7 +178,7 @@
                         id="SkillAnswerText"
                         class="field__input"
                         type="text"
-                        name="properties[{{ 'products.competition.question_heading' | t }}]"
+                        name="properties[Skill answer]"
                         required
                         autocomplete="off"
                       >

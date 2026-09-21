@@ -117,13 +117,14 @@
   endif
 
   comment
-    Whole pounds. metafield_text formats a money metafield correctly whatever the
-    underlying precision; the trailing ".00" is then noise at card size, while a
-    genuine ".50" survives.
+    Whole pounds, and no currency code. metafield_text renders a money
+    metafield as "600.00 GBP", so stripping only ".00" left "£600 GBP value"
+    on every card. The money filter formats from the value itself using the
+    shop's own format, which already carries the symbol.
   endcomment
   assign prize_value_text = ''
   if prize_value != blank
-    assign prize_value_text = prize_value | metafield_text | remove: '.00'
+    assign prize_value_text = prize_value.value.amount | money | remove: '.00'
   endif
 
   assign card_alt = product.featured_media.alt | default: product.title

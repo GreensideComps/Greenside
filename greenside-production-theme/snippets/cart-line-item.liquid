@@ -110,11 +110,10 @@
       </button>
     </div>
 
-    {%- if max_per_person != blank and max_per_person > 0 -%}
-      <p class="cart-item__limit text-xs text-muted">
-        {{ 'products.competition.max_per_person' | t: count: max_per_person }}
-      </p>
-    {%- endif -%}
+    {%- comment -%}
+      The per-person cap is not stated here either. See
+      snippets/entry-selector.liquid for why it cannot be enforced.
+    {%- endcomment -%}
 
     {%- comment -%}
       A basket holding two competitions holds two different deadlines, and
