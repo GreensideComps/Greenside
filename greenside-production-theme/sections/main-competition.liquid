@@ -55,8 +55,11 @@
         <h1 class="competition-page__title h1">{{ product.title | escape }}</h1>
 
         {%- comment -%}
-          Whole pounds. A trailing ".00" is noise at display size, while a
-          genuine ".50" survives the removal.
+          Whole pounds, and no currency code. metafield_text renders a money
+          metafield as "600.00 GBP", which left "£600 GBP" on the page once
+          only the ".00" was stripped. Formatting from the value uses the
+          shop's own money format, which already carries the symbol. A genuine
+          ".50" survives the removal.
         {%- endcomment -%}
         {%- liquid
           assign prize_value_text = ''

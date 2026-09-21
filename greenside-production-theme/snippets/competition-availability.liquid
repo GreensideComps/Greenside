@@ -32,9 +32,10 @@
   inventory above entries_total, which would otherwise render a negative
   number taken.
 
-  Nothing renders unless the cap is a real number above zero AND Shopify is
-  tracking inventory for the variant. No cap, no tracking, no output — there
-  is no fallback and no estimate.
+  Nothing renders unless the cap is a real number above zero, Shopify is
+  tracking inventory for the variant, AND the competition is still open. No
+  cap, no tracking, or past its closing date — no output. There is no
+  fallback and no estimate.
 
   Parameters:
     product  (required)
