@@ -11,6 +11,15 @@
 {%- liquid
   assign entry_total = item.quantity
   assign max_per_person = item.product.metafields.custom.max_entries_per_person.value
+
+  comment
+    The size FILTER, not `.size`. Line item properties come through as a drop,
+    and a drop answers an unknown property with nil rather than an error, so
+    `item.properties.size` silently evaluated to nil and the whole block below
+    was skipped on every cart that had properties. The filter reads the
+    collection itself and returns a real count.
+  endcomment
+  assign property_count = item.properties | size
 -%}
 <li class="cart-item" data-cart-item data-line-key="{{ item.key }}" data-line-index="{{ forloop.index }}">
   <a class="cart-item__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
@@ -43,10 +52,16 @@
       convention for bookkeeping the customer should not see, so they are
       carried on the order but never rendered.
     {%- endcomment -%}
-    {%- if item.properties.size > 0 -%}
+    {%- if property_count > 0 -%}
       <dl class="cart-item__properties">
         {%- for property in item.properties -%}
-          {%- if property.last != blank and property.first.first != '_' -%}
+          {%- comment -%}
+            `slice: 0` for the same reason: a key is a string, and a string has
+            no `first`, so `property.first.first` was nil and never matched the
+            underscore it was meant to catch.
+          {%- endcomment -%}
+          {%- assign property_key_start = property.first | slice: 0 -%}
+          {%- if property.last != blank and property_key_start != '_' -%}
             <div>
               <dt>{{ property.first | escape }}:</dt>
               <dd>{{ property.last | escape }}</dd>
