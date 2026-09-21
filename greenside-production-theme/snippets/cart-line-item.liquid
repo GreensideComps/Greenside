@@ -36,10 +36,16 @@
       <p class="cart-item__variant">{{ item.variant.title | escape }}</p>
     {%- endunless -%}
 
+    {%- comment -%}
+      The skill answer shows here so the entrant can check it before paying —
+      the last point at which a misclick can be corrected. Properties whose key
+      starts with an underscore (_skill_question, _entry_route) are Shopify's
+      convention for bookkeeping the customer should not see, so they are
+      carried on the order but never rendered.
+    {%- endcomment -%}
     {%- if item.properties.size > 0 -%}
       <dl class="cart-item__properties">
         {%- for property in item.properties -%}
-          {%- comment -%} Shopify uses a leading underscore for hidden properties. {%- endcomment -%}
           {%- if property.last != blank and property.first.first != '_' -%}
             <div>
               <dt>{{ property.first | escape }}:</dt>
