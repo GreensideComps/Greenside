@@ -5,8 +5,9 @@
   single prize as though it matters, not to offer a choice of twelve.
 
   Everything shown is real: the price comes from the product, the closing date
-  from custom.closing_at, and the entry line only appears when the competition
-  is genuinely open. Nothing counts down.
+  from custom.closing_at, the entries left from live Shopify inventory, and the
+  entry line only appears when the competition is genuinely open. Nothing
+  counts down.
 {%- endcomment -%}
 
 {%- liquid
@@ -157,8 +158,8 @@
         {%- endif -%}
 
         {%- comment -%}
-          One entry line: price, closing date, action. No progress bar, no
-          counter, no badge. The prize is the hero; this is the caption.
+          One entry line: price, entries left, closing date, action. No progress
+          bar, no counter, no badge. The prize is the hero; this is the caption.
         {%- endcomment -%}
         {%- if has_featured -%}
           <div class="hero__entry">
