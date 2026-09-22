@@ -14,7 +14,15 @@
      the whole page sideways, which is the classic marquee bug. */
   overflow: hidden;
   position: relative;
-  z-index: calc(var(--z-header) + 1);
+  /* Below the header, never above it.
+
+     This was calc(var(--z-header) + 1), which put the ticker one level above
+     the header and so above every nav dropdown: .header-wrapper carries
+     var(--z-header) and creates the stacking context the dropdowns live in, so
+     a dropdown cannot paint above anything that outranks the header, whatever
+     z-index the dropdown itself is given. The fix belongs on the ticker, not
+     on the menu. Still above page content, which is unpositioned. */
+  z-index: calc(var(--z-header) - 10);
   border-bottom: 1px solid rgb(var(--color-on-brand) / 0.12);
 }
 
