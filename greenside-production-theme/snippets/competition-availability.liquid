@@ -26,16 +26,15 @@
   one, and it must never reach a customer as "-1 entries left". Both figures
   are therefore clamped: remaining never drops below zero, and taken never
   exceeds the published cap. A competition at or past its cap reports itself
-  as fully entered instead of quoting a number.
+  as sold out instead of quoting a number.
 
   The reverse case is clamped too. Raising a cap, or restocking, can leave
   inventory above entries_total, which would otherwise render a negative
   number taken.
 
-  Nothing renders unless the cap is a real number above zero, Shopify is
-  tracking inventory for the variant, AND the competition is still open. No
-  cap, no tracking, or past its closing date — no output. There is no
-  fallback and no estimate.
+  Nothing renders unless the cap is a real number above zero AND Shopify is
+  tracking inventory for the variant. No cap or no tracking, no output. There
+  is no fallback and no estimate.
 
   Parameters:
     product  (required)
@@ -53,24 +52,19 @@
   endif
 
   comment
-    A closed competition has no entries left to advertise. Quoting "618 of 750
-    entries left" beside a Closed badge invites someone to try, and describes
-    an opportunity that no longer exists. Closing is a harder fact than stock:
-    whatever the inventory says, the competition is over, so the count is
-    suppressed entirely and the closed state speaks for itself.
-  endcomment
-  assign is_closed = false
-  assign closing_at = product.metafields.custom.closing_at.value
-  if closing_at != blank
-    assign now_stamp = 'now' | date: '%s' | times: 1
-    assign close_stamp = closing_at | date: '%s' | times: 1
-    if close_stamp <= now_stamp
-      assign is_closed = true
-    endif
-  endif
+    closing_at no longer suppresses the count.
 
+    It used to: the theme treated a passed closing date as the end of the
+    competition and hid the availability line. That was wrong in the one case
+    that matters -- a competition past its date with entries still unsold is
+    still buyable, because Shopify enforces stock and not dates. Hiding the
+    count there concealed entries the customer could still buy.
+
+    Stock is now the only thing that decides. At zero the line reads "Sold
+    out", which is exactly what Shopify will tell anyone who tries.
+  endcomment
   assign show = false
-  if total != blank and total > 0 and is_closed == false
+  if total != blank and total > 0
     assign show = true
   endif
 -%}
@@ -116,7 +110,7 @@
     {%- if display_mode == 'cap' -%}
       {{ 'products.competition.entry_cap' | t: total: total_text }}
     {%- elsif remaining == 0 -%}
-      {{ 'products.competition.fully_entered' | t }}
+      {{ 'products.competition.sold_out' | t }}
     {%- else -%}
       {{ 'products.competition.entries_left' | t: remaining: remaining_text, total: total_text }}
     {%- endif -%}

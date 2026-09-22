@@ -67,21 +67,14 @@
   endif
 
   assign prize_value = product.metafields.custom.prize_value
-  assign closing_at = product.metafields.custom.closing_at.value
 
-  assign is_closed = false
-  if closing_at != blank
-    assign now_stamp = 'now' | date: '%s' | times: 1
-    assign close_stamp = closing_at | date: '%s' | times: 1
-    if close_stamp <= now_stamp
-      assign is_closed = true
-    endif
-  endif
-
+  comment
+    Entry state is Shopify inventory, not a date. See the note in
+    sections/main-competition.liquid: a card that says a competition is closed
+    while Shopify would still accept the order is worse than one that says
+    nothing, because the customer can still be charged.
+  endcomment
   assign can_enter = product.available
-  if is_closed
-    assign can_enter = false
-  endif
 
   assign cta_label = settings.entry_cta_label | default: 'Enter'
   unless can_enter

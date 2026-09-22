@@ -38,26 +38,22 @@
   assign limit = section.settings.items_to_show | default: 8
 
   comment
-    Only competitions a visitor can actually enter. A sold-out or closed
-    competition in a promotional strip is an advert for a dead end.
+    Only competitions a visitor can actually enter. A sold-out competition in
+    a promotional strip is an advert for a dead end.
   endcomment
   assign open_items = ''
-  assign now_stamp = 'now' | date: '%s' | times: 1
 -%}
 
 {%- capture items_markup -%}
   {%- for product in collection.products limit: limit -%}
-    {%- liquid
-      assign is_closed = false
-      assign closing_at = product.metafields.custom.closing_at.value
-      if closing_at != blank
-        assign close_stamp = closing_at | date: '%s' | times: 1
-        if close_stamp <= now_stamp
-          assign is_closed = true
-        endif
-      endif
-    -%}
-    {%- if product.available and is_closed == false -%}
+    {%- comment -%}
+      Only competitions Shopify will actually sell. A sold-out competition is
+      excluded because the strip is promotional and an advert for something
+      that cannot be bought is a dead end. A passed closing_at is NOT a reason
+      to exclude: the competition is still purchasable, so hiding it would
+      conceal something the customer can still enter.
+    {%- endcomment -%}
+    {%- if product.available -%}
       {%- liquid
         comment
           Most competition titles already begin "Win a ...". Prefixing those

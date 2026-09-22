@@ -316,7 +316,11 @@ test('the ticker renders nothing without real open competitions', () => {
   const body = readMarkup('sections/competition-ticker.liquid');
   assert.match(body, /open_count > 0/, 'the section must render only when items exist');
   assert.match(body, /product\.available/, 'only enterable competitions may appear');
-  assert.match(body, /is_closed/, 'closed competitions must be excluded');
+  assert.doesNotMatch(
+    body,
+    /is_closed/,
+    'a passed closing date must not exclude a competition Shopify will still sell',
+  );
 });
 
 // Motion preferences are an accessibility requirement, and a marquee that
@@ -371,8 +375,13 @@ test('a negative inventory from a postal entry never reaches the customer', () =
   assert.match(body, /if remaining > total/, 'remaining must be clamped at the cap');
   assert.match(
     body,
-    /fully_entered/,
+    /sold_out/,
     'a competition at or past its cap must say so rather than quote a number',
+  );
+  assert.doesNotMatch(
+    body,
+    /is_closed/,
+    'a passed closing date must not suppress a count of entries still for sale',
   );
 });
 
@@ -406,4 +415,50 @@ test('cards carry an availability count and never a progress bar', () => {
     /\.competition-availability[^{]*\{[^}]*(background-image|linear-gradient)/,
     'the availability line must not be dressed up as a meter',
   );
+});
+
+/* -------------------------------------------------------------------------- *
+ * Inventory is the gate, a date is not
+ *
+ * Shopify enforces stock at checkout; it does not enforce closing_at. Any
+ * place the theme decides whether a customer may enter must therefore read
+ * product availability. A theme that hid the entry form on a date while
+ * Shopify still held stock would tell the customer a competition was closed
+ * and then charge anyone who arrived by direct link.
+ * -------------------------------------------------------------------------- */
+
+test('no entry gate anywhere is driven by closing_at', () => {
+  const gated = [
+    'sections/main-competition.liquid',
+    'sections/hero-competition.liquid',
+    'sections/competition-ticker.liquid',
+    'snippets/competition-card.liquid',
+    'snippets/competition-availability.liquid',
+    'snippets/competition-badges.liquid',
+  ];
+
+  for (const file of gated) {
+    const body = readMarkup(file);
+    assert.doesNotMatch(body, /is_closed/, `${file} must not gate entry on a date`);
+    assert.doesNotMatch(
+      body,
+      /can_enter[^\n]*is_closed/,
+      `${file} must derive can_enter from inventory alone`,
+    );
+  }
+});
+
+test('the competition page derives can_enter from product.available alone', () => {
+  const body = readMarkup('sections/main-competition.liquid');
+  assert.match(body, /assign can_enter = product\.available/, 'inventory is the gate');
+  assert.doesNotMatch(body, /closed_title/, 'the date-driven closed state is gone');
+});
+
+test('a sold-out competition is still rendered, never hidden', () => {
+  // The product page must keep serving a page at zero stock: entrants who
+  // already bought need somewhere to return to, and links already sent must
+  // not 404.
+  const body = readMarkup('sections/main-competition.liquid');
+  assert.match(body, /competition-closed/, 'a sold-out state is rendered in place');
+  assert.match(body, /sold_out_title/, 'and it says sold out');
 });

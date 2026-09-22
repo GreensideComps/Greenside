@@ -294,3 +294,80 @@ Two further notes for whoever builds the allocator:
   allocator compares each order's `Skill answer` against the competition's
   correct answer, and excludes the ones that do not match. This is the
   documented and intended design, not a gap to be closed at the cart layer.
+
+## How a competition closes
+
+A competition closes when its entries sell out. Nothing else closes it.
+
+    entries_total  = the published cap
+    inventory      = entries remaining
+    inventory 0    = sold out
+
+Shopify enforces this itself. Every competition variant is `tracked: true`
+with `inventoryPolicy: DENY`, so once available inventory reaches 0 Shopify
+refuses the checkout with `MERCHANDISE_OUT_OF_STOCK`. That is a server-side
+stop, not a storefront one, and it cannot be bypassed by a direct link, a
+stale page or a hand-built cart.
+
+The storefront reads the same fact. `product.available` is false at zero
+stock, and every closed-state surface in the theme derives from it: the entry
+form is not rendered, the page says **Sold out**, cards carry the sold-out
+badge, and the competition drops out of the ticker.
+
+### closing_at is information, not a gate
+
+`custom.closing_at` publishes when the draw is expected. It does **not**
+decide whether a customer may enter, and no theme code may use it that way.
+
+The reason is narrow and important. Shopify enforces stock; it does not
+enforce dates. A theme that hid the entry form once a date passed, while
+inventory remained and Shopify would still take the payment, would be telling
+customers a competition was closed while continuing to sell it — and anyone
+arriving by direct link could still be charged for it. A date cannot stop a
+checkout, so it is not permitted to look as though it does.
+
+What closing_at still drives: the published closing and draw dates, the
+informational "Closing soon" badge inside 48 hours, and `priceValidUntil` in
+structured data.
+
+This is enforced by tests in `tests/persuasion-integrity.test.js`, which fail
+if `is_closed` reappears in any file that decides entry.
+
+### A sold-out competition stays published
+
+Nothing unpublishes, archives, drafts or redirects a competition when it sells
+out. The product page keeps serving: entrants who already bought need
+somewhere to return to, and links already sent must keep working. Removing a
+competition after the draw is a manual decision.
+
+## The refund restock hazard
+
+**Operational rule: once a competition has sold out, its inventory must never
+be restocked.**
+
+Cancelling or refunding an order in Shopify offers to restock the items. For
+an ordinary product that is correct. For a competition it is not: restocking
+a single entry takes inventory from 0 to 1, which makes `product.available`
+true again, and a competition that was publicly sold out silently reopens and
+starts selling entries into a draw that may already have taken place.
+
+When cancelling or refunding a competition order, **untick "Restock items"**.
+
+### Why this is not automated
+
+Three technical options were considered and all were rejected for now:
+
+1. **A Flow workflow on inventory change that re-zeroes stock.** It would fight
+   any legitimate inventory correction, and a loop between a restock and an
+   automatic re-zero is worse than the hazard it fixes.
+2. **Switching the sold-out variant to a policy that refuses sales regardless
+   of stock.** Shopify has no such policy; `CONTINUE` is the opposite of what
+   is wanted and `DENY` already behaves correctly at zero.
+3. **Removing the product from sale on sell-out.** That contradicts keeping the
+   competition visible as an archive.
+
+The hazard is real but narrow: it requires a refund on an already sold-out
+competition, with the restock box left ticked. A written rule and a checked
+box are proportionate. If refunds ever become frequent enough that the rule
+is unreliable, the honest fix is a Flow workflow that *alerts* on a restock of
+a sold-out competition rather than one that silently corrects it.

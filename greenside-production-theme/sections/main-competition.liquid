@@ -3,7 +3,6 @@
 {%- liquid
   assign prize_value = product.metafields.custom.prize_value
   assign cash_alternative = product.metafields.custom.cash_alternative
-  assign closing_at = product.metafields.custom.closing_at.value
   assign skill_question = product.metafields.custom.skill_question.value
   assign skill_answers = product.metafields.custom.skill_answers.value
   assign competition_type = product.metafields.custom.competition_type.value
@@ -13,22 +12,21 @@
   assign free_entry_url = product.metafields.custom.free_entry_url.value | default: settings.legal_free_entry_url
 
   comment
-    Entry state. A competition is enterable only when Shopify says the product
-    is available AND the published closing date has not passed.
-  endcomment
-  assign is_closed = false
-  if closing_at != blank
-    assign now_stamp = 'now' | date: '%s' | times: 1
-    assign close_stamp = closing_at | date: '%s' | times: 1
-    if close_stamp <= now_stamp
-      assign is_closed = true
-    endif
-  endif
+    Entry state comes from Shopify inventory and nothing else.
 
+    `product.available` is false the moment available inventory reaches 0 on a
+    variant that is tracked with a DENY policy, and that same fact is what
+    makes Shopify refuse the checkout. The storefront and the server therefore
+    agree by construction.
+
+    closing_at is deliberately NOT part of this. It is published information,
+    not a gate. A theme that hid the entry form once a date passed, while
+    Shopify still held stock and would still take the payment, would be
+    claiming a competition was closed when it was not -- and anyone arriving by
+    direct link could still be charged. A date cannot stop a checkout, so it is
+    not allowed to look as though it does.
+  endcomment
   assign can_enter = product.available
-  if is_closed
-    assign can_enter = false
-  endif
 
 -%}
 
@@ -218,14 +216,19 @@
           {%- endif -%}
 
         {%- else -%}
+          {%- comment -%}
+            Sold out, and still a page.
+
+            The product stays published and this block renders in place of the
+            entry form. Entrants who already bought need somewhere to come back
+            to, and every link already sent out must keep working -- so nothing
+            here unpublishes, archives or redirects.
+          {%- endcomment -%}
           <div class="competition-closed">
             <span class="competition-closed__icon">
               {%- render 'icon', icon: 'flag', size: 24 -%}
             </span>
-            {%- if is_closed -%}
-              <h2 class="h4">{{ 'products.competition.closed_title' | t }}</h2>
-              <p class="text-muted">{{ 'products.competition.closed_body' | t }}</p>
-            {%- elsif product.available == false -%}
+            {%- if product.available == false -%}
               <h2 class="h4">{{ 'products.competition.sold_out_title' | t }}</h2>
               <p class="text-muted">{{ 'products.competition.sold_out_body' | t }}</p>
             {%- else -%}

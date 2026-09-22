@@ -48,17 +48,12 @@
     assign hero_link = routes.all_products_collection_url
   endif
 
-  assign closing_at = featured.metafields.custom.closing_at.value
-  assign is_closed = false
-  if closing_at != blank
-    assign now_stamp = 'now' | date: '%s' | times: 1
-    assign close_stamp = closing_at | date: '%s' | times: 1
-    if close_stamp <= now_stamp
-      assign is_closed = true
-    endif
-  endif
+  comment
+    Entry state is Shopify inventory only. closing_at is information, not a
+    gate -- see sections/main-competition.liquid.
+  endcomment
   assign can_enter = false
-  if has_featured and featured.available and is_closed == false
+  if has_featured and featured.available
     assign can_enter = true
   endif
 
