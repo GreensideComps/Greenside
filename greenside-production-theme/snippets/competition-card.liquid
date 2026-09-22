@@ -76,10 +76,20 @@
   endcomment
   assign can_enter = product.available
 
-  assign cta_label = settings.entry_cta_label | default: 'Enter'
-  unless can_enter
-    assign cta_label = 'products.competition.view_competition' | t
-  endunless
+  comment
+    A card navigates. It never enters.
+
+    The card once carried settings.entry_cta_label -- the same "Enter" as the
+    real submit button on the competition page -- and that cost a real QA
+    order: an entrant on one competition's page read a related card's "Enter"
+    as the entry control and bought the wrong competition. The only link on
+    this card is the title, pointing at product.url, and the label below is a
+    decorative aria-hidden span. Both now say what they do.
+
+    This is deliberately not a theme setting. A merchant cannot be offered a
+    choice that reintroduces the ambiguity.
+  endcomment
+  assign cta_label = 'products.competition.view_competition' | t
 
   comment
     Trim a leading "Win a" / "Win an" / "Win the". The card sits under a heading
