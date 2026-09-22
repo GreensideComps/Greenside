@@ -12,7 +12,7 @@
     "related": {
       "type": "related-competitions",
       "settings": {
-        "heading": "Other competitions you can enter",
+        "heading": "More competitions",
         "intent": "related",
         "products_to_show": 4,
         "colour_scheme": "cream",

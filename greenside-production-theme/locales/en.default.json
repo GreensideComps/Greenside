@@ -277,7 +277,7 @@
     "quantity_error": "You can only add {{ quantity }} of this to your basket.",
     "quantity_error_generic": "That quantity isn't available.",
     "updating": "Updating…",
-    "recommendations_heading": "Add another competition",
+    "recommendations_heading": "More competitions",
     "continue": "Keep browsing",
     "view_cart": "View basket",
     "added_to_cart": "Added to your basket"
