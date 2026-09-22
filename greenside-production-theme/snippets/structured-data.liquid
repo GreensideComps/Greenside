@@ -65,6 +65,22 @@
   {%- liquid
     assign product_media = product.featured_media
     assign closing_at = product.metafields.custom.closing_at
+
+    comment
+      priceValidUntil is only emitted while the date is still ahead. It means
+      "the price is no longer available after this date", so publishing a date
+      that has passed tells search engines the offer has expired while the
+      competition is still on sale. Entries end when inventory runs out, which
+      is carried by `availability` above; a stale date here would contradict it.
+    endcomment
+    assign closing_is_future = false
+    if closing_at != blank
+      assign now_epoch = 'now' | date: '%s' | times: 1
+      assign closing_epoch = closing_at.value | date: '%s' | times: 1
+      if closing_epoch > now_epoch
+        assign closing_is_future = true
+      endif
+    endif
   -%}
   <script type="application/ld+json">
     {
@@ -95,7 +111,7 @@
         "priceCurrency": {{ cart.currency.iso_code | json }},
         "price": {{ product.price | divided_by: 100.0 | json }},
         "availability": {% if product.available %}"https://schema.org/InStock"{% else %}"https://schema.org/SoldOut"{% endif %}
-        {%- if closing_at != blank -%},
+        {%- if closing_is_future -%},
         "priceValidUntil": {{ closing_at | date: '%Y-%m-%d' | json }}
         {%- endif %}
       }

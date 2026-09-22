@@ -5,6 +5,18 @@
   timezone, not fuzzy countdowns, and they only ever reflect a real date held in
   custom.closing_at. No date, no output.
 
+  A DATE THAT HAS PASSED PRODUCES NO OUTPUT AT ALL.
+
+  It used to render "Closed". That was the one thing this snippet must never
+  say, because a passed date does not close anything: Shopify closes a
+  competition when its inventory runs out, and a competition past its published
+  date with entries left is still on sale. Printing "Closed" above a working
+  Enter button told the customer the opposite of what the page would let them
+  do. Saying nothing is honest; the entry form is the answer to "can I enter".
+
+  The same applies to draw_at: a draw date in the past is a date that has been
+  and gone, not a state this line can describe.
+
   With `detail: true` the label also carries the closing *time* and how many days
   away it is. A deadline a customer has to work out for themselves is a deadline
   that does not influence the decision: "Closes Wed 23 Sep" leaves them to check
@@ -28,16 +40,25 @@
   else
     assign stamp = product.metafields.custom.closing_at.value
   endif
+
+  comment
+    Nothing is rendered for a date that has already passed. See the note above.
+  endcomment
+  assign is_future = false
+  if stamp != blank
+    assign now_epoch = 'now' | date: '%s' | times: 1
+    assign stamp_epoch = stamp | date: '%s' | times: 1
+    if stamp_epoch > now_epoch
+      assign is_future = true
+    endif
+  endif
 -%}
 
-{%- if stamp != blank -%}
+{%- if is_future -%}
   {%- liquid
     assign today = 'now' | date: '%Y-%m-%d'
     assign tomorrow = 'now' | date: '%s' | plus: 86400 | date: '%Y-%m-%d'
     assign target_day = stamp | date: '%Y-%m-%d'
-
-    assign now_stamp = 'now' | date: '%s' | times: 1
-    assign target_stamp = stamp | date: '%s' | times: 1
 
     comment
       A merchant who set only a date gets midnight, which is a storage artefact
@@ -52,9 +73,7 @@
     assign time_text = stamp | date: '%-I:%M %p' | downcase
 
     assign label = ''
-    if target_stamp <= now_stamp
-      assign label = 'products.competition.closed' | t
-    elsif target_day == today
+    if target_day == today
       if which == 'draw_at'
         assign label = 'products.competition.draw_today' | t
       else

@@ -462,3 +462,67 @@ test('a sold-out competition is still rendered, never hidden', () => {
   assert.match(body, /competition-closed/, 'a sold-out state is rendered in place');
   assert.match(body, /sold_out_title/, 'and it says sold out');
 });
+
+/* -------------------------------------------------------------------------- *
+ * A date that has passed says nothing
+ *
+ * The live QA-3 test showed a competition past its closing_at, with stock and
+ * a working Enter button, rendering "Closed" and "Entries close on Tue 1 Sep".
+ * Both told the customer the opposite of what the page would let them do.
+ * Entries end when inventory runs out, so a passed date describes nothing.
+ * -------------------------------------------------------------------------- */
+
+test('a closing or draw date that has passed renders nothing at all', () => {
+  const body = readMarkup('snippets/competition-closing.liquid');
+
+  assert.match(body, /assign is_future = false/, 'the snippet must test whether the date is ahead');
+  assert.match(body, /{%- if is_future -%}/, 'and render only when it is');
+  assert.doesNotMatch(
+    body,
+    /competition\.closed/,
+    'a passed date must never render the word Closed',
+  );
+});
+
+test('what-happens-next hides deadlines that have already passed', () => {
+  const body = readMarkup('snippets/what-happens-next.liquid');
+
+  assert.match(body, /{%- if closing_is_future -%}/, 'the closing line is gated on a future date');
+  assert.match(body, /{%- if draw_is_future -%}/, 'so is the draw line');
+  assert.doesNotMatch(
+    body,
+    /{%- if closing_at != blank -%}/,
+    'merely having a date is not enough to state it as a deadline',
+  );
+});
+
+test('priceValidUntil is never published with a date that has passed', () => {
+  // It means "the price is no longer available after this date". A stale value
+  // tells search engines the offer expired while the competition is on sale.
+  const body = readMarkup('snippets/structured-data.liquid');
+  assert.match(body, /{%- if closing_is_future -%},/, 'guarded on a future date');
+  assert.match(body, /priceValidUntil/, 'and still emitted when the date is ahead');
+});
+
+test('no competition surface can claim closed from a date', () => {
+  // Sweep: the only thing allowed to produce a closed/sold-out claim is stock.
+  const surfaces = [
+    'sections/main-competition.liquid',
+    'sections/hero-competition.liquid',
+    'sections/competition-ticker.liquid',
+    'snippets/competition-card.liquid',
+    'snippets/competition-badges.liquid',
+    'snippets/competition-availability.liquid',
+    'snippets/competition-closing.liquid',
+    'snippets/what-happens-next.liquid',
+  ];
+  for (const file of surfaces) {
+    const body = readMarkup(file);
+    assert.doesNotMatch(body, /is_closed/, `${file} must not compute a date-driven closed state`);
+    assert.doesNotMatch(
+      body,
+      /competition\.badge_closed|competition\.closed_title|competition\.closed'/,
+      `${file} must not render date-driven closed copy`,
+    );
+  }
+});

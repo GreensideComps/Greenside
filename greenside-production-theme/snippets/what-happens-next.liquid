@@ -14,6 +14,15 @@
   - the entry-number line appears only when settings.entry_numbers_issued is on,
     because nothing currently allocates entry numbers (see docs/QA.md)
 
+  DATES THAT HAVE PASSED ARE NOT SHOWN.
+
+  "Entries close on Tue 1 Sep" printed beside a working Enter button in late
+  September is worse than silence: it states a deadline the page is visibly
+  ignoring, and invites the entrant to believe entries have stopped when
+  Shopify will still sell them one. Entries stop when inventory runs out, not
+  on a date, so a date that has been and gone describes nothing and is
+  dropped.
+
   Parameters:
     product  (required)
 {%- endcomment -%}
@@ -21,6 +30,24 @@
 {%- liquid
   assign draw_at = product.metafields.custom.draw_at.value
   assign closing_at = product.metafields.custom.closing_at.value
+
+  assign now_epoch = 'now' | date: '%s' | times: 1
+
+  assign closing_is_future = false
+  if closing_at != blank
+    assign closing_epoch = closing_at | date: '%s' | times: 1
+    if closing_epoch > now_epoch
+      assign closing_is_future = true
+    endif
+  endif
+
+  assign draw_is_future = false
+  if draw_at != blank
+    assign draw_epoch = draw_at | date: '%s' | times: 1
+    if draw_epoch > now_epoch
+      assign draw_is_future = true
+    endif
+  endif
 -%}
 
 <div class="next-steps">
@@ -38,7 +65,7 @@
       </li>
     {%- endif -%}
 
-    {%- if closing_at != blank -%}
+    {%- if closing_is_future -%}
       <li class="next-steps__step">
         {%- render 'icon', icon: 'clock', size: 16 -%}
         <span>
@@ -48,7 +75,7 @@
       </li>
     {%- endif -%}
 
-    {%- if draw_at != blank -%}
+    {%- if draw_is_future -%}
       <li class="next-steps__step">
         {%- render 'icon', icon: 'trophy', size: 16 -%}
         <span>
