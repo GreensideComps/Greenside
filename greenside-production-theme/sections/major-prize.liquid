@@ -88,14 +88,14 @@
 
             {%- if prize_value != blank -%}
               <span class="competition-card__price">
-                <span class="competition-card__price-amount">{{ prize_value.value.amount | money }}</span>
+                <span class="competition-card__price-amount">{{ prize_value.value | money }}</span>
                 <span class="competition-card__price-label">{{ 'products.competition.prize_value' | t }}</span>
               </span>
             {%- endif -%}
 
             {%- if cash_alternative != blank -%}
               <span class="competition-card__price">
-                <span class="competition-card__price-amount">{{ cash_alternative.value.amount | money }}</span>
+                <span class="competition-card__price-amount">{{ cash_alternative.value | money }}</span>
                 <span class="competition-card__price-label">{{ 'products.competition.cash_alternative' | t }}</span>
               </span>
             {%- endif -%}

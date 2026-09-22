@@ -7,6 +7,7 @@
   Parameters:
     item     (required) a cart line item
     context  'drawer' or 'page'
+    index    (required) the line's position, passed in from the caller's loop
 {%- endcomment -%}
 {%- liquid
   assign entry_total = item.quantity
@@ -20,8 +21,18 @@
     collection itself and returns a real count.
   endcomment
   assign property_count = item.properties | size
+
+  comment
+    `render` does not inherit the caller's forloop, so `forloop.index` was
+    always empty here and every line in the basket was given the same id:
+    CartQty-page-. Two competitions in one basket meant two inputs sharing an
+    id, and two labels pointing at whichever the browser matched first, so
+    clicking the second line's label moved focus to the first line's field.
+    The position comes in from the caller instead.
+  endcomment
+  assign line_index = index | default: forloop.index
 -%}
-<li class="cart-item" data-cart-item data-line-key="{{ item.key }}" data-line-index="{{ forloop.index }}">
+<li class="cart-item" data-cart-item data-line-key="{{ item.key }}" data-line-index="{{ line_index }}">
   <a class="cart-item__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
     {%- if item.image -%}
       <img
@@ -93,11 +104,11 @@
         >
           {%- render 'icon', icon: 'minus', size: 14 -%}
         </button>
-        <label class="visually-hidden" for="CartQty-{{ context }}-{{ forloop.index }}">
+        <label class="visually-hidden" for="CartQty-{{ context }}-{{ line_index }}">
           {{ 'products.competition.quantity_label' | t }}
         </label>
         <input
-          id="CartQty-{{ context }}-{{ forloop.index }}"
+          id="CartQty-{{ context }}-{{ line_index }}"
           class="quantity-selector__input"
           type="number"
           inputmode="numeric"

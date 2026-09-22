@@ -55,20 +55,24 @@
         <h1 class="competition-page__title h1">{{ product.title | escape }}</h1>
 
         {%- comment -%}
-          Whole pounds, and no currency code. metafield_text renders a money
-          metafield as "600.00 GBP", which left "£600 GBP" on the page once
-          only the ".00" was stripped. Formatting from the value uses the
-          shop's own money format, which already carries the symbol. A genuine
-          ".50" survives the removal.
+          Whole pounds, and no currency code. `metafield_text` renders a money
+          metafield as "£55.00 GBP", so stripping only the ".00" left
+          "£55 GBP" on the page.
+
+          The value itself is the money, and it is in the shop's minor unit:
+          `prize_value.value` is 5500, and `| money` turns that into "£55.00"
+          using the shop's own format, symbol included. There is no `.amount`
+          on it — that reads as empty, which silently blanked the whole block.
+          A genuine ".50" survives the removal.
         {%- endcomment -%}
         {%- liquid
           assign prize_value_text = ''
           if prize_value != blank
-            assign prize_value_text = prize_value.value.amount | money | remove: '.00'
+            assign prize_value_text = prize_value.value | money | remove: '.00'
           endif
           assign cash_alternative_text = ''
           if cash_alternative != blank
-            assign cash_alternative_text = cash_alternative.value.amount | money | remove: '.00'
+            assign cash_alternative_text = cash_alternative.value | money | remove: '.00'
           endif
         -%}
         {%- if prize_value_text != blank or cash_alternative_text != blank -%}

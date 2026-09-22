@@ -27,7 +27,7 @@
 
 {%- if show -%}
   {%- liquid
-    assign prize_text = prize_value.value.amount | money | remove: '.00'
+    assign prize_text = prize_value.value | money | remove: '.00'
     if product.price_varies
       assign entry_text = product.price_min | money
     else

@@ -33,7 +33,7 @@
       <div class="overlay__body">
         <ul class="cart-items" data-cart-items>
           {%- for item in cart.items -%}
-            {%- render 'cart-line-item', item: item, context: 'drawer' -%}
+            {%- render 'cart-line-item', item: item, context: 'drawer', index: forloop.index -%}
           {%- endfor -%}
         </ul>
 

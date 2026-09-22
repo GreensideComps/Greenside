@@ -16,7 +16,7 @@
         <div class="cart-page__items">
           <ul class="cart-items" role="list">
             {%- for item in cart.items -%}
-              {%- render 'cart-line-item', item: item, context: 'page' -%}
+              {%- render 'cart-line-item', item: item, context: 'page', index: forloop.index -%}
             {%- endfor -%}
           </ul>
 
