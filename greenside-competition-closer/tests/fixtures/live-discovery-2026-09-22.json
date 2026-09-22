@@ -1,0 +1,30 @@
+{
+  "_captured": "Live Shopify Admin API response, 2026-09-22, query: status:active AND tag:competition-live AND -tag:gs-closed-zeroed",
+  "products": {
+    "pageInfo": { "hasNextPage": false, "endCursor": "eyJsYXN0X2lkIjoxNTg5MzY1NTcxNjIxNCwibGFzdF92YWx1ZSI6MTU4OTM2NTU3MTYyMTR9" },
+    "nodes": [
+      {
+        "id": "gid://shopify/Product/15893655716214",
+        "title": "QA-3 — Competition Closer Test",
+        "status": "ACTIVE",
+        "tags": ["competition-live", "delete-me", "qa-test"],
+        "variantsCount": { "count": 1 },
+        "closingAt": { "value": "2026-09-01T12:00:00Z", "type": "date_time" },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/58792108065142",
+              "inventoryItem": {
+                "id": "gid://shopify/InventoryItem/57262763639158",
+                "inventoryLevel": {
+                  "id": "gid://shopify/InventoryLevel/158268260726?inventory_item_id=57262763639158",
+                  "quantities": [{ "name": "available", "quantity": 100 }]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
