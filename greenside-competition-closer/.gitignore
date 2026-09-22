@@ -1,0 +1,10 @@
+node_modules/
+.wrangler/
+dist/
+*.log
+.env
+.env.*
+
+# Real local credentials. The .example template IS committed.
+.dev.vars
+.dev.vars.local

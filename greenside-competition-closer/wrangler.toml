@@ -1,0 +1,22 @@
+name = "greenside-competition-closer"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Cloudflare Cron Triggers execute on UTC time. Every comparison in this
+# Worker is done in epoch milliseconds, so no local-time or BST arithmetic
+# exists anywhere in the codebase.
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+# DRY_RUN is deliberately a plain var, not a secret, so its value is visible
+# in the dashboard. Only the exact string "false" permits a write.
+DRY_RUN = "true"
+SHOPIFY_API_VERSION = "2026-07"
+ALLOWED_LOCATION_ID = "gid://shopify/Location/119443915126"
+REQUIRED_LIVE_TAG = "competition-live"
+CLOSED_TAG = "gs-closed-zeroed"
+
+# Secrets are NEVER defined here. Set them with:
+#   npx wrangler secret put SHOPIFY_STORE
+#   npx wrangler secret put SHOPIFY_ACCESS_TOKEN
