@@ -11,7 +11,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "migrate:local": "wrangler d1 migrations apply greenside_entries --local",
-    "migrate:qa": "wrangler d1 migrations apply greenside_entries_qa --remote"
+    "migrate:qa": "wrangler d1 migrations apply greenside_entries_qa --env qa --remote"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",

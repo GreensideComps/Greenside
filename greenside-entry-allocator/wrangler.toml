@@ -31,3 +31,29 @@ ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
 # The token this Worker uses must come from an app holding ONLY:
 #   read_orders, read_all_orders, read_products, write_orders
 # It must never hold write_inventory. See README.
+
+# ---------------------------------------------------------------------------
+# QA environment.
+#
+# A named environment, NOT a replacement for the default one above: the
+# production binding, its placeholder database_id and the default worker name
+# are all untouched by anything in this block. Deploying `--env qa` publishes a
+# separate worker, `greenside-entry-allocator-qa`.
+#
+# vars and d1_databases are NON-INHERITABLE in Wrangler, so every value the QA
+# worker needs is restated here. Omitting DRY_RUN would leave it unset, which
+# the Worker treats as read-only -- safe, but silent. It is spelled out instead.
+# ---------------------------------------------------------------------------
+[env.qa]
+
+[[env.qa.d1_databases]]
+binding = "DB"
+database_name = "greenside_entries_qa"
+database_id = "REPLACE_WITH_QA_D1_ID"
+migrations_dir = "migrations"
+
+[env.qa.vars]
+DRY_RUN = "true"
+SHOPIFY_API_VERSION = "2026-07"
+SHOPIFY_STORE = "7r5csb-1j.myshopify.com"
+ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
