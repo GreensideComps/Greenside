@@ -49,7 +49,7 @@ ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
 [[env.qa.d1_databases]]
 binding = "DB"
 database_name = "greenside_entries_qa"
-database_id = "REPLACE_WITH_QA_D1_ID"
+database_id = "5c7ecce9-5b2f-45eb-b5a6-ab78f14698be"
 migrations_dir = "migrations"
 
 [env.qa.vars]
