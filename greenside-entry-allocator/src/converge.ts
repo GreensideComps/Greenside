@@ -35,12 +35,30 @@ export interface ConvergePlan {
 /**
  * The quantity source, isolated deliberately.
  *
+ * VERIFIED, not assumed. Live order #1009 (GBP 0.00, PAID, quantity 5) was
+ * partially refunded by 2 units with NO_RESTOCK, and Shopify reported:
+ *
+ *   quantity            5 -> 5    the original is IMMUTABLE. It is order
+ *                                 history, never an entitlement figure, and
+ *                                 reading it here would have released nothing.
+ *   currentQuantity     5 -> 3    the entitlement signal, decremented by
+ *                                 exactly the refunded units.
+ *   refundableQuantity  5 -> 3    tracks currentQuantity.
+ *
+ *   => targetCount = currentQuantity x entries_per_unit = 3 x 1 = 3.
+ *
+ * The refund also proved a trap worth naming: it produced a Refund object
+ * carrying NO financial transactions at all (the order had none to begin
+ * with, being fully discounted), and refunds[].totalRefundedSet was GBP 0.00.
+ * A release must therefore never be detected from money movement, refund
+ * transactions or a change in financial status -- on a GBP 0.00 order there
+ * is none. Only the recomputed currentQuantity moves.
+ *
  * Full-quantity refunds and cancellations driving currentQuantity to 0 are
- * OBSERVED on live orders #1001, #1002 and #1003. The partial case
- * (quantity 5, refund 2 -> currentQuantity 3) is DOCUMENTED but not yet
- * observed, because refundCreate is blocked by policy in this environment.
- * If that assumption ever proves wrong, this function is the only thing that
- * changes.
+ * separately observed on live orders #1001, #1002, #1003 and #1004.
+ *
+ * If this behaviour ever changes, this function is the only thing that does.
+ * Regression coverage: tests/u2-partial-refund.test.ts.
  */
 export function targetCount(currentQuantity: number, entriesPerUnit: number): number {
   const units = Math.max(0, currentQuantity);
