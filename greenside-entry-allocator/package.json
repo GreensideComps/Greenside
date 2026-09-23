@@ -1,0 +1,23 @@
+{
+  "name": "greenside-entry-allocator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Allocates competition-specific sequential entry numbers to paid Greenside orders. Owns the entry-number pool, the allocation ledger and the OPEN -> FROZEN transition. Contains no inventory-write capability and no draw logic.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply greenside_entries --local",
+    "migrate:qa": "wrangler d1 migrations apply greenside_entries_qa --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/node": "^22.20.4",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8",
+    "wrangler": "^3.101.0"
+  }
+}

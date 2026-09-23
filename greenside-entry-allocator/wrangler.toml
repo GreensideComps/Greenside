@@ -1,0 +1,33 @@
+name = "greenside-entry-allocator"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Reconciliation sweep. Webhooks carry the latency; this carries the guarantee.
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "greenside_entries"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+[vars]
+# DRY_RUN is deliberately a plain var, not a secret, so its value is visible in
+# the dashboard. Only the exact string "false" permits a write. An unset,
+# misspelled or empty variable leaves the Worker read-only.
+DRY_RUN = "true"
+
+# Pinned, never "latest". A quarterly Shopify release must not silently change
+# the shape of an operation that decides who is in a prize draw.
+SHOPIFY_API_VERSION = "2026-07"
+SHOPIFY_STORE = "7r5csb-1j.myshopify.com"
+ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
+
+# Secrets are NEVER defined here. Set them with:
+#   npx wrangler secret put SHOPIFY_ACCESS_TOKEN
+#   npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
+#
+# The token this Worker uses must come from an app holding ONLY:
+#   read_orders, read_all_orders, read_products, write_orders
+# It must never hold write_inventory. See README.
