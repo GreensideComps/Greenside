@@ -25,12 +25,20 @@ SHOPIFY_STORE = "7r5csb-1j.myshopify.com"
 ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
 
 # Secrets are NEVER defined here. Set them with:
-#   npx wrangler secret put SHOPIFY_ACCESS_TOKEN
+#   npx wrangler secret put SHOPIFY_CLIENT_ID
+#   npx wrangler secret put SHOPIFY_CLIENT_SECRET
 #   npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
+# (add --env qa for the QA worker).
 #
-# The token this Worker uses must come from an app holding ONLY:
+# They are the Dev Dashboard app's client ID and client secret; webhooks are
+# signed with the same client secret. There is no access token to set: the
+# Worker exchanges the credentials for a 24-hour offline token itself
+# (client-credentials grant), keeps it in memory and renews it before expiry.
+#
+# The app must hold ONLY:
 #   read_orders, read_products
-# It must never hold write_inventory. See README.
+# It must never hold write_inventory; the Worker refuses a token that does.
+# See README.
 
 # ---------------------------------------------------------------------------
 # QA environment.

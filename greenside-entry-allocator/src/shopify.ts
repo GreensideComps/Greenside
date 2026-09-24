@@ -23,8 +23,12 @@
  * Worker uses must come from an app holding only read_orders and
  * read_products. Nothing calls setOrderEntryNumbersMetafield() yet; wiring it
  * up would also need write_orders.
+ *
+ * The access token comes from a TokenSource (see auth.ts), never from
+ * configuration: the app's tokens expire after 24 hours.
  */
 
+import type { TokenSource } from './auth';
 import type { Logger } from './logging';
 
 /**
@@ -51,7 +55,7 @@ export class ShopifyError extends Error {
 
 export interface ShopifyClientOptions {
   store: string;
-  accessToken: string;
+  tokens: TokenSource;
   apiVersion?: string;
   logger: Logger;
   fetchImpl?: typeof fetch;
@@ -193,18 +197,43 @@ export class ShopifyClient {
     this.apiVersion = opts.apiVersion ?? SHOPIFY_API_VERSION;
     const host = opts.store.replace(/^https?:\/\//, '').replace(/\/+$/, '');
     this.endpoint = `https://${host}/admin/api/${this.apiVersion}/graphql.json`;
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // Called unbound: Workers reject the global fetch invoked as a method.
+    this.fetchImpl = opts.fetchImpl ?? ((input, init) => fetch(input, init));
     this.maxAttempts = opts.maxAttempts ?? 3;
     this.backoffBaseMs = opts.backoffBaseMs ?? 500;
   }
 
-  /** One GraphQL round trip, with bounded retries for transient failures only. */
+  /**
+   * One GraphQL round trip. Transient failures are retried with backoff. A 401
+   * means the token was rejected (expired or revoked): it is dropped and the
+   * request is retried exactly once with a freshly exchanged token. A second
+   * 401, or a failed exchange, is thrown.
+   */
   async request<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+    const token = await this.token();
+    try {
+      return await this.withRetries<T>(token, query, variables);
+    } catch (err) {
+      if (!(err instanceof ShopifyError) || err.status !== 401) throw err;
+      this.opts.logger.warn('shopify_token_rejected', { status: 401 });
+      this.opts.tokens.invalidate(token);
+      return await this.withRetries<T>(await this.token(), query, variables);
+    }
+  }
+
+  /** A token, registered with the logger so no log line can carry it. */
+  private async token(): Promise<string> {
+    const token = await this.opts.tokens.getToken();
+    this.opts.logger.redact(token);
+    return token;
+  }
+
+  private async withRetries<T>(token: string, query: string, variables: Record<string, unknown>): Promise<T> {
     let lastError: ShopifyError | undefined;
 
     for (let attempt = 1; attempt <= this.maxAttempts; attempt++) {
       try {
-        return await this.once<T>(query, variables);
+        return await this.once<T>(token, query, variables);
       } catch (err) {
         const e =
           err instanceof ShopifyError
@@ -224,14 +253,14 @@ export class ShopifyClient {
     throw lastError ?? new ShopifyError('request failed', 'NETWORK', false);
   }
 
-  private async once<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+  private async once<T>(token: string, query: string, variables: Record<string, unknown>): Promise<T> {
     let response: Response;
     try {
       response = await this.fetchImpl(this.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': this.opts.accessToken,
+          'X-Shopify-Access-Token': token,
           Accept: 'application/json',
         },
         body: JSON.stringify({ query, variables }),
@@ -241,8 +270,9 @@ export class ShopifyClient {
     }
 
     if (response.status === 401 || response.status === 403) {
-      // Never retried: a bad or under-scoped token will not fix itself, and
-      // retrying burns the run. The message deliberately carries no headers.
+      // Not a transient failure, so never retried with backoff. request()
+      // retries a 401 once with a fresh token; a 403 (under-scoped) will not
+      // fix itself. The message deliberately carries no headers.
       throw new ShopifyError('authentication or scope failure', 'AUTH', false, response.status);
     }
     if (response.status === 429) throw new ShopifyError('rate limited', 'THROTTLED', true, 429);

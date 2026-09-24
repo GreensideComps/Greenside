@@ -12,7 +12,7 @@ import { processOrder, toMinorUnits } from '../src/process';
 import { ShopifyClient } from '../src/shopify';
 import { readSnapshot } from '../src/snapshot';
 import { allocationId } from '../src/idempotency';
-import { NOW, TestD1, seedCompetition, silentLogger } from './helpers';
+import { NOW, TestD1, seedCompetition, silentLogger, staticTokens } from './helpers';
 
 const SHOP = 'test.myshopify.com';
 const PRODUCT_GID = 'gid://shopify/Product/900001';
@@ -89,7 +89,7 @@ function mockFetch(opts: OrderOpts) {
 function deps(opts: OrderOpts) {
   return {
     db,
-    shopify: new ShopifyClient({ store: SHOP, accessToken: 't', logger: silentLogger(), fetchImpl: mockFetch(opts) as never, backoffBaseMs: 0 }),
+    shopify: new ShopifyClient({ store: SHOP, tokens: staticTokens(), logger: silentLogger(), fetchImpl: mockFetch(opts) as never, backoffBaseMs: 0 }),
     logger: silentLogger(),
     shopDomain: SHOP,
     runId: 'run-1',

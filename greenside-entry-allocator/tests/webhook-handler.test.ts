@@ -8,6 +8,7 @@
  * webhook_no_order_id.
  */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { resetTokenSources } from '../src/auth';
 import worker, { TOPIC_ROUTES, type Env } from '../src/index';
 import { computeHmac } from '../src/hmac';
 import { buildPool } from '../src/pool';
@@ -35,13 +36,19 @@ const ORDERS_EDITED_BODY = JSON.stringify({
 
 let db: TestD1;
 let logLines: string[];
-let shopifyRequests: Array<{ url: string; query: string; variables: Record<string, unknown> }>;
+let shopifyRequests: Array<{ url: string; query: string; variables: Record<string, unknown>; token: string | null }>;
+let tokenExchanges: number;
+let tokenResponse: () => Response;
+
+const CLIENT_SECRET = 'test-client-secret-value';
+const ACCESS_TOKEN = 'shpat_test_access_token_value';
 
 function env(overrides: Partial<Env> = {}): Env {
   return {
     DB: db,
     SHOPIFY_STORE: SHOP,
-    SHOPIFY_ACCESS_TOKEN: 'test-access-token',
+    SHOPIFY_CLIENT_ID: 'test-client-id',
+    SHOPIFY_CLIENT_SECRET: CLIENT_SECRET,
     SHOPIFY_WEBHOOK_SECRET: SECRET,
     SHOPIFY_API_VERSION: '2026-07',
     ALLOWED_SHOP_DOMAIN: SHOP,
@@ -87,11 +94,21 @@ beforeEach(async () => {
     logLines.push(String(line));
   });
 
+  // The Worker caches tokens for the life of the isolate; start each test cold.
+  resetTokenSources();
+  tokenExchanges = 0;
+  tokenResponse = () => Response.json({ access_token: ACCESS_TOKEN, scope: 'read_orders,read_products', expires_in: 86399 });
+
   shopifyRequests = [];
   const shopify = mockFetch({ quantity: 3, currentQuantity: 3 });
   vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+    if (String(url) === `https://${SHOP}/admin/oauth/access_token`) {
+      tokenExchanges++;
+      return tokenResponse();
+    }
     const body = JSON.parse(String(init?.body ?? '{}')) as { query: string; variables: Record<string, unknown> };
-    shopifyRequests.push({ url: String(url), query: body.query, variables: body.variables });
+    const token = new Headers(init?.headers).get('X-Shopify-Access-Token');
+    shopifyRequests.push({ url: String(url), query: body.query, variables: body.variables, token });
     return shopify(url, init);
   });
 });
@@ -159,5 +176,81 @@ describe('orders/edited webhook', () => {
     expect([forged.status, wrongShop.status, wrongTopic.status]).toEqual([401, 401, 401]);
     expect(shopifyRequests).toHaveLength(0);
     expect(db.query('SELECT COUNT(*) AS n FROM allocation')).toEqual([{ n: 0 }]);
+  });
+});
+
+describe('Shopify authentication through the webhook handler', () => {
+  const body = JSON.stringify({ id: 1042 });
+
+  test('a paid order is processed with a client-credentials token, fetched once and sent on every query', async () => {
+    const response = await deliver('orders/paid', body, env());
+    expect(response.status).toBe(200);
+
+    expect(tokenExchanges).toBe(1);
+    expect(shopifyRequests.length).toBeGreaterThan(0);
+    const tokensSent = new Set(shopifyRequests.map((r) => r.token));
+    expect(tokensSent).toEqual(new Set([ACCESS_TOKEN]));
+    expect(db.query(`SELECT COUNT(*) AS n FROM entry_number WHERE status = 'ALLOCATED'`)).toEqual([{ n: 3 }]);
+
+    // A second delivery in the same isolate reuses the cached token.
+    await deliver('orders/create', body, env());
+    expect(tokenExchanges).toBe(1);
+  });
+
+  test('missing client credentials fail clearly with 500 and no Shopify call', async () => {
+    const response = await deliver('orders/paid', body, env({ SHOPIFY_CLIENT_ID: undefined, SHOPIFY_CLIENT_SECRET: '' }));
+
+    expect(response.status).toBe(500);
+    expect(await response.text()).toBe('Not configured');
+    const missing = logLines.map((l) => JSON.parse(l) as Record<string, unknown>).find((l) => l['event'] === 'missing_configuration');
+    expect(missing?.['missing']).toEqual(['SHOPIFY_CLIENT_ID', 'SHOPIFY_CLIENT_SECRET']);
+    expect(tokenExchanges).toBe(0);
+    expect(shopifyRequests).toHaveLength(0);
+  });
+
+  test('a failed token exchange is a 500, so Shopify redelivers; nothing is written', async () => {
+    tokenResponse = () => Response.json({ error: 'invalid_client' }, { status: 400 });
+    const response = await deliver('orders/paid', body, env());
+
+    expect(response.status).toBe(500);
+    expect(tokenExchanges).toBe(1);
+    expect(shopifyRequests).toHaveLength(0);
+    expect(db.query(`SELECT COUNT(*) AS n FROM allocation`)).toEqual([{ n: 0 }]);
+    expect(events()).toContain('webhook_failed');
+  });
+
+  test('a token granted write_inventory is refused: 500, no Admin API call, nothing written', async () => {
+    tokenResponse = () =>
+      Response.json({ access_token: ACCESS_TOKEN, scope: 'read_orders,read_products,write_inventory', expires_in: 86399 });
+    const response = await deliver('orders/paid', body, env());
+
+    expect(response.status).toBe(500);
+    expect(shopifyRequests).toHaveLength(0);
+    expect(db.query(`SELECT COUNT(*) AS n FROM allocation`)).toEqual([{ n: 0 }]);
+  });
+
+  test('neither the client secret nor the access token reaches a log line', async () => {
+    // Force the paths that log: a rejected token, then a failed exchange.
+    let graphqlCalls = 0;
+    const shopify = mockFetch({ quantity: 3, currentQuantity: 3 });
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      if (String(url).endsWith('/admin/oauth/access_token')) {
+        tokenExchanges++;
+        return tokenExchanges === 1
+          ? tokenResponse()
+          : Response.json({ error: 'invalid_client', detail: CLIENT_SECRET }, { status: 401 });
+      }
+      graphqlCalls++;
+      if (graphqlCalls === 1) return new Response('{}', { status: 401 });
+      return shopify(url, init);
+    });
+
+    const response = await deliver('orders/paid', body, env());
+    expect(response.status).toBe(500);
+    expect(events()).toEqual(expect.arrayContaining(['shopify_token_rejected', 'webhook_failed']));
+
+    const all = logLines.join('\n');
+    expect(all).not.toContain(CLIENT_SECRET);
+    expect(all).not.toContain(ACCESS_TOKEN);
   });
 });

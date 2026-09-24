@@ -24,6 +24,9 @@ export type LogFields = Record<string, unknown>;
  * vocabulary (CLOSED, VERIFICATION_FAILED, ...) and would be dead, misleading
  * code here. The allocator's event vocabulary lives in src/events.ts instead.
  *
+ * One addition: redact(), because the allocator's access token is exchanged
+ * at runtime (see auth.ts) and so cannot be passed to the constructor.
+ *
  * Nothing else is changed. The Logger, the redaction rules and newRunId are
  * the closer's tested implementation.
  */
@@ -49,6 +52,11 @@ export class Logger {
     // Short strings are not distinctive enough to scrub safely: replacing a
     // 3-character "secret" would corrupt unrelated output.
     this.secrets = secrets.filter((s): s is string => typeof s === 'string' && s.length >= 8);
+  }
+
+  /** Scrub `secret` from every line emitted from now on (same length rule). */
+  redact(secret: string | undefined): void {
+    if (typeof secret === 'string' && secret.length >= 8 && !this.secrets.includes(secret)) this.secrets.push(secret);
   }
 
   child(extra: LogFields): Logger {

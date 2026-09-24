@@ -11,6 +11,7 @@
 import { createRequire } from 'node:module';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import type { TokenSource } from '../src/auth';
 import { Logger } from '../src/logging';
 import type { D1Like, D1StatementLike } from '../src/db';
 
@@ -104,6 +105,11 @@ export class TestD1 implements D1Like {
 
 export function silentLogger(): Logger {
   return new Logger({}, [], () => {});
+}
+
+/** A fixed token for tests that exercise queries rather than authentication. */
+export function staticTokens(token = 'test-token'): TokenSource {
+  return { getToken: async () => token, invalidate: () => {} };
 }
 
 export const NOW = '2026-09-23T10:00:00.000Z';

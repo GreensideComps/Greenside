@@ -85,11 +85,12 @@ Shopify capture setting, not a weakening of this rule.
 
 ## Setup
 
-Requires its own Shopify custom app holding ONLY:
+Requires its own Shopify Dev Dashboard app, installed on the store and in the
+same Shopify organisation, holding ONLY:
 
     read_orders, read_products
 
-**Never `write_inventory`.** Do not reuse the connector app's token.
+**Never `write_inventory`.** Do not reuse the connector app's credentials.
 
 Without `read_all_orders`, only orders from the last 60 days can be read.
 `write_orders` is not needed: the order-metafield mirror
@@ -99,11 +100,32 @@ it up would need that scope.
 `read_customers` is not needed either: the order is read without its customer,
 so `customer_ref` is always NULL and an entrant is identified by order.
 
+### Authentication
+
+The Worker holds the app's **client ID and client secret**, never an access
+token. A Dev Dashboard app has no permanent `shpat_` token to copy: the Worker
+exchanges its credentials for an offline access token with Shopify's
+client-credentials grant (`src/auth.ts`). That token always expires after 24
+hours and comes with no refresh token, so renewal is another exchange:
+
+- fetched on first use and kept only in the isolate's memory, never in D1, KV
+  or a log line;
+- reused while valid and replaced 5 minutes before it expires;
+- one exchange at a time, however many requests are waiting;
+- a 401 drops the token, and the request is retried once with a fresh one;
+- a failed exchange fails the webhook with 500, so Shopify redelivers it;
+- the granted scopes are checked first: a token with `write_inventory`, or
+  without `read_orders` and `read_products`, is refused.
+
+Webhooks are signed with the same client secret, so `SHOPIFY_WEBHOOK_SECRET`
+holds that value too.
+
 Production (worker `greenside-entry-allocator`):
 
     npx wrangler d1 create greenside_entries     # put the id in wrangler.toml
     npx wrangler d1 migrations apply greenside_entries --local
-    npx wrangler secret put SHOPIFY_ACCESS_TOKEN
+    npx wrangler secret put SHOPIFY_CLIENT_ID
+    npx wrangler secret put SHOPIFY_CLIENT_SECRET
     npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
 
 QA (worker `greenside-entry-allocator-qa`, D1 `greenside_entries_qa`). Every
@@ -111,7 +133,8 @@ QA command needs `--env qa`; without it Wrangler targets the production
 worker name.
 
     npx wrangler secret put SHOPIFY_WEBHOOK_SECRET --env qa
-    npx wrangler secret put SHOPIFY_ACCESS_TOKEN --env qa    # read only when DRY_RUN is "false"
+    npx wrangler secret put SHOPIFY_CLIENT_ID --env qa       # read only when DRY_RUN is "false"
+    npx wrangler secret put SHOPIFY_CLIENT_SECRET --env qa   # read only when DRY_RUN is "false"
 
 `DRY_RUN` defaults to true and is disabled only by the exact string `"false"`.
 An unset, misspelled or empty value leaves the Worker read-only.
@@ -131,7 +154,7 @@ Dispute handling is absent: `read_shopify_payments_disputes` is not available.
 
 ## Tests
 
-    npm test          # 291 tests
+    npm test          # 314 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the

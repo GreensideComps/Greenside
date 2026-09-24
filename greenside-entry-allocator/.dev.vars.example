@@ -1,7 +1,8 @@
 # Copy to .dev.vars for local development. .dev.vars is git-ignored.
 # Never commit real values.
 SHOPIFY_STORE=7r5csb-1j.myshopify.com
-SHOPIFY_ACCESS_TOKEN=shpat_REPLACE_ME
+SHOPIFY_CLIENT_ID=REPLACE_ME
+SHOPIFY_CLIENT_SECRET=REPLACE_ME
 SHOPIFY_WEBHOOK_SECRET=REPLACE_ME
 ALLOWED_SHOP_DOMAIN=7r5csb-1j.myshopify.com
 DRY_RUN=true

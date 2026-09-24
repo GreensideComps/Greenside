@@ -25,7 +25,7 @@ import { allocationId } from '../src/idempotency';
 import { buildPool } from '../src/pool';
 import { processOrder } from '../src/process';
 import { ShopifyClient } from '../src/shopify';
-import { NOW, TestD1, seedCompetition, silentLogger } from './helpers';
+import { NOW, TestD1, seedCompetition, silentLogger, staticTokens } from './helpers';
 
 /** The observed fixture. Read-only evidence; do not "tidy" these figures. */
 const ORDER_1009 = {
@@ -116,7 +116,7 @@ function deps(currentQuantity: number) {
     db,
     shopify: new ShopifyClient({
       store: SHOP,
-      accessToken: 't',
+      tokens: staticTokens(),
       logger: silentLogger(),
       fetchImpl: mockFetch(currentQuantity) as never,
       backoffBaseMs: 0,

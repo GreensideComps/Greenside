@@ -5,7 +5,7 @@
  */
 import type { D1Like } from '../src/db';
 import { ShopifyClient } from '../src/shopify';
-import { NOW, silentLogger } from './helpers';
+import { NOW, silentLogger, staticTokens } from './helpers';
 
 export const SHOP = 'test.myshopify.com';
 export const PRODUCT_GID = 'gid://shopify/Product/900001';
@@ -65,6 +65,6 @@ export function mockFetch(o: OrderOpts) {
 export function deps(db: D1Like, o: OrderOpts, runId: string) {
   return {
     db, logger: silentLogger(), shopDomain: SHOP, runId, actor: 'system:webhook' as const, now: () => NOW, webhookId: `wh-${runId}`,
-    shopify: new ShopifyClient({ store: SHOP, accessToken: 't', logger: silentLogger(), fetchImpl: mockFetch(o) as never, backoffBaseMs: 0 }),
+    shopify: new ShopifyClient({ store: SHOP, tokens: staticTokens(), logger: silentLogger(), fetchImpl: mockFetch(o) as never, backoffBaseMs: 0 }),
   };
 }

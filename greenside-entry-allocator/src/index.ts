@@ -13,6 +13,7 @@
  * bundle, and the token it uses must not hold write_inventory.
  */
 
+import { tokenSourceFor } from './auth';
 import { Logger, newRunId } from './logging';
 import { verifyWebhook } from './hmac';
 import { ShopifyClient, SHOPIFY_API_VERSION } from './shopify';
@@ -23,7 +24,9 @@ import type { ReleaseReason } from './events';
 export interface Env {
   DB: D1Like;
   SHOPIFY_STORE?: string;
-  SHOPIFY_ACCESS_TOKEN?: string;
+  /** The Dev Dashboard app's credentials, exchanged for a 24-hour token (auth.ts). */
+  SHOPIFY_CLIENT_ID?: string;
+  SHOPIFY_CLIENT_SECRET?: string;
   SHOPIFY_WEBHOOK_SECRET?: string;
   SHOPIFY_API_VERSION?: string;
   ALLOWED_SHOP_DOMAIN?: string;
@@ -78,7 +81,7 @@ export default {
     const url = new URL(request.url);
     const runId = newRunId();
     const logger = new Logger({ run_id: runId, dry_run: isDryRun(env) }, [
-      env.SHOPIFY_ACCESS_TOKEN,
+      env.SHOPIFY_CLIENT_SECRET,
       env.SHOPIFY_WEBHOOK_SECRET,
     ]);
 
@@ -151,17 +154,23 @@ export default {
     }
 
     const store = env.SHOPIFY_STORE?.trim();
-    const token = env.SHOPIFY_ACCESS_TOKEN?.trim();
-    if (!store || !token) {
+    const clientId = env.SHOPIFY_CLIENT_ID?.trim();
+    const clientSecret = env.SHOPIFY_CLIENT_SECRET?.trim();
+    if (!store || !clientId || !clientSecret) {
       logger.error('missing_configuration', {
-        missing: [!store ? 'SHOPIFY_STORE' : null, !token ? 'SHOPIFY_ACCESS_TOKEN' : null].filter(Boolean),
+        missing: [
+          !store ? 'SHOPIFY_STORE' : null,
+          !clientId ? 'SHOPIFY_CLIENT_ID' : null,
+          !clientSecret ? 'SHOPIFY_CLIENT_SECRET' : null,
+        ].filter(Boolean),
       });
       return new Response('Not configured', { status: 500 });
     }
 
     const shopify = new ShopifyClient({
       store,
-      accessToken: token,
+      // Cached for the life of the isolate, so a token outlives this request.
+      tokens: tokenSourceFor({ store, clientId, clientSecret }),
       apiVersion: env.SHOPIFY_API_VERSION || SHOPIFY_API_VERSION,
       logger,
     });
@@ -184,8 +193,9 @@ export default {
       logger.info('webhook_processed', { topic: route.topic, order_gid: orderGid, lines: outcomes.length });
       return Response.json({ status: 'ok', outcomes });
     } catch (err) {
-      // A genuine transient failure: 500 asks Shopify to retry, and the
-      // reconciler is the backstop if every retry is exhausted.
+      // A genuine transient failure, including a failed token exchange: 500
+      // asks Shopify to retry, and the reconciler is the backstop if every
+      // retry is exhausted.
       logger.error('webhook_failed', { topic: route.topic, error: String((err as Error)?.message ?? err) });
       return new Response('Processing failed', { status: 500 });
     }
@@ -194,7 +204,7 @@ export default {
   async scheduled(controller: ScheduledController, env: Env): Promise<void> {
     const runId = newRunId();
     const logger = new Logger({ run_id: runId, dry_run: isDryRun(env) }, [
-      env.SHOPIFY_ACCESS_TOKEN,
+      env.SHOPIFY_CLIENT_SECRET,
       env.SHOPIFY_WEBHOOK_SECRET,
     ]);
     logger.info('reconcile_started', {
