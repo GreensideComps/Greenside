@@ -573,7 +573,7 @@ describe('failure handling', () => {
 });
 
 describe('aged allocations', () => {
-  test('numbers held on an order near the 60-day read horizon are reported, not touched', async () => {
+  test('numbers held on an order near the 60-day read horizon in an OPEN competition are reported, not touched', async () => {
     shop.orders = [paidOrder('2901', 1)];
     await webhook('2901');
     db.sqlite.exec("UPDATE allocation SET order_created_at = '2026-07-01T00:00:00Z'");
@@ -587,6 +587,22 @@ describe('aged allocations', () => {
     expect(logged('reconcile_aged_allocation')).toEqual([
       expect.objectContaining({ order_id: '2901', held: 1 }),
     ]);
+  });
+
+  test('an equally old holding in a FROZEN competition is not warned on: numbers stay held after the draw', async () => {
+    shop.orders = [paidOrder('2902', 1)];
+    await webhook('2902');
+    db.sqlite.exec("UPDATE allocation SET order_created_at = '2026-07-01T00:00:00Z'");
+    freeze();
+    shop.orders = [];
+    const before = fingerprint();
+
+    const s = await sweep();
+
+    expect(held('2902')).toEqual(['PUT1001']);
+    expect(fingerprint()).toBe(before);
+    expect(s).toMatchObject({ aged_held: 0 });
+    expect(logged('reconcile_aged_allocation')).toEqual([]);
   });
 });
 

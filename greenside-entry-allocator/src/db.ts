@@ -346,13 +346,21 @@ SELECT a.allocation_id, a.competition_id, a.order_id, a.line_item_id, a.entries_
   FROM allocation a
  WHERE a.order_id IN (SELECT value FROM json_each(?1))`;
 
-/** Allocations still holding numbers whose order is older than ?1 (ISO). */
+/**
+ * Allocations still holding numbers whose order is older than ?1 (ISO), in an
+ * OPEN competition only. A defensive warning: competitions run about 30 days,
+ * so an OPEN one should never hold an order this old. Numbers stay held after
+ * a freeze and draw, so FROZEN competitions are excluded rather than warned on
+ * for ever.
+ */
 export const SELECT_AGED_HELD = `
 SELECT a.allocation_id, a.competition_id, a.order_id, a.order_name, a.order_created_at,
        (SELECT COUNT(*) FROM entry_number e
          WHERE e.allocation_id = a.allocation_id AND e.status = 'ALLOCATED') AS held
   FROM allocation a
- WHERE a.order_created_at < ?1
+  JOIN competition c ON c.competition_id = a.competition_id
+ WHERE c.status = 'OPEN'
+   AND a.order_created_at < ?1
    AND EXISTS (SELECT 1 FROM entry_number e
                 WHERE e.allocation_id = a.allocation_id AND e.status = 'ALLOCATED')
  ORDER BY a.order_created_at ASC`;

@@ -40,7 +40,10 @@ const DAY_MS = 24 * HOUR_MS;
 export const TRAILING_WINDOW_MS = 2 * HOUR_MS;
 /** One day inside the 60 days of orders read_orders can see. */
 export const DEEP_WINDOW_MS = 59 * DAY_MS;
-/** Held numbers on an order this old are about to become unverifiable. */
+/**
+ * Held numbers on an order this old, in an OPEN competition, are about to
+ * become unverifiable. Defensive only: competitions run about 30 days.
+ */
 export const AGED_HELD_MS = 55 * DAY_MS;
 /** Aged allocations logged individually per run; the rest are counted. */
 const AGED_LOG_LIMIT = 20;

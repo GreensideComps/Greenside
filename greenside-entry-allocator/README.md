@@ -177,10 +177,17 @@ cancelled, else `REFUND` if it has a refund, else `ORDER_EDIT`.
 - **FROZEN** competitions take no new numbers: a paid line still owed numbers
   is logged as `reconcile_refused_not_open` for a human to refund. Releases
   still apply and leave the number `RELEASED`.
-- **Unreadable orders** (`order_unreadable`) are never released on. Without
-  `read_all_orders` Shopify only exposes the last 60 days of orders, so
-  `reconcile_aged_allocation` warns when numbers are held on an order 55 or
-  more days old: freeze and draw before then.
+- **Unreadable orders** (`order_unreadable`) are never released on.
+- **Order history.** Without `read_all_orders` Shopify exposes only the last
+  60 days of orders. That is not a constraint in practice: a Greenside
+  competition runs for about 30 days at most, and its close, freeze and draw
+  all happen well before any of its orders is 60 days old. `read_all_orders`
+  is not requested.
+- **Aged-allocation warning.** As a defensive safeguard only,
+  `reconcile_aged_allocation` warns if an OPEN competition holds numbers on
+  an order 55 or more days old. Under the 30-day lifecycle it should never
+  fire; if it does, the competition has overrun. FROZEN competitions are not
+  checked, because their numbers stay held after the draw.
 - **Before a freeze**, wait for a deep run that finished after sales closed
   and logged no drift (`reconcile_summary` with `mismatched: 0`).
 
@@ -189,7 +196,7 @@ the run's page or convergence budget ran out and the next run continues.
 
 ## Tests
 
-    npm test          # 339 tests
+    npm test          # 340 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the
