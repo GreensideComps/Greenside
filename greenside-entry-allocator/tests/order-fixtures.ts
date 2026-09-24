@@ -29,7 +29,7 @@ export function mockFetch(o: OrderOpts) {
         data: {
           order: {
             id: ORDER, name: '#1042', createdAt: NOW, test: false, cancelledAt: o.cancelledAt ?? null,
-            displayFinancialStatus: o.financialStatus ?? 'PAID', customer: { id: 'gid://shopify/Customer/7' },
+            displayFinancialStatus: o.financialStatus ?? 'PAID',
             lineItems: {
               nodes: [{
                 id: 'gid://shopify/LineItem/55', quantity: o.quantity, currentQuantity: o.currentQuantity,

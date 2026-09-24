@@ -67,7 +67,6 @@ function mockFetch(currentQuantity: number) {
             test: false,
             cancelledAt: ORDER_1009.cancelledAt,
             displayFinancialStatus: ORDER_1009.displayFinancialStatus,
-            customer: { id: 'gid://shopify/Customer/26010013204854' },
             lineItems: {
               nodes: [
                 {

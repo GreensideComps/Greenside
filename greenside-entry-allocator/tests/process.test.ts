@@ -10,6 +10,7 @@ import { countHeld, listHeld } from '../src/allocate';
 import { buildPool } from '../src/pool';
 import { processOrder, toMinorUnits } from '../src/process';
 import { ShopifyClient } from '../src/shopify';
+import { readSnapshot } from '../src/snapshot';
 import { allocationId } from '../src/idempotency';
 import { NOW, TestD1, seedCompetition, silentLogger } from './helpers';
 
@@ -43,7 +44,6 @@ function mockFetch(opts: OrderOpts) {
             test: opts.test ?? false,
             cancelledAt: opts.cancelledAt ?? null,
             displayFinancialStatus: opts.financialStatus ?? 'PAID',
-            customer: { id: 'gid://shopify/Customer/7' },
             lineItems: {
               nodes: [
                 {
@@ -299,5 +299,48 @@ describe('money parsing', () => {
     expect(toMinorUnits('10')).toBe(1000);
     expect(toMinorUnits('4.9')).toBe(490);
     expect(toMinorUnits('1234.56')).toBe(123456);
+  });
+});
+
+describe('without customer data', () => {
+  // ORDER_QUERY no longer reads Order.customer (it needs read_customers), so
+  // the mocked orders above carry no customer. Allocation, release and the
+  // snapshot must work with customer_ref recorded as NULL throughout.
+  test('allocates and records customer_ref as NULL on the ledger, numbers and events', async () => {
+    const out = await processOrder(deps({}), ORDER, 'ORDER_EDIT');
+    expect(out[0]?.claimed).toEqual(['PUT1001', 'PUT1002', 'PUT1003']);
+
+    expect(db.query(`SELECT order_id, customer_ref FROM allocation`)).toEqual([{ order_id: '1042', customer_ref: null }]);
+    expect(db.query(`SELECT entry_number, order_id, customer_ref FROM entry_number WHERE status='ALLOCATED' ORDER BY seq`)).toEqual([
+      { entry_number: 'PUT1001', order_id: '1042', customer_ref: null },
+      { entry_number: 'PUT1002', order_id: '1042', customer_ref: null },
+      { entry_number: 'PUT1003', order_id: '1042', customer_ref: null },
+    ]);
+    expect(db.query(`SELECT DISTINCT order_id, customer_ref FROM entry_event WHERE event_type='ALLOCATED'`)).toEqual([
+      { order_id: '1042', customer_ref: null },
+    ]);
+  });
+
+  test('a refund still releases, highest first, back to the pool', async () => {
+    await processOrder(deps({ quantity: 3, currentQuantity: 3 }), ORDER, 'ORDER_EDIT');
+    const out = await processOrder(deps({ quantity: 3, currentQuantity: 1 }), ORDER, 'REFUND');
+    expect(out[0]?.released).toEqual(['PUT1003', 'PUT1002']);
+
+    const key = await allocationId(SHOP, '1042', '55');
+    expect((await listHeld(db, competitionId, key)).map((h) => h.entry_number)).toEqual(['PUT1001']);
+    expect(db.query(`SELECT entry_number, status, customer_ref FROM entry_number WHERE seq IN (1002, 1003) ORDER BY seq`)).toEqual([
+      { entry_number: 'PUT1002', status: 'AVAILABLE', customer_ref: null },
+      { entry_number: 'PUT1003', status: 'AVAILABLE', customer_ref: null },
+    ]);
+  });
+
+  test('the draw snapshot identifies each entry by order, with a NULL customer_ref', async () => {
+    await processOrder(deps({}), ORDER, 'ORDER_EDIT');
+    const snapshot = await readSnapshot({ db, competitionId, competitionStatus: 'OPEN', frozenAt: null });
+    expect(snapshot.entries.map((e) => [e.entry_number, e.order_id, e.order_name, e.customer_ref])).toEqual([
+      ['PUT1001', '1042', '#1042', null],
+      ['PUT1002', '1042', '#1042', null],
+      ['PUT1003', '1042', '#1042', null],
+    ]);
   });
 });

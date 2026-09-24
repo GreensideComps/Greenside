@@ -114,6 +114,7 @@ describe('orders/edited webhook', () => {
     expect(orderReads).toHaveLength(1);
     expect(orderReads[0]!.variables).toEqual({ id: ORDER });
     expect(orderReads[0]!.url).toBe(`https://${SHOP}/admin/api/2026-07/graphql.json`);
+    expect(orderReads[0]!.query).not.toMatch(/customer/i);
 
     // And the normal convergence ran on it.
     expect(result.outcomes).toHaveLength(1);

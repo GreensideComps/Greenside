@@ -23,6 +23,12 @@ export interface SnapshotEntry {
   allocation_seq: number;
   order_id: string;
   order_name: string;
+  /**
+   * Always NULL at present: the order is read without its customer, which
+   * would need read_customers (see ORDER_QUERY). Identify the entrant by
+   * order_id. The column and its migration comments predate this and still
+   * permit a customer id.
+   */
   customer_ref: string | null;
   entry_route: string;
   skill_verdict: string;

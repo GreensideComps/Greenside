@@ -75,6 +75,11 @@ export interface ShopifyClientOptions {
  * EXCLUDES code-based discounts: verified on order #1006, where the default
  * reported GBP 1.00 on a line whose order totalled GBP 0.00. Never read the
  * default form for money.
+ *
+ * No customer field. `Order.customer` requires read_customers, which the app
+ * does not hold, and Shopify fails the whole query when it is requested. No
+ * decision reads the customer, so customer_ref is recorded as NULL and an
+ * entrant is identified by order_id.
  */
 export const ORDER_QUERY = `
 query AllocatorOrder($id: ID!) {
@@ -85,7 +90,6 @@ query AllocatorOrder($id: ID!) {
     test
     cancelledAt
     displayFinancialStatus
-    customer { id }
     lineItems(first: 50) {
       nodes {
         id
@@ -161,7 +165,6 @@ export interface OrderNode {
   test: boolean;
   cancelledAt: string | null;
   displayFinancialStatus: string;
-  customer: { id: string } | null;
   lineItems: { nodes: OrderLineItemNode[] };
 }
 

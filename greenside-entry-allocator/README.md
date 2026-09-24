@@ -96,6 +96,9 @@ Without `read_all_orders`, only orders from the last 60 days can be read.
 (`setOrderEntryNumbersMetafield`) exists but nothing calls it yet, and wiring
 it up would need that scope.
 
+`read_customers` is not needed either: the order is read without its customer,
+so `customer_ref` is always NULL and an entrant is identified by order.
+
 Production (worker `greenside-entry-allocator`):
 
     npx wrangler d1 create greenside_entries     # put the id in wrangler.toml
@@ -128,7 +131,7 @@ Dispute handling is absent: `read_shopify_payments_disputes` is not available.
 
 ## Tests
 
-    npm test          # 287 tests
+    npm test          # 291 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the

@@ -213,7 +213,9 @@ async function processLine(
     reason,
     orderId,
     lineItemId,
-    customerRef: order.customer ? numericId(order.customer.id) : null,
+    // The order is read without its customer (see ORDER_QUERY), so no customer
+    // reference is recorded; the entrant is identified by orderId.
+    customerRef: null,
     actor: deps.actor,
     runId: deps.runId,
     webhookId: deps.webhookId,
@@ -307,7 +309,7 @@ async function allocationStatements(
       order.createdAt,
       numericId(line.id),
       line.variant ? numericId(line.variant.id) : null,
-      order.customer ? numericId(order.customer.id) : null,
+      null, // customer_ref: not read, see ORDER_QUERY
       propertyValue(line, '_entry_route') ?? 'unknown',
       line.quantity,
       args.perUnit,

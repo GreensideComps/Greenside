@@ -4,6 +4,7 @@ import { describe, expect, test } from 'vitest';
 import { computeHmac, timingSafeEqual, verifyWebhook } from '../src/hmac';
 import { allocationId } from '../src/idempotency';
 import { isDryRun, orderGidFromPayload, TOPIC_ROUTES } from '../src/index';
+import { ORDER_QUERY } from '../src/shopify';
 
 const SECRET = 'test-webhook-secret';
 const SHOP = 'test.myshopify.com';
@@ -180,6 +181,14 @@ describe('THE ALLOCATOR HAS NO INVENTORY-WRITE CAPABILITY', () => {
         .replace(/^\s*\/\/.*$/gm, '');
       expect(code).not.toMatch(/drand|randomBeacon|selectWinner|commitmentHash|HMAC_DRBG|rejectionSampling/i);
     }
+  });
+});
+
+describe('Shopify scopes', () => {
+  test('ORDER_QUERY requests no customer field, which would need read_customers', () => {
+    // The app holds read_orders and read_products only. Requesting
+    // Order.customer fails the whole query with ACCESS_DENIED.
+    expect(ORDER_QUERY).not.toMatch(/customer/i);
   });
 });
 
