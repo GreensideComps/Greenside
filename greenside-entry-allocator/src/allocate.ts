@@ -79,10 +79,14 @@ export async function claimLowest(args: {
 /**
  * Release the highest `count` numbers held by one allocation.
  *
- * `returnToPool` is decided by the caller from the competition's status, and
- * is the single place the freeze invariant is enforced: while OPEN a released
- * number goes straight back to AVAILABLE; once FROZEN it stays RELEASED for
- * good, so a post-freeze refund can never hand a drawn number to someone new.
+ * `returnToPool` is decided by the caller from the competition's status: while
+ * OPEN a released number goes straight back to AVAILABLE; once FROZEN it stays
+ * RELEASED for good, so a post-freeze refund can never hand a drawn number to
+ * someone new.
+ *
+ * claimLowest and releaseHighest write no events. Order processing does not
+ * call them: it converges through converge.ts, whose single batch records the
+ * events with the change and enforces the freeze invariant there.
  */
 export async function releaseHighest(args: {
   db: D1Like;

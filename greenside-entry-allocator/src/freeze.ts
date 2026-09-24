@@ -15,7 +15,15 @@
  * repair that after the fact.
  */
 
-import { COUNT_UNJUDGED, FREEZE_COMPETITION, SELECT_ORPHANED_CLAIMS, type D1Like } from './db';
+import {
+  COUNT_UNJUDGED,
+  FREEZE_COMPETITION,
+  SELECT_AUDIT_GAPS,
+  SELECT_LEDGER_DRIFT,
+  SELECT_MISSING_SKILL_EVENTS,
+  SELECT_ORPHANED_CLAIMS,
+  type D1Like,
+} from './db';
 import { poolCounts } from './pool';
 
 export interface FreezeBlocker {
@@ -25,7 +33,8 @@ export interface FreezeBlocker {
     | 'UNJUDGED_ALLOCATIONS'
     | 'ORPHANED_CLAIMS'
     | 'POOL_SIZE_MISMATCH'
-    | 'ALLOCATION_LEDGER_DRIFT';
+    | 'ALLOCATION_LEDGER_DRIFT'
+    | 'AUDIT_GAP';
   detail: string;
 }
 
@@ -84,6 +93,33 @@ export async function freezeBlockers(args: {
     blockers.push({
       code: 'POOL_SIZE_MISMATCH',
       detail: `pool holds ${counts.total} numbers, competition capacity is ${args.expectedCapacity}`,
+    });
+  }
+
+  const drift = await args.db
+    .prepare(SELECT_LEDGER_DRIFT)
+    .bind(args.competitionId)
+    .all<{ allocation_id: string; held_count: number; pool_held: number }>();
+  if (drift.results.length > 0) {
+    blockers.push({
+      code: 'ALLOCATION_LEDGER_DRIFT',
+      detail: `${drift.results.length} allocation(s) whose held_count disagrees with the numbers they hold`,
+    });
+  }
+
+  // Defence in depth. Convergence writes state and events in one transaction,
+  // so a gap should be impossible; this proves it before the list is final,
+  // because a draw over an unaccountable history cannot be defended later.
+  const gaps = await args.db.prepare(SELECT_AUDIT_GAPS).bind(args.competitionId).all<{ entry_number: string }>();
+  const skill = await args.db.prepare(SELECT_MISSING_SKILL_EVENTS).bind(args.competitionId).all<{ allocation_id: string }>();
+  if (gaps.results.length > 0 || skill.results.length > 0) {
+    const numbers = gaps.results.slice(0, 5).map((g) => g.entry_number).join(', ');
+    blockers.push({
+      code: 'AUDIT_GAP',
+      detail:
+        `${gaps.results.length} number(s) whose event history does not match their state` +
+        (gaps.results.length > 0 ? ` (${numbers}${gaps.results.length > 5 ? ', ...' : ''})` : '') +
+        `; ${skill.results.length} allocation(s) missing their skill event`,
     });
   }
 

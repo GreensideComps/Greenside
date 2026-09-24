@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { claimLowest, countHeld, listHeld } from '../src/allocate';
 import { converge, planConvergence, targetCount } from '../src/converge';
 import { buildPool } from '../src/pool';
-import { NOW, TestD1, seedCompetition } from './helpers';
+import { EVENT_CONTEXT, NOW, TestD1, seedCompetition } from './helpers';
 
 let db: TestD1;
 let competitionId: string;
@@ -20,7 +20,7 @@ const run = (allocationId: string, currentQuantity: number, entriesPerUnit = 1, 
   converge({
     db, competitionId, competitionStatus: status, allocationId,
     currentQuantity, entriesPerUnit, now: NOW, reason: 'REFUND',
-    orderId: 'o1', lineItemId: 'l1', customerRef: null,
+    orderId: 'o1', lineItemId: 'l1', customerRef: null, ...EVENT_CONTEXT,
   });
 
 describe('the target rule', () => {
@@ -98,7 +98,7 @@ describe('cancellation', () => {
     const out = await converge({
       db, competitionId, competitionStatus: 'OPEN', allocationId: 'a1',
       currentQuantity: 0, entriesPerUnit: 1, now: NOW, reason: 'CANCELLED',
-      orderId: 'o1', lineItemId: 'l1', customerRef: null,
+      orderId: 'o1', lineItemId: 'l1', customerRef: null, ...EVENT_CONTEXT,
     });
     expect(out.released).toHaveLength(4);
     expect(db.query<{ release_reason: string }>(`SELECT release_reason FROM entry_number WHERE seq=1001`)[0]).toMatchObject({
@@ -148,10 +148,12 @@ describe('idempotency', () => {
 describe('freeze interaction', () => {
   test('while FROZEN a release does NOT return the number to the pool', async () => {
     await seed('a1', 3);
+    // The release reads the competition's status itself, so it must really be FROZEN.
+    db.sqlite.exec(`UPDATE competition SET status = 'FROZEN', frozen_at = '${NOW}'`);
     const out = await converge({
       db, competitionId, competitionStatus: 'FROZEN', allocationId: 'a1',
       currentQuantity: 0, entriesPerUnit: 1, now: NOW, reason: 'REFUND',
-      orderId: 'o1', lineItemId: 'l1', customerRef: null,
+      orderId: 'o1', lineItemId: 'l1', customerRef: null, ...EVENT_CONTEXT,
     });
     expect(out.released).toHaveLength(3);
     const statuses = db.query<{ status: string }>(`SELECT status FROM entry_number WHERE seq IN (1001,1002,1003)`);
@@ -163,7 +165,7 @@ describe('freeze interaction', () => {
     const out = await converge({
       db, competitionId, competitionStatus: 'FROZEN', allocationId: 'a1',
       currentQuantity: 5, entriesPerUnit: 1, now: NOW, reason: 'ORDER_EDIT',
-      orderId: 'o1', lineItemId: 'l1', customerRef: null,
+      orderId: 'o1', lineItemId: 'l1', customerRef: null, ...EVENT_CONTEXT,
     });
     expect(out.plan.action).toBe('ALLOCATE');
     expect(out.claimed).toEqual([]); // refused: the entry list is final

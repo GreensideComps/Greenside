@@ -21,9 +21,19 @@
  *     move, so nothing is released. No special case, no trap.
  */
 
-import { claimLowest, countHeld, releaseHighest, type ClaimedNumber } from './allocate';
-import type { D1Like } from './db';
-import type { ReleaseReason } from './events';
+import { countHeld, type ClaimedNumber } from './allocate';
+import {
+  CLAIM_TO_TARGET,
+  INSERT_ALLOCATED_EVENTS,
+  INSERT_RELEASED_EVENTS,
+  INSERT_RETURNED_EVENTS,
+  RELEASE_TO_TARGET,
+  SELECT_CONVERGED,
+  UPDATE_ALLOCATION_COUNTS,
+  type D1Like,
+  type D1StatementLike,
+} from './db';
+import type { Actor, ReleaseReason } from './events';
 
 export interface ConvergePlan {
   target: number;
@@ -80,10 +90,29 @@ export interface ConvergeOutcome {
 }
 
 /**
- * Execute a convergence.
+ * Execute a convergence, atomically.
  *
- * `competitionStatus` decides two things at once: whether more numbers may be
- * claimed at all, and whether released numbers return to the pool.
+ * Everything this run changes is sent as ONE db.batch(), which D1 commits as a
+ * single transaction:
+ *
+ *   [prelude]                  the ledger row and skill event, first time only
+ *   CLAIM_TO_TARGET            or RELEASE_TO_TARGET, or neither
+ *   INSERT_ALLOCATED_EVENTS    }
+ *   INSERT_RELEASED_EVENTS     }  one event per issue of a number, never twice
+ *   INSERT_RETURNED_EVENTS     }
+ *   UPDATE_ALLOCATION_COUNTS   held_count read from the pool, not from the plan
+ *   SELECT_CONVERGED           status and holdings as committed, for the caller
+ *
+ * So a failure anywhere leaves nothing behind, and the retry starts from the
+ * state before this run. Retry used to repair the numbers and the ledger but
+ * never the events: once the claim had committed, held == target, the plan
+ * was NONE and the missing events were never written.
+ *
+ * `competitionStatus` is the caller's earlier read and only decides whether a
+ * claim is attempted. The batch itself is authoritative: the claim re-checks
+ * that the competition is OPEN, and a release reads the status to decide
+ * whether the number returns to the pool, so a freeze that commits after the
+ * caller's read is honoured.
  */
 export async function converge(args: {
   db: D1Like;
@@ -97,45 +126,65 @@ export async function converge(args: {
   orderId: string;
   lineItemId: string;
   customerRef: string | null;
+  actor: Actor;
+  runId: string;
+  webhookId?: string | null;
+  /** Statements that must commit in the same transaction, ahead of the convergence. */
+  prelude?: D1StatementLike[];
 }): Promise<ConvergeOutcome> {
+  const { db, competitionId, allocationId, now, reason } = args;
   const target = targetCount(args.currentQuantity, args.entriesPerUnit);
-  const held = await countHeld(args.db, args.competitionId, args.allocationId);
+  const held = await countHeld(db, competitionId, allocationId);
   const plan = planConvergence(target, held);
+  // A claim is not even attempted once the caller has seen the freeze. The
+  // SQL enforces the freeze invariant regardless: no claim unless OPEN, and a
+  // release after the freeze stays RELEASED for good.
+  const open = args.competitionStatus === 'OPEN';
 
-  if (plan.action === 'NONE') {
-    return { plan, claimed: [], released: [], refusedCapacity: false };
+  const statements = [...(args.prelude ?? [])];
+  let claimAt = -1;
+  let releaseAt = -1;
+  if (plan.action === 'ALLOCATE' && open) {
+    claimAt = statements.length;
+    statements.push(
+      db
+        .prepare(CLAIM_TO_TARGET)
+        .bind(competitionId, allocationId, now, target, args.orderId, args.lineItemId, args.customerRef),
+    );
+  } else if (plan.action === 'RELEASE') {
+    releaseAt = statements.length;
+    statements.push(
+      db.prepare(RELEASE_TO_TARGET).bind(competitionId, allocationId, now, target, reason),
+    );
   }
 
-  if (plan.action === 'RELEASE') {
-    const released = await releaseHighest({
-      db: args.db,
-      competitionId: args.competitionId,
-      allocationId: args.allocationId,
-      count: plan.delta,
-      now: args.now,
-      reason: args.reason,
-      // THE FREEZE INVARIANT, in one place.
-      returnToPool: args.competitionStatus === 'OPEN',
-    });
-    return { plan, claimed: [], released, refusedCapacity: false };
-  }
+  const event = [now, args.actor, args.runId, args.webhookId ?? null] as const;
+  statements.push(
+    db.prepare(INSERT_ALLOCATED_EVENTS).bind(competitionId, allocationId, ...event),
+    db.prepare(INSERT_RELEASED_EVENTS).bind(competitionId, allocationId, ...event, reason),
+    db.prepare(INSERT_RETURNED_EVENTS).bind(competitionId, allocationId, ...event, reason),
+    db.prepare(UPDATE_ALLOCATION_COUNTS).bind(competitionId, allocationId, now, target),
+    db.prepare(SELECT_CONVERGED).bind(competitionId, allocationId),
+  );
 
-  // ALLOCATE. Only into an OPEN competition -- a frozen entry list is final.
-  if (args.competitionStatus !== 'OPEN') {
-    return { plan, claimed: [], released: [], refusedCapacity: false };
-  }
+  const results = (await db.batch(statements)) as { results?: unknown[] }[];
+  const converged = results[results.length - 1]?.results?.[0] as { competition_status: string; held: number };
 
-  const result = await claimLowest({
-    db: args.db,
-    competitionId: args.competitionId,
-    allocationId: args.allocationId,
-    count: plan.delta,
-    now: args.now,
-    orderId: args.orderId,
-    lineItemId: args.lineItemId,
-    customerRef: args.customerRef,
-  });
+  // Ascending, so the caller and the customer see 'PUT1001, PUT1002, PUT1003'.
+  const claimed = claimAt < 0 ? [] : rows(results[claimAt]).sort((a, b) => a.seq - b.seq);
+  // Descending: highest released first, which is the order they were taken.
+  const released = releaseAt < 0 ? [] : rows(results[releaseAt]).sort((a, b) => b.seq - a.seq);
 
-  if (!result.ok) return { plan, claimed: [], released: [], refusedCapacity: true };
-  return { plan, claimed: result.claimed, released: [], refusedCapacity: false };
+  // Zero rows claimed is a capacity refusal only if the allocation is still
+  // short (a concurrent run for the same line may have reached the target
+  // first) and the competition is still OPEN (a freeze refuses for its own
+  // reason, not for capacity). Both read in the same transaction as the claim.
+  const refusedCapacity =
+    claimAt >= 0 && claimed.length === 0 && converged.competition_status === 'OPEN' && converged.held < target;
+
+  return { plan, claimed, released, refusedCapacity };
+}
+
+function rows(result: { results?: unknown[] } | undefined): ClaimedNumber[] {
+  return ((result?.results ?? []) as ClaimedNumber[]).slice();
 }

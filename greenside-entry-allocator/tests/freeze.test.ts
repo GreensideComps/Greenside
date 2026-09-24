@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { claimLowest } from '../src/allocate';
+import { converge } from '../src/converge';
 import { freeze, freezeBlockers } from '../src/freeze';
 import { buildPool } from '../src/pool';
+import { writeEvent } from '../src/process';
 import { readSnapshot } from '../src/snapshot';
-import { NOW, TestD1, seedAllocation, seedCompetition } from './helpers';
+import { EVENT_CONTEXT, NOW, TestD1, seedAllocation, seedCompetition } from './helpers';
 
 let db: TestD1;
 let competitionId: string;
@@ -20,8 +22,20 @@ beforeEach(async () => {
 });
 
 async function allocate(allocationId: string, count: number, verdict: 'CORRECT' | 'INCORRECT' | 'UNJUDGED' = 'CORRECT') {
+  // The production path: ledger row, its skill event, then a convergence that
+  // claims, records and counts in one batch -- so a clean competition has a
+  // complete audit trail, as it must to freeze.
   seedAllocation(db, { allocationId, competitionId, orderId: `o-${allocationId}`, lineItemId: `l-${allocationId}`, verdict });
-  await claimLowest({ db, competitionId, allocationId, count, now: NOW, orderId: `o-${allocationId}`, lineItemId: `l-${allocationId}`, customerRef: 'c' });
+  if (verdict !== 'CORRECT') {
+    await writeEvent(db, {
+      occurredAt: NOW, competitionId, allocationId, orderId: `o-${allocationId}`,
+      eventType: verdict === 'INCORRECT' ? 'INCORRECT_SKILL' : 'UNJUDGED_SKILL', ...EVENT_CONTEXT,
+    });
+  }
+  await converge({
+    db, competitionId, competitionStatus: 'OPEN', allocationId, currentQuantity: count, entriesPerUnit: 1,
+    now: NOW, reason: 'REFUND', orderId: `o-${allocationId}`, lineItemId: `l-${allocationId}`, customerRef: 'c', ...EVENT_CONTEXT,
+  });
 }
 
 const doFreeze = (capacity = 10) =>
@@ -117,11 +131,10 @@ describe('no number reuse after freeze', () => {
     await doFreeze();
 
     // A refund arrives after the freeze.
-    const { converge } = await import('../src/converge');
     await converge({
       db, competitionId, competitionStatus: 'FROZEN', allocationId: 'a1',
       currentQuantity: 0, entriesPerUnit: 1, now: NOW, reason: 'REFUND',
-      orderId: 'o-a1', lineItemId: 'l-a1', customerRef: null,
+      orderId: 'o-a1', lineItemId: 'l-a1', customerRef: null, ...EVENT_CONTEXT,
     });
 
     const released = db.query<{ status: string }>(`SELECT status FROM entry_number WHERE seq IN (1001,1002)`);

@@ -50,6 +50,15 @@ is wrong the moment anything is refunded, and is never used.
 lowest-first, and stamps `allocation_id` onto the rows it claims. Read its
 comment before changing anything.
 
+Each convergence is ONE `db.batch()`, which D1 commits as a single
+transaction: the ledger row (first time only), the claim or release, every
+`ALLOCATED` / `RELEASED` / `RETURNED_TO_POOL` event and the ledger counts. A
+failure leaves nothing behind, so a retry rebuilds state *and* history. The
+claim and release take the target, not a count, and work out the difference
+in SQL, so two concurrent runs for one order line cannot over-claim. Freeze
+refuses with `AUDIT_GAP` if any number's event history does not match its
+state (see `db.ts :: SELECT_AUDIT_GAPS`).
+
 ## Refunds and cancellations
 
 One rule covers refund, partial refund, cancellation and order edit:
@@ -105,7 +114,7 @@ Dispute handling is absent: `read_shopify_payments_disputes` is not available.
 
 ## Tests
 
-    npm test          # 232 tests
+    npm test          # 282 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the

@@ -64,12 +64,26 @@ export class TestD1 implements D1Like {
     return new SqliteStatement(this.sqlite, sql);
   }
 
-  /** D1's batch is an implicit transaction. Mirrored here with a real one. */
-  async batch(statements: D1StatementLike[]): Promise<unknown[]> {
+  private batches: Promise<unknown> = Promise.resolve();
+
+  /**
+   * D1's batch is an implicit transaction. Mirrored here with a real one.
+   *
+   * Like D1 it returns each statement's rows (RETURNING included) and runs
+   * batches one at a time; without the queue, two concurrent batches would
+   * interleave inside one SQLite transaction, which D1 never does.
+   */
+  batch(statements: D1StatementLike[]): Promise<unknown[]> {
+    const run = this.batches.then(() => this.runBatch(statements));
+    this.batches = run.catch(() => undefined);
+    return run;
+  }
+
+  private async runBatch(statements: D1StatementLike[]): Promise<unknown[]> {
     this.sqlite.exec('BEGIN');
     try {
       const out: unknown[] = [];
-      for (const s of statements) out.push(await s.run());
+      for (const s of statements) out.push(await s.all());
       this.sqlite.exec('COMMIT');
       return out;
     } catch (err) {
@@ -93,6 +107,9 @@ export function silentLogger(): Logger {
 }
 
 export const NOW = '2026-09-23T10:00:00.000Z';
+
+/** Who a test convergence is recorded as. */
+export const EVENT_CONTEXT = { actor: 'system:cli' as const, runId: 'test-run' };
 
 /** Insert a competition directly, bypassing Shopify. */
 export function seedCompetition(

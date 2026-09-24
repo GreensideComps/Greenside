@@ -8,16 +8,17 @@
  * staleness becomes impossible, and payload trimming stops mattering.
  */
 
-import { claimLowest, countHeld } from './allocate';
+import { countHeld } from './allocate';
 import { buildCompetitionConfig, entriesPerUnit, numericId, type CompetitionConfig } from './config';
-import { converge, targetCount } from './converge';
+import { converge } from './converge';
 import {
   INSERT_ALLOCATION,
   INSERT_EVENT,
+  INSERT_EVENT_IF_CHANGED,
   SELECT_ALLOCATION,
   SELECT_COMPETITION,
-  UPDATE_ALLOCATION_COUNTS,
   type D1Like,
+  type D1StatementLike,
 } from './db';
 import { evaluateOrder } from './eligibility';
 import type { Actor, EventRecord, ReleaseReason } from './events';
@@ -69,8 +70,21 @@ export interface LineOutcome {
 }
 
 export async function writeEvent(db: D1Like, e: EventRecord): Promise<void> {
-  await db
-    .prepare(INSERT_EVENT)
+  await eventStatement(db, e).run();
+}
+
+/**
+ * An informational event, written only when the condition it describes has
+ * changed since the allocation's latest event. See INSERT_EVENT_IF_CHANGED.
+ */
+export async function writeInformationalEvent(db: D1Like, e: EventRecord): Promise<void> {
+  await eventStatement(db, e, INSERT_EVENT_IF_CHANGED).run();
+}
+
+/** An event as a statement, for inclusion in a batch. */
+export function eventStatement(db: D1Like, e: EventRecord, sql = INSERT_EVENT): D1StatementLike {
+  return db
+    .prepare(sql)
     .bind(
       e.occurredAt,
       e.competitionId,
@@ -88,8 +102,7 @@ export async function writeEvent(db: D1Like, e: EventRecord): Promise<void> {
       e.runId,
       e.webhookId ?? null,
       JSON.stringify(e.detail ?? {}),
-    )
-    .run();
+    );
 }
 
 /**
@@ -143,7 +156,7 @@ async function processLine(
   // Not eligible and nothing held: record and stop. A PENDING order holding
   // nothing is simply not ready.
   if (!verdict.allocate && !verdict.converge) {
-    await writeEvent(deps.db, {
+    await writeInformationalEvent(deps.db, {
       occurredAt: now,
       competitionId,
       allocationId: allocId,
@@ -168,10 +181,12 @@ async function processLine(
     ? 0
     : currentQuantity;
 
-  // First allocation for this line: write the ledger row before converging, so
-  // the skill verdict is snapshotted from the config as it stands NOW.
+  // First allocation for this line: the ledger row, snapshotting the skill
+  // verdict from the config as it stands NOW, commits in the same batch as the
+  // claim and its events.
+  let prelude: D1StatementLike[] = [];
   if (!existing && verdict.allocate) {
-    const created = await createAllocation(deps, {
+    const created = await allocationStatements(deps, {
       allocId,
       competition,
       competitionId,
@@ -184,6 +199,7 @@ async function processLine(
     if (!created) {
       return { ...base, competitionId, action: 'SKIPPED', detail: 'competition config unavailable' };
     }
+    prelude = created;
   }
 
   const outcome = await converge({
@@ -198,34 +214,16 @@ async function processLine(
     orderId,
     lineItemId,
     customerRef: order.customer ? numericId(order.customer.id) : null,
+    actor: deps.actor,
+    runId: deps.runId,
+    webhookId: deps.webhookId,
+    prelude,
   });
 
-  for (const c of outcome.claimed) {
-    await writeEvent(deps.db, {
-      occurredAt: now, competitionId, seq: c.seq, entryNumber: c.entry_number,
-      allocationId: allocId, allocationSeq: c.allocation_seq,
-      eventType: 'ALLOCATED', fromStatus: 'AVAILABLE', toStatus: 'ALLOCATED',
-      orderId, actor: deps.actor, runId: deps.runId, webhookId: deps.webhookId, detail: {},
-    });
-  }
-  for (const r of outcome.released) {
-    const returned = competition.status === 'OPEN';
-    await writeEvent(deps.db, {
-      occurredAt: now, competitionId, seq: r.seq, entryNumber: r.entry_number,
-      allocationId: allocId, allocationSeq: r.allocation_seq,
-      eventType: 'RELEASED', fromStatus: 'ALLOCATED', toStatus: returned ? 'AVAILABLE' : 'RELEASED',
-      orderId, reason, actor: deps.actor, runId: deps.runId, webhookId: deps.webhookId, detail: {},
-    });
-    if (returned) {
-      await writeEvent(deps.db, {
-        occurredAt: now, competitionId, seq: r.seq, entryNumber: r.entry_number,
-        eventType: 'RETURNED_TO_POOL', fromStatus: 'RELEASED', toStatus: 'AVAILABLE',
-        actor: deps.actor, runId: deps.runId, webhookId: deps.webhookId, detail: { reason },
-      });
-    }
-  }
+  // Recorded outside the batch: a refusal changes no state, so a retry
+  // recomputes it. It is written once per condition, not once per delivery.
   if (outcome.refusedCapacity) {
-    await writeEvent(deps.db, {
+    await writeInformationalEvent(deps.db, {
       occurredAt: now, competitionId, allocationId: allocId,
       eventType: 'REFUSED_CAPACITY', orderId, actor: deps.actor, runId: deps.runId,
       webhookId: deps.webhookId,
@@ -234,9 +232,6 @@ async function processLine(
   }
 
   const finalHeld = await countHeld(deps.db, competitionId, allocId);
-  const target = targetCount(effectiveQuantity, perUnit);
-  const status = finalHeld === 0 ? 'RELEASED' : finalHeld < target ? 'PARTIAL' : 'ALLOCATED';
-  await deps.db.prepare(UPDATE_ALLOCATION_COUNTS).bind(allocId, target, finalHeld, status, now).run();
 
   return {
     lineItemId,
@@ -256,7 +251,8 @@ async function variantEntriesFor(deps: ProcessDeps, line: OrderLineItemNode): Pr
   return variant?.entries?.value ?? null;
 }
 
-async function createAllocation(
+/** The ledger row and any skill event, as statements for the convergence batch. */
+async function allocationStatements(
   deps: ProcessDeps,
   args: {
     allocId: string;
@@ -268,12 +264,12 @@ async function createAllocation(
     now: string;
     verdictCode: string;
   },
-): Promise<boolean> {
+): Promise<D1StatementLike[] | null> {
   const { line, order } = args;
-  if (!line.product) return false;
+  if (!line.product) return null;
 
   const product = await deps.shopify.fetchCompetitionProduct(line.product.id);
-  if (!product) return false;
+  if (!product) return null;
 
   const configResult = buildCompetitionConfig({
     productGid: product.id,
@@ -299,7 +295,8 @@ async function createAllocation(
     now: args.now,
   });
 
-  await deps.db
+  const statements = [
+    deps.db
     .prepare(INSERT_ALLOCATION)
     .bind(
       args.allocId,
@@ -334,24 +331,24 @@ async function createAllocation(
       'ALLOCATED',
       deps.actor === 'system:reconcile' ? 'reconcile' : 'webhook',
       args.now,
-    )
-    .run();
+    ),
+  ];
 
   if (skill.verdict === 'UNJUDGED') {
-    await writeEvent(deps.db, {
+    statements.push(eventStatement(deps.db, {
       occurredAt: args.now, competitionId: args.competitionId, allocationId: args.allocId,
       eventType: 'UNJUDGED_SKILL', orderId: numericId(order.id),
       actor: deps.actor, runId: deps.runId, webhookId: deps.webhookId,
       detail: { note: 'custom.skill_answer_correct is not set; this competition cannot be frozen' },
-    });
+    }));
   } else if (skill.verdict === 'INCORRECT') {
-    await writeEvent(deps.db, {
+    statements.push(eventStatement(deps.db, {
       occurredAt: args.now, competitionId: args.competitionId, allocationId: args.allocId,
       eventType: 'INCORRECT_SKILL', orderId: numericId(order.id),
       actor: deps.actor, runId: deps.runId, webhookId: deps.webhookId,
       detail: { note: 'entry is allocated but excluded from the draw; numbers are NOT voided' },
-    });
+    }));
   }
 
-  return true;
+  return statements;
 }
