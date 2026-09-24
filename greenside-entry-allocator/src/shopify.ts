@@ -129,12 +129,37 @@ query AllocatorCompetition($id: ID!) {
   }
 }`;
 
-/** Reconciliation sweep. Read-only. */
-export const ORDERS_SWEEP_QUERY = `
-query AllocatorSweep($cursor: String, $search: String!) {
-  orders(first: 50, after: $cursor, query: $search, sortKey: CREATED_AT) {
+/**
+ * Reconciliation listing. Read-only.
+ *
+ * One page of orders carrying just enough to decide, without a further call,
+ * whether an order has drifted from the ledger: its financial status,
+ * cancellation, test flag, whether it has any refund, and each line's product
+ * and currentQuantity. A drifted order is then re-read in full (ORDER_QUERY)
+ * and converged exactly as a webhook would converge it.
+ *
+ * 25 orders x 20 lines keeps the requested cost well inside Shopify's
+ * 1000-point single-query ceiling. An order with more than 20 lines reports
+ * lineItems.pageInfo.hasNextPage and is always re-read in full, so no
+ * competition line can hide past the page.
+ */
+export const RECONCILE_ORDERS_QUERY = `
+query AllocatorReconcile($cursor: String, $search: String!, $sortKey: OrderSortKeys!) {
+  orders(first: 25, after: $cursor, query: $search, sortKey: $sortKey) {
     pageInfo { hasNextPage endCursor }
-    nodes { id updatedAt }
+    nodes {
+      id
+      createdAt
+      updatedAt
+      test
+      cancelledAt
+      displayFinancialStatus
+      refunds(first: 1) { id }
+      lineItems(first: 20) {
+        pageInfo { hasNextPage }
+        nodes { id currentQuantity product { id } }
+      }
+    }
   }
 }`;
 
@@ -171,6 +196,27 @@ export interface OrderNode {
   displayFinancialStatus: string;
   lineItems: { nodes: OrderLineItemNode[] };
 }
+
+export interface ReconcileOrderNode {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  test: boolean;
+  cancelledAt: string | null;
+  displayFinancialStatus: string;
+  refunds: Array<{ id: string }>;
+  lineItems: {
+    pageInfo: { hasNextPage: boolean };
+    nodes: Array<{ id: string; currentQuantity: number; product: { id: string } | null }>;
+  };
+}
+
+export interface ReconcileOrdersPage {
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  nodes: ReconcileOrderNode[];
+}
+
+export type ReconcileSortKey = 'UPDATED_AT' | 'CREATED_AT';
 
 export interface CompetitionProductNode {
   id: string;
@@ -308,6 +354,20 @@ export class ShopifyClient {
   async fetchCompetitionProduct(productGid: string): Promise<CompetitionProductNode | null> {
     const data = await this.request<{ product: CompetitionProductNode | null }>(COMPETITION_QUERY, { id: productGid });
     return data.product;
+  }
+
+  /** One page of the reconciliation listing. `search` is Shopify order search syntax. */
+  async listReconcileOrders(
+    search: string,
+    sortKey: ReconcileSortKey,
+    cursor: string | null,
+  ): Promise<ReconcileOrdersPage> {
+    const data = await this.request<{ orders: ReconcileOrdersPage }>(RECONCILE_ORDERS_QUERY, {
+      search,
+      sortKey,
+      cursor,
+    });
+    return data.orders;
   }
 
   /** The single permitted write. */

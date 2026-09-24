@@ -20,7 +20,7 @@ import {
   type D1Like,
   type D1StatementLike,
 } from './db';
-import { evaluateOrder } from './eligibility';
+import { evaluateOrder, type EligibilityVerdict } from './eligibility';
 import type { Actor, EventRecord, ReleaseReason } from './events';
 import { allocationId } from './idempotency';
 import type { Logger } from './logging';
@@ -33,6 +33,21 @@ export function toMinorUnits(amount: string): number {
   const pence = (frac + '00').slice(0, 2);
   const sign = whole.trim().startsWith('-') ? -1 : 1;
   return sign * (Math.abs(Number.parseInt(whole, 10)) * 100 + Number.parseInt(pence, 10));
+}
+
+/**
+ * The quantity convergence drives a line to, given its eligibility verdict.
+ * Shared with reconcile.ts, whose drift check must predict exactly what
+ * processLine will do.
+ */
+export function effectiveQuantity(verdict: EligibilityVerdict, currentQuantity: number): number {
+  if (!verdict.allocate && !verdict.converge) return 0;
+  const zeroed =
+    verdict.code === 'NEVER_CANCELLED' ||
+    verdict.code === 'NEVER_VOIDED' ||
+    verdict.code === 'NEVER_EXPIRED' ||
+    verdict.code === 'NEVER_TEST';
+  return zeroed ? 0 : currentQuantity;
 }
 
 export function propertyValue(line: OrderLineItemNode, key: string): string | null {
@@ -113,7 +128,13 @@ export function eventStatement(db: D1Like, e: EventRecord, sql = INSERT_EVENT): 
  */
 export async function processOrder(deps: ProcessDeps, orderGid: string, reason: ReleaseReason): Promise<LineOutcome[]> {
   const order = await deps.shopify.fetchOrder(orderGid);
-  if (!order) return [];
+  if (!order) {
+    // Not an error to retry: deleted, outside the 60-day window read_orders
+    // grants, or otherwise invisible to this app. Nothing is released on the
+    // strength of an order that cannot be read, but it must not pass silently.
+    deps.logger.warn('order_unreadable', { order_gid: orderGid });
+    return [];
+  }
   const outcomes: LineOutcome[] = [];
 
   for (const line of order.lineItems.nodes) {
@@ -176,10 +197,7 @@ async function processLine(
 
   // Ineligible but holding numbers: release them. This is how a cancelled or
   // refunded order gives its entries back, driven by currentQuantity.
-  const currentQuantity = verdict.allocate || verdict.converge ? line.currentQuantity : 0;
-  const effectiveQuantity = verdict.code === 'NEVER_CANCELLED' || verdict.code === 'NEVER_VOIDED' || verdict.code === 'NEVER_EXPIRED' || verdict.code === 'NEVER_TEST'
-    ? 0
-    : currentQuantity;
+  const quantity = effectiveQuantity(verdict, line.currentQuantity);
 
   // First allocation for this line: the ledger row, snapshotting the skill
   // verdict from the config as it stands NOW, commits in the same batch as the
@@ -207,7 +225,7 @@ async function processLine(
     competitionId,
     competitionStatus: competition.status,
     allocationId: allocId,
-    currentQuantity: effectiveQuantity,
+    currentQuantity: quantity,
     entriesPerUnit: perUnit,
     now,
     reason,

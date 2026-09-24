@@ -326,6 +326,37 @@ SELECT entry_number, seq, allocation_seq FROM entry_number
 export const COUNT_AVAILABLE = `
 SELECT COUNT(*) AS n FROM entry_number WHERE competition_id = ?1 AND status = 'AVAILABLE'`;
 
+/* ------------------------------------------------------------------ *
+ * Reconciliation (reconcile.ts). All three are read-only.
+ * ------------------------------------------------------------------ */
+
+/** Competitions the sweep acts on. DRAFT is never touched. */
+export const SELECT_RECONCILE_COMPETITIONS = `
+SELECT competition_id, status FROM competition WHERE status IN ('OPEN', 'FROZEN')`;
+
+/**
+ * Ledger rows for one listing page. ?1 is a JSON array of numeric order ids,
+ * so a page of any size is one bound parameter. `held` is counted from the
+ * pool, the source of truth, not read from the ledger's held_count.
+ */
+export const SELECT_ALLOCATIONS_FOR_ORDERS = `
+SELECT a.allocation_id, a.competition_id, a.order_id, a.line_item_id, a.entries_per_unit,
+       (SELECT COUNT(*) FROM entry_number e
+         WHERE e.allocation_id = a.allocation_id AND e.status = 'ALLOCATED') AS held
+  FROM allocation a
+ WHERE a.order_id IN (SELECT value FROM json_each(?1))`;
+
+/** Allocations still holding numbers whose order is older than ?1 (ISO). */
+export const SELECT_AGED_HELD = `
+SELECT a.allocation_id, a.competition_id, a.order_id, a.order_name, a.order_created_at,
+       (SELECT COUNT(*) FROM entry_number e
+         WHERE e.allocation_id = a.allocation_id AND e.status = 'ALLOCATED') AS held
+  FROM allocation a
+ WHERE a.order_created_at < ?1
+   AND EXISTS (SELECT 1 FROM entry_number e
+                WHERE e.allocation_id = a.allocation_id AND e.status = 'ALLOCATED')
+ ORDER BY a.order_created_at ASC`;
+
 /** Orphan sweep: rows claimed by an allocation_id that has no ledger row. */
 export const SELECT_ORPHANED_CLAIMS = `
 SELECT e.competition_id, e.allocation_id, COUNT(*) AS n

@@ -18,6 +18,7 @@ import { Logger, newRunId } from './logging';
 import { verifyWebhook } from './hmac';
 import { ShopifyClient, SHOPIFY_API_VERSION } from './shopify';
 import { processOrder, writeEvent } from './process';
+import { DEFAULT_DEEP_CRON, runReconcile, type ReconcileMode } from './reconcile';
 import type { D1Like } from './db';
 import type { ReleaseReason } from './events';
 
@@ -31,6 +32,8 @@ export interface Env {
   SHOPIFY_API_VERSION?: string;
   ALLOWED_SHOP_DOMAIN?: string;
   DRY_RUN?: string;
+  /** The cron expression that runs the deep (59-day) sweep; any other cron runs the trailing one. */
+  RECONCILE_DEEP_CRON?: string;
 }
 
 /**
@@ -194,32 +197,67 @@ export default {
       return Response.json({ status: 'ok', outcomes });
     } catch (err) {
       // A genuine transient failure, including a failed token exchange: 500
-      // asks Shopify to retry, and the reconciler is the backstop if every
-      // retry is exhausted.
+      // asks Shopify to retry, and the reconciliation sweep is the backstop if
+      // every retry is exhausted.
       logger.error('webhook_failed', { topic: route.topic, error: String((err as Error)?.message ?? err) });
       return new Response('Processing failed', { status: 500 });
     }
   },
 
+  /**
+   * The reconciliation sweep (reconcile.ts). Which cron fired picks the
+   * look-back; dry run picks report mode, which reads but never writes.
+   */
   async scheduled(controller: ScheduledController, env: Env): Promise<void> {
     const runId = newRunId();
     const logger = new Logger({ run_id: runId, dry_run: isDryRun(env) }, [
       env.SHOPIFY_CLIENT_SECRET,
       env.SHOPIFY_WEBHOOK_SECRET,
     ]);
+    const mode: ReconcileMode = controller.cron === (env.RECONCILE_DEEP_CRON?.trim() || DEFAULT_DEEP_CRON) ? 'deep' : 'trailing';
+    const report = isDryRun(env);
     logger.info('reconcile_started', {
       cron: controller.cron,
       scheduled_time_utc: new Date(controller.scheduledTime).toISOString(),
+      mode,
+      report,
     });
 
-    // Reconciliation is deliberately not wired to live Shopify in this stage:
-    // no production webhooks are registered and no live sweep runs. The
-    // mechanism is exercised by tests against fixtures.
-    if (isDryRun(env)) {
-      logger.info('reconcile_skipped', { reason: 'DRY_RUN is not the exact string "false"' });
+    const store = env.SHOPIFY_STORE?.trim();
+    const clientId = env.SHOPIFY_CLIENT_ID?.trim();
+    const clientSecret = env.SHOPIFY_CLIENT_SECRET?.trim();
+    const shopDomain = env.ALLOWED_SHOP_DOMAIN?.trim();
+    if (!store || !clientId || !clientSecret || !shopDomain) {
+      // Retrying on the next tick will not fix configuration; say so and stop.
+      logger.error('missing_configuration', {
+        missing: [
+          !store ? 'SHOPIFY_STORE' : null,
+          !clientId ? 'SHOPIFY_CLIENT_ID' : null,
+          !clientSecret ? 'SHOPIFY_CLIENT_SECRET' : null,
+          !shopDomain ? 'ALLOWED_SHOP_DOMAIN' : null,
+        ].filter(Boolean),
+      });
       return;
     }
-    logger.info('reconcile_finished', { note: 'sweep implementation lands with live webhook registration' });
+
+    const shopify = new ShopifyClient({
+      store,
+      tokens: tokenSourceFor({ store, clientId, clientSecret }),
+      apiVersion: env.SHOPIFY_API_VERSION || SHOPIFY_API_VERSION,
+      logger,
+    });
+
+    try {
+      await runReconcile(
+        { db: env.DB, shopify, logger, shopDomain, runId, now: () => new Date().toISOString() },
+        { mode, report },
+      );
+    } catch (err) {
+      // A listing or D1 failure ends the run. Rethrown so the invocation shows
+      // as failed; the next tick starts again from its own window.
+      logger.error('reconcile_failed', { mode, error: String((err as Error)?.message ?? err) });
+      throw err;
+    }
   },
 };
 

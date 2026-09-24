@@ -2,9 +2,17 @@ name = "greenside-entry-allocator"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
 
-# Reconciliation sweep. Webhooks carry the latency; this carries the guarantee.
+# Reconciliation sweep (src/reconcile.ts). Webhooks carry the latency; this
+# carries the guarantee. The cron that fires picks the look-back: the one equal
+# to RECONCILE_DEEP_CRON runs the deep (59-day) sweep, any other the trailing
+# (2-hour) one.
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["*/15 * * * *", "0 3 * * *"]
+
+# Persist Worker logs beyond a live `wrangler tail`, so the sweep's
+# reconcile_summary lines can be read after the fact.
+[observability]
+enabled = true
 
 [[d1_databases]]
 binding = "DB"
@@ -23,6 +31,7 @@ DRY_RUN = "true"
 SHOPIFY_API_VERSION = "2026-07"
 SHOPIFY_STORE = "7r5csb-1j.myshopify.com"
 ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
+RECONCILE_DEEP_CRON = "0 3 * * *"
 
 # Secrets are NEVER defined here. Set them with:
 #   npx wrangler secret put SHOPIFY_CLIENT_ID
@@ -65,3 +74,8 @@ DRY_RUN = "true"
 SHOPIFY_API_VERSION = "2026-07"
 SHOPIFY_STORE = "7r5csb-1j.myshopify.com"
 ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
+# QA runs the deep sweep twice an hour, so a QA session can watch one.
+RECONCILE_DEEP_CRON = "20,50 * * * *"
+
+[env.qa.triggers]
+crons = ["*/15 * * * *", "20,50 * * * *"]

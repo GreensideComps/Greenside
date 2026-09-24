@@ -152,9 +152,44 @@ window -- Shopify retries for 48 hours.
 
 Dispute handling is absent: `read_shopify_payments_disputes` is not available.
 
+## Reconciliation sweep
+
+Webhooks carry the latency; the sweep carries the guarantee. It recovers a
+delivery that never arrived, or one acknowledged while the Worker was in dry
+run, by converging the order exactly as its webhook would have
+(`src/reconcile.ts`). It keeps no state: each run's look-back is fixed by
+which cron fired.
+
+| Cron | Mode | Orders listed |
+|---|---|---|
+| `*/15 * * * *` | trailing | updated in the last 2 hours |
+| `RECONCILE_DEEP_CRON` (`0 3 * * *`) | deep | created in the last 59 days |
+
+It compares first: the listing carries each order's status, cancellation,
+refunds and per-line `currentQuantity`, which are checked against the pool
+using the same eligibility and quantity rules as `processOrder`. Only an order
+that has drifted is re-read and converged, as actor `system:reconcile` with no
+webhook id. A release it performs is recorded as `CANCELLED` if the order is
+cancelled, else `REFUND` if it has a refund, else `ORDER_EDIT`.
+
+- **Dry run** runs the sweep in report mode: it reads Shopify and D1, logs
+  `reconcile_would_change`, and writes nothing.
+- **FROZEN** competitions take no new numbers: a paid line still owed numbers
+  is logged as `reconcile_refused_not_open` for a human to refund. Releases
+  still apply and leave the number `RELEASED`.
+- **Unreadable orders** (`order_unreadable`) are never released on. Without
+  `read_all_orders` Shopify only exposes the last 60 days of orders, so
+  `reconcile_aged_allocation` warns when numbers are held on an order 55 or
+  more days old: freeze and draw before then.
+- **Before a freeze**, wait for a deep run that finished after sales closed
+  and logged no drift (`reconcile_summary` with `mismatched: 0`).
+
+Each run ends with one `reconcile_summary` line; `reconcile_truncated` means
+the run's page or convergence budget ran out and the next run continues.
+
 ## Tests
 
-    npm test          # 314 tests
+    npm test          # 339 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the
