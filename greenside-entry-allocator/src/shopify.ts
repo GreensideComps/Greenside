@@ -20,8 +20,9 @@
  * THE ONLY WRITE THIS CLIENT CAN PERFORM is setOrderEntryNumbersMetafield(),
  * the order-metafield mirror. There is no product write, no inventory write,
  * no discount write and no order-state write of any kind. The token this
- * Worker uses must come from an app holding only read_orders, read_all_orders,
- * read_products and write_orders.
+ * Worker uses must come from an app holding only read_orders and
+ * read_products. Nothing calls setOrderEntryNumbersMetafield() yet; wiring it
+ * up would also need write_orders.
  */
 
 import type { Logger } from './logging';

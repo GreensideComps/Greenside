@@ -224,5 +224,18 @@ describe('webhook routing', () => {
     expect(orderGidFromPayload('refunds/create', { id: 999, order_id: 1042 })).toBe('gid://shopify/Order/1042');
     expect(orderGidFromPayload('orders/paid', { id: 1042 })).toBe('gid://shopify/Order/1042');
     expect(orderGidFromPayload('orders/paid', {})).toBeNull();
+    expect(orderGidFromPayload('orders/create', { id: 1042 })).toBe('gid://shopify/Order/1042');
+    expect(orderGidFromPayload('orders/cancelled', { id: 1042 })).toBe('gid://shopify/Order/1042');
+    expect(orderGidFromPayload('refunds/create', { id: 999 })).toBeNull();
+  });
+
+  test('orders/edited reads order_edit.order_id, never the edit id or a top-level id', () => {
+    expect(orderGidFromPayload('orders/edited', { order_edit: { id: 78912, order_id: 1042 } })).toBe(
+      'gid://shopify/Order/1042',
+    );
+    expect(orderGidFromPayload('orders/edited', { order_edit: { id: 78912 } })).toBeNull();
+    expect(orderGidFromPayload('orders/edited', { id: 1042 })).toBeNull();
+    expect(orderGidFromPayload('orders/edited', { order_edit: null })).toBeNull();
+    expect(orderGidFromPayload('orders/edited', {})).toBeNull();
   });
 });

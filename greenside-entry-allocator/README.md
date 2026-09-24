@@ -87,14 +87,28 @@ Shopify capture setting, not a weakening of this rule.
 
 Requires its own Shopify custom app holding ONLY:
 
-    read_orders, read_all_orders, read_products, write_orders
+    read_orders, read_products
 
 **Never `write_inventory`.** Do not reuse the connector app's token.
+
+Without `read_all_orders`, only orders from the last 60 days can be read.
+`write_orders` is not needed: the order-metafield mirror
+(`setOrderEntryNumbersMetafield`) exists but nothing calls it yet, and wiring
+it up would need that scope.
+
+Production (worker `greenside-entry-allocator`):
 
     npx wrangler d1 create greenside_entries     # put the id in wrangler.toml
     npx wrangler d1 migrations apply greenside_entries --local
     npx wrangler secret put SHOPIFY_ACCESS_TOKEN
     npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
+
+QA (worker `greenside-entry-allocator-qa`, D1 `greenside_entries_qa`). Every
+QA command needs `--env qa`; without it Wrangler targets the production
+worker name.
+
+    npx wrangler secret put SHOPIFY_WEBHOOK_SECRET --env qa
+    npx wrangler secret put SHOPIFY_ACCESS_TOKEN --env qa    # read only when DRY_RUN is "false"
 
 `DRY_RUN` defaults to true and is disabled only by the exact string `"false"`.
 An unset, misspelled or empty value leaves the Worker read-only.
@@ -114,7 +128,7 @@ Dispute handling is absent: `read_shopify_payments_disputes` is not available.
 
 ## Tests
 
-    npm test          # 282 tests
+    npm test          # 287 tests
     npm run typecheck
 
 The D1 stub is backed by real SQLite (`node:sqlite`), not a fake, because the

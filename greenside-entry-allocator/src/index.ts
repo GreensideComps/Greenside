@@ -54,8 +54,20 @@ const PATH_TO_TOPIC: Record<string, { topic: string; reason: ReleaseReason }> = 
 
 /** Order id out of any supported webhook payload shape. */
 export function orderGidFromPayload(topic: string, payload: Record<string, unknown>): string | null {
-  // refunds/create carries the refund, whose order_id names the order.
-  const raw = topic === 'refunds/create' ? payload['order_id'] : payload['id'];
+  let raw: unknown;
+  if (topic === 'refunds/create') {
+    // refunds/create carries the refund, whose order_id names the order.
+    raw = payload['order_id'];
+  } else if (topic === 'orders/edited') {
+    // orders/edited carries the edit, not the order:
+    //   { "order_edit": { "id": <edit id>, "order_id": <order id>, ... } }
+    // There is no top-level id, and order_edit.id names the edit, so only
+    // order_edit.order_id is read.
+    const edit = payload['order_edit'];
+    raw = edit !== null && typeof edit === 'object' ? (edit as Record<string, unknown>)['order_id'] : undefined;
+  } else {
+    raw = payload['id'];
+  }
   if (raw === undefined || raw === null) return null;
   const id = String(raw);
   return id.startsWith('gid://') ? id : `gid://shopify/Order/${id}`;

@@ -29,7 +29,7 @@ ALLOWED_SHOP_DOMAIN = "7r5csb-1j.myshopify.com"
 #   npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
 #
 # The token this Worker uses must come from an app holding ONLY:
-#   read_orders, read_all_orders, read_products, write_orders
+#   read_orders, read_products
 # It must never hold write_inventory. See README.
 
 # ---------------------------------------------------------------------------
