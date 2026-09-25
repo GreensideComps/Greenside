@@ -1,0 +1,10 @@
+{
+  "layout": "password",
+  "sections": {
+    "landing": {
+      "type": "greenside-landing",
+      "settings": {}
+    }
+  },
+  "order": ["landing"]
+}

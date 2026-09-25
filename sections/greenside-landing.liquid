@@ -1,0 +1,922 @@
+{% comment %}
+  Greenside pre-launch landing page.
+
+  Rendered by the password template while the storefront password is on, so this
+  is the only page the public sees. Its one job is collecting email addresses.
+
+  Signup uses Shopify's native customer form (the same mechanism as the default
+  password page). Shopify records the subscriber; Klaviyo's Shopify subscriber
+  sync is what adds them to the Klaviyo list. There is no custom Klaviyo code
+  here, and the form works without JavaScript.
+
+  The Privacy Notice and Terms & Conditions are rendered inline from their pages,
+  wording unchanged, because the storefront password blocks /pages/* for visitors.
+
+  Keep this page free of competition mechanics, prices, odds, draw or winner
+  claims, pre-launch rewards and brand names.
+{% endcomment %}
+
+{%- liquid
+  assign privacy_page = pages['privacy-notice']
+  assign terms_page = pages['terms-conditions']
+  assign contact_email = shop.email
+-%}
+
+{% style %}
+  .gs-landing {
+    --gs-green: #1b4332;
+    --gs-green-deep: #0f2e22;
+    --gs-green-pale: #e8f0ea;
+    --gs-ink: #10231a;
+    --gs-muted: #4b5d53;
+    --gs-line: #d5e0d8;
+    --gs-on-dark: #dce9e1;
+    --gs-on-dark-muted: #b9d3c3;
+    --gs-radius: 10px;
+
+    font-family: var(--font-body--family, Inter, 'Helvetica Neue', Arial, sans-serif);
+    color: var(--gs-ink);
+    background: #ffffff;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .gs-landing *,
+  .gs-landing *::before,
+  .gs-landing *::after {
+    box-sizing: border-box;
+  }
+
+  .gs-landing .gs-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .gs-landing .gs-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Header */
+  .gs-landing .gs-top {
+    background: #ffffff;
+    border-bottom: 1px solid var(--gs-line);
+  }
+
+  .gs-landing .gs-top .gs-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 84px;
+    gap: 16px;
+  }
+
+  .gs-landing .gs-logo {
+    display: block;
+    width: 120px;
+    height: 72px;
+    object-fit: cover;
+    object-position: center 60%;
+  }
+
+  .gs-landing .gs-wordmark {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--gs-green);
+    letter-spacing: 0.02em;
+  }
+
+  .gs-landing .gs-pill {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gs-green);
+    background: var(--gs-green-pale);
+    border-radius: 999px;
+    padding: 10px 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .gs-landing .gs-pill:focus-visible {
+    outline: 2px solid var(--gs-green);
+    outline-offset: 2px;
+  }
+
+  /* Type */
+  .gs-landing h1.gs-h1,
+  .gs-landing h2.gs-h2,
+  .gs-landing h3.gs-h3 {
+    font-family: inherit;
+    text-transform: none;
+    font-weight: 700;
+  }
+
+  .gs-landing h1.gs-h1 {
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    color: #ffffff;
+  }
+
+  .gs-landing h2.gs-h2 {
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 16px;
+    color: var(--gs-green-deep);
+  }
+
+  .gs-landing h3.gs-h3 {
+    font-size: 18px;
+    line-height: 1.3;
+    margin: 0 0 6px;
+    color: var(--gs-green-deep);
+  }
+
+  .gs-landing .gs-eyebrow {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gs-on-dark-muted);
+    margin: 0 0 16px;
+  }
+
+  .gs-landing .gs-lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--gs-on-dark);
+    margin: 0 0 32px;
+    max-width: 34ch;
+  }
+
+  /* Hero */
+  .gs-landing .gs-hero {
+    background: var(--gs-green);
+    color: #ffffff;
+  }
+
+  .gs-landing .gs-hero .gs-wrap {
+    padding-top: 88px;
+    padding-bottom: 96px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .gs-landing .gs-hero--with-image .gs-wrap {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .gs-landing .gs-hero-media {
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+  }
+
+  .gs-landing .gs-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Form */
+  .gs-landing .gs-form {
+    max-width: 480px;
+    margin: 0;
+  }
+
+  .gs-landing .gs-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .gs-landing .gs-form .gs-input {
+    flex: 1;
+    min-width: 0;
+    height: 54px;
+    padding: 0 16px;
+    font: inherit;
+    font-size: 16px;
+    border-radius: var(--gs-radius);
+    border: 1.5px solid #ffffff;
+    background-color: #ffffff;
+    color: var(--gs-ink);
+    margin: 0;
+  }
+
+  .gs-landing .gs-form .gs-input::placeholder {
+    color: #6b7d72;
+  }
+
+  .gs-landing .gs-form .gs-input:focus-visible {
+    outline: 3px solid #9fd0b2;
+    outline-offset: 1px;
+  }
+
+  .gs-landing .gs-form .gs-input[aria-invalid='true'] {
+    border-color: #ffb4b4;
+  }
+
+  .gs-landing .gs-form .gs-btn {
+    height: 54px;
+    padding: 0 22px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: var(--gs-radius);
+    border: 0;
+    background: #ffffff;
+    color: var(--gs-green);
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .gs-landing .gs-form .gs-btn:hover {
+    background: var(--gs-green-pale);
+  }
+
+  .gs-landing .gs-form .gs-btn:focus-visible {
+    outline: 3px solid #9fd0b2;
+    outline-offset: 2px;
+  }
+
+  .gs-landing label.gs-consent {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 16px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--gs-on-dark);
+    cursor: pointer;
+  }
+
+  .gs-landing label.gs-consent input {
+    width: 20px;
+    height: 20px;
+    margin: 1px 0 0;
+    flex: none;
+    accent-color: #ffffff;
+  }
+
+  .gs-landing label.gs-consent a {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+
+  .gs-landing .gs-small {
+    font-size: 13px;
+    color: var(--gs-on-dark-muted);
+    margin: 10px 0 0;
+  }
+
+  .gs-landing .gs-error {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #8a1c1c;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 14px;
+  }
+
+  .gs-landing .gs-success {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--gs-green);
+    background: #ffffff;
+    border-radius: var(--gs-radius);
+    padding: 16px 18px;
+    margin: 0;
+  }
+
+  .gs-landing .gs-success strong {
+    display: block;
+    font-size: 19px;
+    margin-bottom: 2px;
+  }
+
+  /* About */
+  .gs-landing .gs-about {
+    padding: 96px 0;
+  }
+
+  .gs-landing .gs-about .gs-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+  }
+
+  .gs-landing .gs-about p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--gs-muted);
+    margin: 0;
+  }
+
+  .gs-landing .gs-points {
+    display: grid;
+    gap: 24px;
+    align-content: start;
+  }
+
+  .gs-landing .gs-point {
+    border-top: 2px solid var(--gs-green);
+    padding-top: 16px;
+  }
+
+  .gs-landing .gs-point p {
+    font-size: 16px;
+  }
+
+  /* Categories */
+  .gs-landing .gs-cats {
+    background: var(--gs-green-pale);
+    padding: 96px 0;
+  }
+
+  .gs-landing .gs-cats-intro {
+    max-width: 620px;
+    margin-bottom: 40px;
+  }
+
+  .gs-landing .gs-cats-intro p {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--gs-muted);
+    margin: 0;
+  }
+
+  .gs-landing .gs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .gs-landing .gs-tile {
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .gs-landing .gs-tile-img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .gs-landing .gs-tile-body {
+    padding: 22px 20px 24px;
+    border-top: 3px solid var(--gs-green);
+  }
+
+  .gs-landing .gs-tile--image .gs-tile-body {
+    border-top: 0;
+  }
+
+  .gs-landing .gs-tile h3.gs-h3 {
+    font-size: 20px;
+  }
+
+  .gs-landing .gs-tile p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--gs-muted);
+  }
+
+  .gs-landing .gs-note {
+    font-size: 13px;
+    color: var(--gs-muted);
+    margin: 18px 0 0;
+  }
+
+  /* Final signup */
+  .gs-landing .gs-final {
+    background: var(--gs-green-deep);
+    color: #ffffff;
+    padding: 96px 0;
+    text-align: center;
+  }
+
+  .gs-landing .gs-final h2.gs-h2 {
+    color: #ffffff;
+  }
+
+  .gs-landing .gs-final .gs-lede {
+    margin: 0 auto 28px;
+  }
+
+  .gs-landing .gs-final .gs-form {
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  /* Legal (inline Privacy Notice and T&Cs) */
+  .gs-landing .gs-legal {
+    background: #ffffff;
+    border-top: 1px solid var(--gs-line);
+    padding: 40px 0 8px;
+  }
+
+  .gs-landing .gs-legal details {
+    border-bottom: 1px solid var(--gs-line);
+    padding: 4px 0;
+  }
+
+  .gs-landing .gs-legal summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--gs-green);
+    padding: 12px 0;
+    min-height: 44px;
+  }
+
+  .gs-landing .gs-legal-body {
+    max-width: 720px;
+    padding: 4px 0 24px;
+    color: var(--gs-ink);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .gs-landing .gs-legal-body > div {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    font-family: inherit !important;
+  }
+
+  .gs-landing .gs-legal-body h2,
+  .gs-landing .gs-legal-body h3 {
+    font-size: 17px;
+    margin: 20px 0 6px;
+    color: var(--gs-green-deep);
+    text-transform: none;
+  }
+
+  .gs-landing .gs-legal-body a {
+    color: var(--gs-green);
+  }
+
+  /* Footer */
+  .gs-landing .gs-footer {
+    background: #ffffff;
+    padding: 32px 0 24px;
+    font-size: 14px;
+    color: var(--gs-muted);
+  }
+
+  .gs-landing .gs-footer .gs-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .gs-landing .gs-footer .gs-logo {
+    width: 100px;
+    height: 60px;
+  }
+
+  .gs-landing .gs-footer nav {
+    display: flex;
+    gap: 8px 22px;
+    flex-wrap: wrap;
+  }
+
+  .gs-landing .gs-footer a {
+    color: var(--gs-green);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 0;
+    display: inline-block;
+  }
+
+  .gs-landing .gs-footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media screen and (max-width: 800px) {
+    .gs-landing .gs-top .gs-wrap {
+      min-height: 68px;
+    }
+
+    .gs-landing .gs-top .gs-logo {
+      width: 100px;
+      height: 60px;
+    }
+
+    .gs-landing .gs-hero .gs-wrap,
+    .gs-landing .gs-hero--with-image .gs-wrap {
+      grid-template-columns: 1fr;
+      padding-top: 40px;
+      padding-bottom: 56px;
+      gap: 32px;
+    }
+
+    .gs-landing .gs-hero-media {
+      aspect-ratio: 16 / 10;
+    }
+
+    .gs-landing h1.gs-h1 {
+      font-size: 38px;
+    }
+
+    .gs-landing .gs-lede {
+      font-size: 17px;
+    }
+
+    .gs-landing .gs-row {
+      flex-direction: column;
+    }
+
+    .gs-landing .gs-form .gs-input {
+      flex: none;
+      width: 100%;
+    }
+
+    .gs-landing .gs-form .gs-btn {
+      width: 100%;
+    }
+
+    .gs-landing .gs-about,
+    .gs-landing .gs-cats,
+    .gs-landing .gs-final {
+      padding: 64px 0;
+    }
+
+    .gs-landing .gs-about .gs-wrap {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .gs-landing h2.gs-h2 {
+      font-size: 28px;
+    }
+
+    .gs-landing .gs-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gs-landing .gs-footer .gs-wrap {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+{% endstyle %}
+
+{%- capture consent_line -%}
+  <label class="gs-consent">
+    <input type="checkbox" required>
+    <span>I agree to the <a href="#privacy-notice" data-gs-legal>Privacy Notice</a> and <a href="#terms-conditions" data-gs-legal>Terms &amp; Conditions</a>.</span>
+  </label>
+{%- endcapture -%}
+
+{%- capture success_message -%}
+  <p class="gs-success" role="status">
+    <strong>{{ section.settings.success_heading | escape }}</strong>
+    {{ section.settings.success_body | escape }}
+  </p>
+{%- endcapture -%}
+
+<div class="gs-landing">
+  <header class="gs-top">
+    <div class="gs-wrap">
+      {%- if settings.logo != blank -%}
+        {{
+          settings.logo
+          | image_url: width: 400
+          | image_tag: class: 'gs-logo', alt: shop.name, loading: 'eager', widths: '200, 400'
+        }}
+      {%- else -%}
+        <span class="gs-wordmark">{{ shop.name | escape }}</span>
+      {%- endif -%}
+      <a class="gs-pill" href="#join">{{ section.settings.button_label | escape }}</a>
+    </div>
+  </header>
+
+  <section class="gs-hero{% if section.settings.hero_image != blank %} gs-hero--with-image{% endif %}" aria-labelledby="gs-hero-heading">
+    <div class="gs-wrap">
+      <div>
+        <p class="gs-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h1 class="gs-h1" id="gs-hero-heading">{{ section.settings.heading | escape }}</h1>
+        <p class="gs-lede">{{ section.settings.lede | escape }}</p>
+
+        {%- form 'customer', id: 'GreensideSignupHero', class: 'gs-form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            {{ success_message }}
+          {%- else -%}
+            {%- if form.errors -%}
+              <p class="gs-error" role="alert" id="GreensideSignupHero-error">
+                {{ form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email }}
+              </p>
+            {%- endif -%}
+            <div class="gs-row">
+              <label class="gs-sr" for="GreensideEmail-hero">Email address</label>
+              <input
+                class="gs-input"
+                id="GreensideEmail-hero"
+                type="email"
+                name="contact[email]"
+                placeholder="Your email address"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                required
+                {% if form.errors %}
+                  aria-invalid="true"
+                  aria-describedby="GreensideSignupHero-error"
+                {% endif %}
+              >
+              <button class="gs-btn" type="submit">{{ section.settings.button_label | escape }}</button>
+            </div>
+            {{ consent_line }}
+            <p class="gs-small">{{ section.settings.reassurance | escape }}</p>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      {%- if section.settings.hero_image != blank -%}
+        <div class="gs-hero-media">
+          {{
+            section.settings.hero_image
+            | image_url: width: 1600
+            | image_tag: loading: 'eager', widths: '600, 900, 1200, 1600', sizes: '(min-width: 800px) 45vw, 100vw'
+          }}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="gs-about" aria-labelledby="gs-about-heading">
+    <div class="gs-wrap">
+      <div>
+        <h2 class="gs-h2" id="gs-about-heading">{{ section.settings.about_heading | escape }}</h2>
+        <p>{{ section.settings.about_body | escape }}</p>
+      </div>
+      <div class="gs-points">
+        <div class="gs-point">
+          <h3 class="gs-h3">{{ section.settings.point_1_heading | escape }}</h3>
+          <p>{{ section.settings.point_1_body | escape }}</p>
+        </div>
+        <div class="gs-point">
+          <h3 class="gs-h3">{{ section.settings.point_2_heading | escape }}</h3>
+          <p>{{ section.settings.point_2_body | escape }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gs-cats" aria-labelledby="gs-cats-heading">
+    <div class="gs-wrap">
+      <div class="gs-cats-intro">
+        <h2 class="gs-h2" id="gs-cats-heading">{{ section.settings.cats_heading | escape }}</h2>
+        <p>{{ section.settings.cats_intro | escape }}</p>
+      </div>
+      <div class="gs-grid">
+        {%- for i in (1..3) -%}
+          {%- liquid
+            assign image_key = 'tile_' | append: i | append: '_image'
+            assign heading_key = 'tile_' | append: i | append: '_heading'
+            assign body_key = 'tile_' | append: i | append: '_body'
+            assign tile_image = section.settings[image_key]
+          -%}
+          <div class="gs-tile{% if tile_image != blank %} gs-tile--image{% endif %}">
+            {%- if tile_image != blank -%}
+              {{
+                tile_image
+                | image_url: width: 900
+                | image_tag: class: 'gs-tile-img', loading: 'lazy', widths: '450, 700, 900', sizes: '(min-width: 800px) 33vw, 100vw'
+              }}
+            {%- endif -%}
+            <div class="gs-tile-body">
+              <h3 class="gs-h3">{{ section.settings[heading_key] | escape }}</h3>
+              <p>{{ section.settings[body_key] | escape }}</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <p class="gs-note">{{ section.settings.cats_note | escape }}</p>
+    </div>
+  </section>
+
+  <section class="gs-final" id="join" aria-labelledby="gs-final-heading">
+    <div class="gs-wrap">
+      <h2 class="gs-h2" id="gs-final-heading">{{ section.settings.final_heading | escape }}</h2>
+      <p class="gs-lede">{{ section.settings.final_body | escape }}</p>
+
+      {%- form 'customer', id: 'GreensideSignupFinal', class: 'gs-form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {%- if form.posted_successfully? -%}
+          {{ success_message }}
+        {%- else -%}
+          {%- if form.errors -%}
+            <p class="gs-error" role="alert" id="GreensideSignupFinal-error">
+              {{ form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email }}
+            </p>
+          {%- endif -%}
+          <div class="gs-row">
+            <label class="gs-sr" for="GreensideEmail-final">Email address</label>
+            <input
+              class="gs-input"
+              id="GreensideEmail-final"
+              type="email"
+              name="contact[email]"
+              placeholder="Your email address"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              {% if form.errors %}
+                aria-invalid="true"
+                aria-describedby="GreensideSignupFinal-error"
+              {% endif %}
+            >
+            <button class="gs-btn" type="submit">{{ section.settings.button_label | escape }}</button>
+          </div>
+          {{ consent_line }}
+          <p class="gs-small">{{ section.settings.reassurance | escape }}</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </section>
+
+  <section class="gs-legal" aria-label="Privacy Notice and Terms &amp; Conditions">
+    <div class="gs-wrap">
+      <details id="privacy-notice">
+        <summary>Privacy Notice</summary>
+        <div class="gs-legal-body">
+          {%- if privacy_page != blank -%}
+            {{ privacy_page.content | replace: '<h1', '<h2' | replace: '</h1>', '</h2>' }}
+          {%- else -%}
+            <p>Please email {{ contact_email }} for a copy of our Privacy Notice.</p>
+          {%- endif -%}
+        </div>
+      </details>
+      <details id="terms-conditions">
+        <summary>Terms &amp; Conditions</summary>
+        <div class="gs-legal-body">
+          {%- if terms_page != blank -%}
+            {{
+              terms_page.content
+              | replace: '<h1', '<h2'
+              | replace: '</h1>', '</h2>'
+              | replace: 'href="/pages/privacy-notice"', 'href="#privacy-notice" data-gs-legal'
+            }}
+          {%- else -%}
+            <p>Please email {{ contact_email }} for a copy of our Terms &amp; Conditions.</p>
+          {%- endif -%}
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer class="gs-footer">
+    <div class="gs-wrap">
+      {%- if settings.logo != blank -%}
+        {{
+          settings.logo
+          | image_url: width: 300
+          | image_tag: class: 'gs-logo', alt: shop.name, loading: 'lazy', widths: '150, 300'
+        }}
+      {%- else -%}
+        <span class="gs-wordmark">{{ shop.name | escape }}</span>
+      {%- endif -%}
+      <nav aria-label="Footer">
+        <a href="#privacy-notice" data-gs-legal>Privacy Notice</a>
+        <a href="#terms-conditions" data-gs-legal>Terms &amp; Conditions</a>
+        {%- if contact_email != blank -%}
+          <a href="mailto:{{ contact_email }}">Contact</a>
+        {%- endif -%}
+      </nav>
+      <div>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | escape }}</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    // Progressive enhancement only: opening the matching Privacy Notice / T&Cs panel
+    // when one of its links is used. Without JavaScript the panels still open by tapping them.
+    function openFromHash(hash) {
+      if (!hash) return;
+      var el = document.getElementById(hash.replace('#', ''));
+      if (el && el.tagName === 'DETAILS') {
+        el.open = true;
+      }
+    }
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('a[data-gs-legal]');
+      if (link) openFromHash(link.getAttribute('href'));
+    });
+    openFromHash(window.location.hash);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Greenside landing",
+  "class": "gs-landing-section",
+  "settings": [
+    { "type": "header", "content": "Hero" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Launching soon" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A new home for golf prizes." },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting text",
+      "default": "Greenside is a new golf prize brand. Win golf equipment, tech and experiences. Join the waitlist and we'll tell you the moment we launch."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image (genuine, licensed photography only)"
+    },
+    { "type": "header", "content": "Signup" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Join the waitlist" },
+    { "type": "text", "id": "reassurance", "label": "Reassurance line", "default": "Free to join. No spam. Unsubscribe anytime." },
+    { "type": "text", "id": "success_heading", "label": "Success heading", "default": "You're on the list." },
+    {
+      "type": "text",
+      "id": "success_body",
+      "label": "Success message",
+      "default": "Thanks for joining. We'll email you when Greenside launches."
+    },
+    { "type": "header", "content": "What is Greenside?" },
+    { "type": "text", "id": "about_heading", "label": "Heading", "default": "What is Greenside?" },
+    {
+      "type": "textarea",
+      "id": "about_body",
+      "label": "Text",
+      "default": "Greenside is a golf brand built around the prizes golfers actually want, from the latest equipment and tech to days out on the course. We're putting the finishing touches in place now."
+    },
+    { "type": "text", "id": "point_1_heading", "label": "Point 1 heading", "default": "Made for golfers" },
+    {
+      "type": "text",
+      "id": "point_1_body",
+      "label": "Point 1 text",
+      "default": "Prizes chosen around the kit and experiences golfers really want."
+    },
+    { "type": "text", "id": "point_2_heading", "label": "Point 2 heading", "default": "Clear from the start" },
+    {
+      "type": "text",
+      "id": "point_2_body",
+      "label": "Point 2 text",
+      "default": "Full details, including the rules, will be published before anything opens."
+    },
+    { "type": "header", "content": "Prize categories" },
+    { "type": "text", "id": "cats_heading", "label": "Heading", "default": "The kind of prizes we're planning" },
+    {
+      "type": "text",
+      "id": "cats_intro",
+      "label": "Intro",
+      "default": "Three areas golfers care about. Specific prizes will be announced at launch."
+    },
+    { "type": "image_picker", "id": "tile_1_image", "label": "Tile 1 image (genuine, licensed only)" },
+    { "type": "text", "id": "tile_1_heading", "label": "Tile 1 heading", "default": "Golf equipment" },
+    { "type": "text", "id": "tile_1_body", "label": "Tile 1 text", "default": "Clubs, bags and the kit that goes in them." },
+    { "type": "image_picker", "id": "tile_2_image", "label": "Tile 2 image (genuine, licensed only)" },
+    { "type": "text", "id": "tile_2_heading", "label": "Tile 2 heading", "default": "Golf tech" },
+    { "type": "text", "id": "tile_2_body", "label": "Tile 2 text", "default": "Rangefinders, GPS watches and launch monitors." },
+    { "type": "image_picker", "id": "tile_3_image", "label": "Tile 3 image (genuine, licensed only)" },
+    { "type": "text", "id": "tile_3_heading", "label": "Tile 3 heading", "default": "Golf experiences" },
+    { "type": "text", "id": "tile_3_body", "label": "Tile 3 text", "default": "Days out, lessons and rounds worth remembering." },
+    {
+      "type": "text",
+      "id": "cats_note",
+      "label": "Note",
+      "default": "Examples of categories only. No specific products or brands are confirmed."
+    },
+    { "type": "header", "content": "Final signup" },
+    { "type": "text", "id": "final_heading", "label": "Heading", "default": "Be first to know when we launch" },
+    {
+      "type": "text",
+      "id": "final_body",
+      "label": "Text",
+      "default": "Join the Greenside waitlist and we'll email you when we go live."
+    },
+    { "type": "header", "content": "Footer" },
+    { "type": "text", "id": "copyright_name", "label": "Copyright name", "default": "Greenside Competitions" }
+  ]
+}
+{% endschema %}
