@@ -90,6 +90,60 @@ Expected result:
 - #1011, #1012 and #1013 rows byte-identical.
 - Restore confirmed (`DRY_RUN="true"`).
 
+**Result (25 Sep 2026): passed.** All times UTC.
+- **Pre-live gate:** all checks passed before the switch.
+  - Version `ae18deed` at 100% with `DRY_RUN="true"`.
+  - #1014 PAID, quantity 2, not cancelled, no refunds.
+  - QAE1003 and QAE1004 AVAILABLE.
+  - D1 byte-identical to the Phase A baseline (fingerprint
+    `e1ba8582964bd3b9…`: 11 events, 3 allocations, nothing for #1014).
+  - No unexpected webhooks or Worker errors since Phase A.
+  - Monitoring and heartbeat running.
+- **Live version:** `6b5057f6-ba83-41ee-a41f-e8997333af07`
+  (`3facafc`, `DRY_RUN=false`), deployed 22:35:01.
+  - The strict gate passed at 22:35:50: 6 consecutive `dry_run:false`
+    probes over 21s, each tail-confirmed on `6b5057f6`, and zero requests on
+    any other version.
+  - No webhooks and no errors while live.
+- **Live sweep:** trailing run `44819012…`, scheduled 22:45:47, on
+  `6b5057f6`.
+  - Logged `reconcile_converged` for #1014: line `39047250772342`,
+    `ALLOCATE`, claimed **exactly QAE1003 and QAE1004**, released none,
+    `ELIGIBLE; target 2, held 0 -> 2`.
+  - Summary: `mismatched 1, converged_orders 1, claimed 2, released 0,
+    refused_not_open 0, unreadable 0, errors 0, aged_held 0`.
+- **D1 after the sweep:** only the expected rows changed.
+  - QAE1003 and QAE1004 are ALLOCATED to #1014 with `allocation_seq` 2
+    (issue 2).
+  - **1 allocation** for #1014: `source` = `reconcile`, ALLOCATED, target 2,
+    held 2.
+  - **2 `ALLOCATED` events** (12 and 13): `actor` = `system:reconcile`,
+    `webhook_id` NULL.
+  - **Events 11 → 13.**
+  - Byte-identical: events 1–11, the #1011, #1012 and #1013 allocations,
+    every other entry-number row, both competitions, and `webhook_delivery`.
+  - Integrity checks: dup_events, audit_gaps, ledger_drift and orphans all 0.
+  - Fingerprint `dbc4fc8e9de38d59…`.
+- **Restored dry-run version:** `45971bda-6334-4b48-be6f-700a34b13746`
+  (`3facafc`, `DRY_RUN="true"`), deployed 22:45:57. The strict restore gate
+  passed at 22:46:41.
+- **Rollout-transition probes:** the first two restore-gate probes (22:46:03
+  and 22:46:08) were still served by the live version `6b5057f6`
+  (`dry_run:false`) while the new version rolled out. The strict gate
+  discarded them and reset its streak, as designed. This was expected
+  rollout behaviour, not a test deviation. Every later probe and heartbeat
+  was served by `45971bda` with `dry_run:true`.
+- **Post-restore sweep:** deep run `234329f9…` at 22:50:47 on `45971bda`, in
+  dry-run.
+  - Reported `mismatched 0, claimed 0, released 0, errors 0`.
+  - D1 unchanged (`dbc4fc8e…`).
+- **Final `DRY_RUN="true"` verified:**
+  - Cloudflare shows `45971bda` at 100% with `DRY_RUN="true"`.
+  - `/health` returns `dry_run:true`.
+  - The heartbeat returned `dry_run:true` 74 of 74 times after the restore.
+- **Shopify:** #1014 unchanged (PAID, quantity 2, no refunds), and no other
+  order was touched.
+
 ## SW2: recover a missed refund
 
 **Purpose:** a refund acknowledged during dry-run is released later by the
