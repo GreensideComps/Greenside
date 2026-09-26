@@ -231,6 +231,37 @@ Phase A (dry-run):
   remaining £0.01) return 200 in dry-run; D1 unchanged; the sweep reports a
   release of 1.
 
+**Phase A result (26 Sep 2026): passed.** All times UTC.
+- **Pre-state:**
+  - Worker `f30cda23` (`3facafc`) at 100% with `DRY_RUN="true"`.
+  - #1014 PARTIALLY_REFUNDED, current quantity 1.
+  - QAE1003 ALLOCATED and QAE1004 AVAILABLE; allocation target 1 / held 1.
+  - 15 events, 4 allocations, integrity checks all 0.
+  - D1 byte-identical to the SW2 Phase B final state (`789e4c32…`).
+- **Cancellation:** #1014 was cancelled in Shopify Admin at 10:04:23 with
+  restock.
+  - Shopify refunded the remaining £0.01 (manual, restocked).
+  - #1014 is now cancelled, REFUNDED and closed, current quantity 0.
+- **Webhooks:** both returned 200 `dry_run_webhook` on `f30cda23`, and no
+  other webhook arrived:
+  - `refunds/create` at 10:04:24;
+  - `orders/cancelled` at 10:04:25.
+- **D1 after the webhooks:** byte-identical (`789e4c32…`).
+- **Sweep:** trailing run `2ce6d31e…`, scheduled 10:15:24, on `f30cda23`, in
+  report mode.
+  - Logged `reconcile_would_change` for #1014: reason `CANCELLED`, line
+    `39047250772342`, `RELEASE`, target 0, held 1.
+  - Summary: `mismatched 1, converged_orders 0, claimed 0, released 0,
+    unreadable 0, errors 0`.
+- **D1 after the sweep:** byte-identical (`789e4c32…`).
+  - QAE1003 is still ALLOCATED to #1014, and the allocation is still
+    target 1 / held 1.
+  - Events are still 15. No allocation or event was written.
+- **Post-checks:**
+  - `DRY_RUN="true"` in Cloudflare settings and `/health`.
+  - The heartbeat returned `dry_run:true` 13 of 13 times.
+  - Cloudflare shows 0 errors.
+
 Phase B (live, only on approval):
 - **Steps:** strict gate; next sweep run; at least 3 further sweep runs while
   live; strict restore.
