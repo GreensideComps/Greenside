@@ -154,6 +154,33 @@ Phase A (dry-run):
 - **Expected:** `refunds/create` returns 200 in dry-run; D1 unchanged; the
   sweep reports a release of 1.
 
+**Phase A result (26 Sep 2026): passed.** All times UTC.
+- **Pre-state:**
+  - Worker `45971bda` (`3facafc`) at 100% with `DRY_RUN="true"`.
+  - #1014 PAID, quantity 2, holding QAE1003 and QAE1004 (issue 2).
+  - Allocation target 2 / held 2, source `reconcile`.
+  - 13 events, integrity checks all 0.
+  - D1 byte-identical to the SW1 Phase B final state (`dbc4fc8e…`).
+- **Refund:** 1 of 2 units refunded in Shopify Admin at 09:05:48: £0.01,
+  manual gateway, restocked. #1014 is now PARTIALLY_REFUNDED, current
+  quantity 1.
+- **Webhook:** `refunds/create` at 09:05:50 returned 200 `dry_run_webhook`
+  on `45971bda`. It was the only webhook.
+- **D1 after the webhook:** byte-identical (`dbc4fc8e…`).
+- **Sweep:** trailing run `52eacaa9…`, scheduled 09:15:55, on `45971bda`, in
+  report mode.
+  - Logged `reconcile_would_change` for #1014: reason `REFUND`, line
+    `39047250772342`, `RELEASE`, target 1, held 2.
+  - Summary: `mismatched 1, converged_orders 0, claimed 0, released 0,
+    unreadable 0, errors 0`.
+- **D1 after the sweep:** byte-identical (`dbc4fc8e…`).
+  - QAE1003 and QAE1004 are still allocated to #1014.
+  - Events are still 13. No allocation or event was written.
+- **Post-checks:**
+  - `DRY_RUN="true"` in Cloudflare settings and `/health`.
+  - The heartbeat returned `dry_run:true` 15 of 15 times.
+  - Cloudflare shows 0 errors.
+
 Phase B (live, only on approval):
 - **Steps:** strict gate; next sweep run; strict restore.
 - **Expected:**
