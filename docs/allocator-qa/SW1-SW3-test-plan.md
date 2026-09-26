@@ -157,10 +157,68 @@ Phase A (dry-run):
 Phase B (live, only on approval):
 - **Steps:** strict gate; next sweep run; strict restore.
 - **Expected:**
-  - QAE1004 released (highest number first), reason `REFUND`, `detail_json`
-    source `reconcile`;
-  - allocation target 1, held 1;
-  - events 13 → 15.
+  - QAE1004 released (highest number first), reason `REFUND`. QAE1003
+    stays allocated.
+  - Two events: `RELEASED` (reason `REFUND`), then `RETURNED_TO_POOL`
+    (`detail_json` `{"reason":"REFUND"}`).
+  - The reconciliation source shows in each event as `actor` =
+    `system:reconcile`, the sweep's `run_id` and `webhook_id` NULL.
+    `detail_json` does **not** record a source. Where it applies, it holds
+    the release reason, in the same format as a webhook release.
+  - Allocation target 1, held 1.
+  - Events 13 → 15.
+- **Correction:** the plan first said `detail_json` would contain source
+  `reconcile`. That was a documentation error, not a code defect: the code has
+  no path that writes a source into `detail_json`.
+
+**Phase B result (26 Sep 2026): passed.** All times UTC.
+- **Live version:** `37f83f57-7bb1-4a86-b9f4-27382c2e6054`
+  (`3facafc`, `DRY_RUN=false`), deployed 09:35:01.
+  - The strict gate passed at 09:35:49: 6 consecutive `dry_run:false`
+    probes over 21s, each tail-confirmed on `37f83f57`, and zero requests on
+    any other version.
+  - No webhooks and no errors while live.
+- **Live sweep:** trailing run `23098a12…`, scheduled 09:45:24, on
+  `37f83f57`.
+  - Logged `reconcile_converged` for #1014, reason `REFUND`: line
+    `39047250772342`, `RELEASE`, released **QAE1004**, claimed none,
+    `CONVERGE_ONLY; target 1, held 2 -> 1`.
+  - Summary: `mismatched 1, converged_orders 1, claimed 0, released 1,
+    refused_not_open 0, unreadable 0, errors 0, aged_held 0`.
+- **D1 after the sweep:** only the expected rows changed.
+  - **QAE1004** was released and **returned to the available pool**
+    (AVAILABLE, `release_reason` `REFUND`).
+  - **QAE1003 remained allocated** to #1014 (issue 2).
+  - The #1014 allocation (`source` `reconcile`) went from **target 2 → 1**
+    and **held 2 → 1**.
+  - **Events 13 → 15**, both with `actor` = `system:reconcile`, run
+    `23098a12…` and `webhook_id` NULL:
+    - Event 14: QAE1004 `RELEASED`, reason `REFUND`, `detail_json` `{}`.
+    - Event 15: QAE1004 `RETURNED_TO_POOL`, `detail_json`
+      `{"reason":"REFUND"}`.
+  - Byte-identical: events 1–13, the #1011, #1012 and #1013 allocations,
+    every other entry-number row, both competitions, and `webhook_delivery`.
+  - Integrity checks: dup_events, audit_gaps, ledger_drift and orphans all 0.
+  - Fingerprint `789e4c321dc0d8f8…`.
+- **Restored dry-run version:** `f30cda23-dec0-490c-8a60-0b871d569b49`
+  (`3facafc`, `DRY_RUN="true"`), deployed 09:45:32. The strict restore gate
+  passed at 09:46:10.
+- **Rollout-transition probes:** the first restore-gate probe (09:45:37) and
+  heartbeat hb-343 (09:45:33) were still served by the live version
+  `37f83f57` while the new version rolled out.
+  - The strict gate discarded the probe and reset its streak, as designed.
+  - This was expected rollout behaviour, not a test deviation.
+  - No webhook or sweep ran in that period.
+- **Post-restore sweep:** deep run `492368f6…` at 09:50:24 on `f30cda23`,
+  in dry-run.
+  - Reported `mismatched 0, claimed 0, released 0, errors 0`.
+  - D1 unchanged (`789e4c32…`).
+- **Final `DRY_RUN="true"` verified:**
+  - Cloudflare shows `f30cda23` at 100% with `DRY_RUN="true"`.
+  - `/health` returns `dry_run:true`.
+  - The heartbeat returned `dry_run:true` 74 of 74 times after the restore.
+- **Shopify:** #1014 unchanged (PARTIALLY_REFUNDED, current quantity 1,
+  refunded £0.01), and no other order changed.
 
 ## SW3: recover a missed cancellation, idempotency and restore
 
