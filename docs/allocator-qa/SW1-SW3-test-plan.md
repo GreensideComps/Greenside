@@ -299,6 +299,81 @@ Phase B (live, only on approval):
   - the further runs add 0 events and 0 corrections;
   - final `DRY_RUN="true"` confirmed.
 
+**Phase B result (26 Sep 2026): passed, no deviations.** All times UTC.
+- **Pre-live gate:** passed 10:19–10:31.
+  - Worker `f30cda23` (`3facafc`) at 100% with `DRY_RUN="true"`, and 0
+    errors since Phase A.
+  - #1014 cancelled 10:04:23, REFUNDED, closed, current quantity 0, and
+    unchanged since Phase A.
+  - QAE1003 ALLOCATED to #1014; allocation target 1 / held 1, ALLOCATED,
+    `source` `reconcile`.
+  - 15 events, 4 allocations, integrity checks all 0.
+  - D1 byte-identical to the Phase A final state (`789e4c32…`).
+  - The 10:20 deep and 10:30 trailing dry-run sweeps both reported
+    `RELEASE`, target 0, held 1, reason `CANCELLED`, errors 0.
+- **Live version:** `23d4541a-5503-4abc-988c-7c3676046911`
+  (`3facafc`, `DRY_RUN=false`), deployed 10:35:01.
+  - The strict gate passed at 10:35:48: 6 consecutive `dry_run:false`
+    probes over 21s, each tail-confirmed on `23d4541a`, and zero requests on
+    any other version.
+  - No webhooks and no errors while live (10:35:48–11:15:37).
+- **Live recovery sweep:** trailing run
+  `5a0c8e49-8879-4938-89e0-ef17e24bcfe3`, scheduled 10:45:24, on
+  `23d4541a`.
+  - Logged `reconcile_converged` for #1014, reason `CANCELLED`: line
+    `39047250772342`, `RELEASE`, released **QAE1003**, claimed none,
+    `NEVER_CANCELLED; target 0, held 1 -> 0`.
+  - Summary: `mismatched 1, converged_orders 1, claimed 0, released 1,
+    refused_not_open 0, unreadable 0, errors 0, aged_held 0`.
+- **D1 after the recovery sweep:** only the expected rows changed.
+  - **QAE1003 ALLOCATED → AVAILABLE** (`release_reason` `CANCELLED`,
+    `allocation_seq` 2).
+  - The #1014 allocation (`source` `reconcile`) went from **target 1 → 0**
+    and **held 1 → 0**, and its status from ALLOCATED to RELEASED.
+  - **Events 15 → 17**, both with `actor` = `system:reconcile`, run
+    `5a0c8e49…` and `webhook_id` NULL:
+    - Event 16: QAE1003 `RELEASED`, reason `CANCELLED`, `detail_json` `{}`.
+    - Event 17: QAE1003 `RETURNED_TO_POOL`, `detail_json`
+      `{"reason":"CANCELLED"}`.
+  - No unrelated rows changed: events 1–15, the #1011, #1012 and #1013
+    allocations, every other entry-number row, both competitions, and
+    `webhook_delivery` are byte-identical.
+  - Integrity checks: dup_events, audit_gaps, ledger_drift and orphans all 0.
+  - Fingerprint `4c9f4e945b389035…`.
+- **Idempotency sweeps (live, on `23d4541a`):** all three had `mismatched 0,
+  claimed 0, released 0, errors 0`, with no corrections. D1 stayed
+  byte-identical at 17 events after each.
+  - I1: deep run `7be776c3…` at 10:50 (14 orders seen).
+  - I2: trailing run `74492884…` at 11:00.
+  - I3: trailing run `e6fe8ec5…` at 11:15.
+- **Restored dry-run version:** `f7e9410d-0685-4cbb-aa72-a2b69dc6f4b7`
+  (`3facafc`, `DRY_RUN="true"`), deployed 11:15:37 right after I3. The
+  strict restore gate passed at 11:16:16.
+- **Rollout-transition check and heartbeat:** the first restore-gate check
+  (11:15:42) and heartbeat hb-811 (11:15:41) were still served by the live
+  version `23d4541a` while the new version rolled out.
+  - The strict gate discarded the check and reset its streak, as designed.
+  - This was expected rollout behaviour, as documented for SW1 and SW2
+    Phase B, not a deviation.
+  - No webhook or sweep ran in that period.
+- **Post-restore sweep:** deep run `fc368158-737b-4226-bd2c-729acceaea60`
+  at 11:20:24 on `f7e9410d`, in dry-run.
+  - Reported `mismatched 0, claimed 0, released 0, errors 0`.
+  - D1 unchanged (`4c9f4e94…`).
+- **Final `DRY_RUN="true"` verified:**
+  - Cloudflare shows `f7e9410d` at 100% with `DRY_RUN="true"`.
+  - `/health` returns `dry_run:true`.
+  - The heartbeat returned `dry_run:true` 74 of 74 times after the restore.
+- **Final QA state:**
+  - QA pool 8 AVAILABLE / 2 ALLOCATED (QAE1001 and QAE1002, still held by
+    #1012).
+  - #1014 fully released (allocation RELEASED, target 0 / held 0).
+  - 17 events, 4 allocations, integrity checks all 0.
+  - #1014 unchanged in Shopify.
+- **No production changes:** no application code, configuration, webhook or
+  production change was made. Only the QA Worker was redeployed, for the
+  live window and the restore.
+
 ## Evidence collected for every test
 
 - Tail captures and webhook deliveries.
