@@ -22,7 +22,30 @@
 /** The rule version pinned onto every verdict. Bump ONLY with a migration plan. */
 export const SKILL_RULE_VERSION = 'v1';
 
-export type SkillVerdict = 'CORRECT' | 'INCORRECT' | 'UNJUDGED';
+/**
+ * NOT_REQUIRED is not a judgement: it records that the competition asked no
+ * question (custom.skill_mode = none), so there was nothing to judge. It
+ * carries no rule version and no judged_at, like UNJUDGED, but unlike
+ * UNJUDGED it does not block a freeze and it is eligible for the draw.
+ */
+export type SkillVerdict = 'CORRECT' | 'INCORRECT' | 'UNJUDGED' | 'NOT_REQUIRED';
+
+/**
+ * Whether a competition asks a skill question, from custom.skill_mode.
+ *
+ * `none` is the only value that turns the question off. Unset or blank means
+ * `required`, so every competition configured before skill_mode existed keeps
+ * exactly the behaviour it had. Any other value is a configuration error,
+ * never a guess.
+ */
+export type SkillMode = 'required' | 'none';
+
+export function parseSkillMode(raw: string | null | undefined): { ok: true; mode: SkillMode } | { ok: false; raw: string } {
+  const value = raw?.trim() ?? '';
+  if (value === '' || value === 'required') return { ok: true, mode: 'required' };
+  if (value === 'none') return { ok: true, mode: 'none' };
+  return { ok: false, raw: value };
+}
 
 /** Punctuation stripped from the OUTSIDE of an answer only, never the inside. */
 const SURROUNDING_PUNCTUATION = /^[\s!-/:-@[-`{-~]+|[\s!-/:-@[-`{-~]+$/g;
@@ -142,7 +165,21 @@ export function snapshotSkill(args: {
   answer: string | null;
   correct: string | null;
   now: string;
+  /** Defaults to 'required', the behaviour before skill_mode existed. */
+  mode?: SkillMode;
 }): SkillSnapshot {
+  if (args.mode === 'none') {
+    // No question was asked, so nothing is judged and no correct answer
+    // applies. Whatever properties the line happens to carry are still kept.
+    return {
+      question: args.question,
+      answer: args.answer,
+      correctSnapshot: null,
+      verdict: 'NOT_REQUIRED',
+      ruleVersion: null,
+      judgedAt: null,
+    };
+  }
   const verdict = judge(args.answer, args.correct);
   const judged = verdict !== 'UNJUDGED';
   return {

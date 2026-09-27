@@ -24,7 +24,7 @@ import { evaluateOrder, type EligibilityVerdict } from './eligibility';
 import type { Actor, EventRecord, ReleaseReason } from './events';
 import { allocationId } from './idempotency';
 import type { Logger } from './logging';
-import { snapshotSkill } from './skill';
+import { parseSkillMode, snapshotSkill } from './skill';
 import type { OrderLineItemNode, OrderNode, ShopifyClient } from './shopify';
 
 /** Money as pence. '2.49' -> 249. Avoids float drift on a legal record. */
@@ -302,17 +302,25 @@ async function allocationStatements(
     skillQuestion: product.skillQuestion?.value ?? null,
     skillAnswers: product.skillAnswers?.value ?? null,
     skillAnswerCorrect: product.skillAnswerCorrect?.value ?? null,
+    skillMode: product.skillMode?.value ?? null,
   });
 
   // The correct answer is snapshotted HERE and never re-read. A merchant
   // correcting a typo six weeks in must not silently re-judge past entries.
   const correct = configResult.ok ? configResult.config.skill.correct : product.skillAnswerCorrect?.value ?? null;
 
+  // Only an explicit, valid custom.skill_mode = none turns judging off. An
+  // invalid value falls back to 'required' (and CONFIG_INVALID blocks the
+  // freeze), so a typo can never quietly make unjudged entries eligible.
+  const parsedMode = parseSkillMode(product.skillMode?.value ?? null);
+  const mode = configResult.ok ? configResult.config.skillMode : parsedMode.ok ? parsedMode.mode : 'required';
+
   const skill = snapshotSkill({
     question: propertyValue(line, '_skill_question'),
     answer: propertyValue(line, 'Skill answer'),
     correct,
     now: args.now,
+    mode,
   });
 
   const statements = [

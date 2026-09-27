@@ -37,8 +37,9 @@ not exist.
 | `entry_bundles` | `list.number_integer` | Preset entry amounts, e.g. `[1, 5, 10, 25]` |
 | `instant_win` | `boolean` | "Instant win" badge |
 | `competition_type` | `single_line_text` | Eyebrow above the title, e.g. "Live draw" |
-| `skill_question` | `single_line_text` | The skill question shown before checkout |
-| `skill_answers` | `list.single_line_text` | Multiple-choice answers; omit for a free-text answer |
+| `skill_mode` | `single_line_text` | `none` = the competition asks no question (nothing shown, no answer recorded). Unset = a question competition, as before. Set before opening; never change it afterwards |
+| `skill_question` | `single_line_text` | The skill question shown before checkout. Ignored when `skill_mode` is `none` |
+| `skill_answers` | `list.single_line_text` | Multiple-choice answers; omit for a free-text answer. Ignored when `skill_mode` is `none` |
 | `whats_included` | `rich_text` | "What's included" accordion |
 | `how_drawn` | `rich_text` | "How the winner is drawn" accordion |
 | `eligibility` | `rich_text` | "Terms and eligibility" accordion |
@@ -212,7 +213,10 @@ lineItems: [{
   variantId: "...",
   quantity: 1,
   appliedDiscount: { title: "Postal entry", value: 100, valueType: PERCENTAGE },
-  customAttributes: [{ key: "Skill answer", value: "..." }]
+  customAttributes: [{ key: "_entry_route", value: "postal" }]
+  // A question competition also needs { key: "_skill_question", value: "<exact question>" }
+  // and { key: "Skill answer", value: "<as written>" }. A skill_mode = none
+  // competition takes neither.
 }]
 ```
 
@@ -224,8 +228,8 @@ Verified on a real £0 order:
   an allocator filtering on `financial_status == paid` picks it up alongside
   paid entries, which is what we want.
 - Tagged `postal-entry`.
-- Line item properties carry the skill answer, the question asked, and
-  `_entry_route: postal`.
+- Line item properties carry `_entry_route: postal` and, for a question
+  competition only, the skill answer and the question asked.
 - Order attributes carry the date received, the date processed and who
   processed it; the order note carries the full audit trail.
 - **Inventory decrements**, so a postal entry consumes one of the published
@@ -234,7 +238,9 @@ Verified on a real £0 order:
 
 ## Entry properties — the canonical shape
 
-Both entry routes write the same three line-item properties. They were not
+Both entry routes write the same line-item properties: `_entry_route` always,
+and the two skill properties only when the competition asks a question
+(`skill_mode` not `none`). They were not
 always identical: the storefront once wrote a single property keyed on the
 section heading (`Skill question: Bunker`) that held the answer and never
 recorded the question, while the postal route wrote the documented shape. Two
@@ -242,9 +248,9 @@ routes producing two order shapes is a bug in the audit trail, not a detail.
 
 | Property | Value | Visible to the customer |
 |---|---|---|
-| `Skill answer` | The answer the entrant gave | Yes — cart, checkout, order, confirmation |
-| `_skill_question` | The exact question text they were shown | No |
-| `_entry_route` | `online` or `postal` | No |
+| `Skill answer` | The answer the entrant gave (question competitions only) | Yes — cart, checkout, order, confirmation |
+| `_skill_question` | The exact question text they were shown (question competitions only) | No |
+| `_entry_route` | `online` or `postal` (every entry) | No |
 
 The leading underscore is Shopify's convention for a property hidden from cart
 and checkout, so the answer is visible for the entrant to check and the
@@ -294,6 +300,8 @@ Two further notes for whoever builds the allocator:
   allocator compares each order's `Skill answer` against the competition's
   correct answer, and excludes the ones that do not match. This is the
   documented and intended design, not a gap to be closed at the cart layer.
+  It applies only to question competitions: with `skill_mode = none` nothing is
+  judged and every allocated entry is eligible (verdict `NOT_REQUIRED`).
 
 ## How a competition closes
 

@@ -19,9 +19,15 @@ export interface OrderOpts {
   correct?: string | null;
   entries?: string;
   financialStatus?: string;
+  /** custom.skill_mode on the product. 'none' also drops the skill metafields and line properties. */
+  skillMode?: string | null;
+  /** Force the skill line properties on (or off) regardless of skillMode. */
+  skillProperties?: boolean;
 }
 
 export function mockFetch(o: OrderOpts) {
+  const noSkill = o.skillMode === 'none';
+  const withSkillProperties = o.skillProperties ?? !noSkill;
   return async (_url: string, init?: RequestInit): Promise<Response> => {
     const body = JSON.parse(String(init?.body ?? '{}')) as { query: string };
     if (body.query.includes('AllocatorOrder')) {
@@ -37,8 +43,12 @@ export function mockFetch(o: OrderOpts) {
                 discountedUnitPriceAfterAllDiscountsSet: { shopMoney: { amount: '2.49' } },
                 discountedTotalSet: { shopMoney: { amount: '7.47' } },
                 customAttributes: [
-                  { key: 'Skill answer', value: o.answer ?? 'Bunker' },
-                  { key: '_skill_question', value: 'What is a sand pit traditionally called in golf?' },
+                  ...(withSkillProperties
+                    ? [
+                        { key: 'Skill answer', value: o.answer ?? 'Bunker' },
+                        { key: '_skill_question', value: 'What is a sand pit traditionally called in golf?' },
+                      ]
+                    : []),
                   { key: '_entry_route', value: 'online' },
                 ],
               }],
@@ -52,9 +62,10 @@ export function mockFetch(o: OrderOpts) {
         product: {
           id: PRODUCT_GID, handle: 'win-a-putter', title: 'Win a TaylorMade Putter', status: 'ACTIVE',
           entriesTotal: { value: '20' }, entryPrefix: { value: 'PUT' }, entryStartNumber: { value: '1001' },
-          skillQuestion: { value: 'What is a sand pit traditionally called in golf?' },
-          skillAnswers: { value: JSON.stringify(['Rough', 'Bunker', 'Fairway']) },
-          skillAnswerCorrect: o.correct === null ? null : { value: o.correct ?? 'Bunker' },
+          skillQuestion: noSkill ? null : { value: 'What is a sand pit traditionally called in golf?' },
+          skillAnswers: noSkill ? null : { value: JSON.stringify(['Rough', 'Bunker', 'Fairway']) },
+          skillAnswerCorrect: noSkill || o.correct === null ? null : { value: o.correct ?? 'Bunker' },
+          skillMode: o.skillMode === undefined || o.skillMode === null ? null : { value: o.skillMode },
           variants: { nodes: [{ id: 'gid://shopify/ProductVariant/88', entries: o.entries ? { value: o.entries } : null }] },
         },
       },

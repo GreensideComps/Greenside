@@ -17,7 +17,7 @@ import {
   validateNumbering,
   type NumberingConfig,
 } from './numbering';
-import { validateSkillConfig, type SkillConfig } from './skill';
+import { parseSkillMode, validateSkillConfig, type SkillConfig, type SkillMode } from './skill';
 
 export interface RawCompetitionMetafields {
   productGid: string;
@@ -31,6 +31,8 @@ export interface RawCompetitionMetafields {
   /** JSON array as stored by a list.single_line_text_field metafield. */
   skillAnswers: string | null;
   skillAnswerCorrect: string | null;
+  /** custom.skill_mode: 'none' turns the question off; unset means 'required'. */
+  skillMode?: string | null;
 }
 
 export interface CompetitionConfig {
@@ -41,6 +43,7 @@ export interface CompetitionConfig {
   numbering: NumberingConfig;
   skill: SkillConfig;
   skillQuestion: string | null;
+  skillMode: SkillMode;
 }
 
 export interface ConfigProblem {
@@ -121,8 +124,17 @@ export function buildCompetitionConfig(raw: RawCompetitionMetafields): ConfigRes
     answers: parseAnswerList(raw.skillAnswers),
     correct: raw.skillAnswerCorrect,
   };
-  for (const problem of validateSkillConfig(skill)) {
-    problems.push({ code: problem.code, message: problem.message });
+  const skillMode = parseSkillMode(raw.skillMode);
+  if (!skillMode.ok) {
+    problems.push({
+      code: 'INVALID_SKILL_MODE',
+      message: `custom.skill_mode must be "none" or unset (got ${JSON.stringify(skillMode.raw)})`,
+    });
+  } else if (skillMode.mode === 'required') {
+    // Only a competition that asks a question has to be able to judge it.
+    for (const problem of validateSkillConfig(skill)) {
+      problems.push({ code: problem.code, message: problem.message });
+    }
   }
 
   if (problems.length > 0 || numbering === null) {
@@ -139,6 +151,7 @@ export function buildCompetitionConfig(raw: RawCompetitionMetafields): ConfigRes
       numbering,
       skill,
       skillQuestion: raw.skillQuestion,
+      skillMode: skillMode.ok ? skillMode.mode : 'required',
     },
   };
 }

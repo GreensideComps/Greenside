@@ -123,6 +123,7 @@ query AllocatorCompetition($id: ID!) {
     skillQuestion:     metafield(namespace: "custom", key: "skill_question") { value }
     skillAnswers:      metafield(namespace: "custom", key: "skill_answers") { value }
     skillAnswerCorrect: metafield(namespace: "custom", key: "skill_answer_correct") { value }
+    skillMode:         metafield(namespace: "custom", key: "skill_mode") { value }
     variants(first: 100) {
       nodes { id entries: metafield(namespace: "custom", key: "entries") { value } }
     }
@@ -229,6 +230,8 @@ export interface CompetitionProductNode {
   skillQuestion: { value: string } | null;
   skillAnswers: { value: string } | null;
   skillAnswerCorrect: { value: string } | null;
+  /** custom.skill_mode. Absent or null means 'required'. */
+  skillMode?: { value: string } | null;
   variants: { nodes: Array<{ id: string; entries: { value: string } | null }> };
 }
 

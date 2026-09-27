@@ -457,6 +457,17 @@ export const COUNT_UNJUDGED = `
 SELECT COUNT(*) AS n FROM allocation
  WHERE competition_id = ?1 AND skill_verdict = 'UNJUDGED' AND status <> 'RELEASED'`;
 
+/**
+ * Allocations still holding (or owed) numbers whose verdict does not fit the
+ * competition's skill mode: ?2 = 1 counts anything but NOT_REQUIRED (a
+ * no-question competition), ?2 = 0 counts NOT_REQUIRED (a question
+ * competition). Either means the mode changed while entries existed.
+ */
+export const COUNT_SKILL_MODE_MISMATCH = `
+SELECT COUNT(*) AS n FROM allocation
+ WHERE competition_id = ?1 AND status <> 'RELEASED'
+   AND ((?2 = 1 AND skill_verdict <> 'NOT_REQUIRED') OR (?2 = 0 AND skill_verdict = 'NOT_REQUIRED'))`;
+
 export const SELECT_ALLOCATIONS_FOR_ORDER = `
 SELECT * FROM allocation WHERE order_id = ?1`;
 
@@ -522,7 +533,7 @@ SELECT e.entry_number, e.seq, e.allocation_id, e.allocation_seq,
   JOIN allocation a ON a.allocation_id = e.allocation_id
  WHERE e.competition_id = ?1
    AND e.status = 'ALLOCATED'
-   AND a.skill_verdict = 'CORRECT'
+   AND a.skill_verdict IN ('CORRECT', 'NOT_REQUIRED')
  ORDER BY e.seq ASC`;
 
 /** Everything excluded from the snapshot, and why. Auditable alongside it. */
@@ -532,5 +543,5 @@ SELECT e.entry_number, e.seq, a.skill_verdict, a.order_id
   JOIN allocation a ON a.allocation_id = e.allocation_id
  WHERE e.competition_id = ?1
    AND e.status = 'ALLOCATED'
-   AND a.skill_verdict <> 'CORRECT'
+   AND a.skill_verdict NOT IN ('CORRECT', 'NOT_REQUIRED')
  ORDER BY e.seq ASC`;

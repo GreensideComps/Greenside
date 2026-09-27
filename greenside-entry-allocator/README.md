@@ -37,6 +37,35 @@ configuration. Nothing is hard-coded.
     PUT / 1001 / 100  ->  PUT1001 .. PUT1100   (exactly 100: 1100-1001+1)
     DRV / 5001 / 250  ->  DRV5001 .. DRV5250
 
+## Skill question (optional)
+
+| Product metafield | Values | Meaning |
+|---|---|---|
+| `custom.skill_mode` | `none`, or unset | `none`: the competition asks no question |
+
+With `skill_mode` unset (or `required`) a competition asks a question:
+`custom.skill_answer_correct` must be set, each entry is judged `CORRECT`,
+`INCORRECT` or `UNJUDGED`, only `CORRECT` entries reach the draw, and any
+`UNJUDGED` entry blocks the freeze. This is the behaviour every competition had
+before `skill_mode` existed.
+
+With `skill_mode = none` no question, answer or correct answer is needed. Each
+entry is recorded as `NOT_REQUIRED` -- not a judgement, a record that there was
+nothing to judge -- with no rule version and no `judged_at`. `NOT_REQUIRED`
+entries are eligible for the draw (`status = ALLOCATED AND skill_verdict IN
+(CORRECT, NOT_REQUIRED)`), and the `UNJUDGED` freeze check does not apply.
+
+Any other `skill_mode` value is a configuration error (`INVALID_SKILL_MODE`),
+never a guess: entries fall back to being judged, and the freeze is blocked by
+`CONFIG_INVALID`. Freezing also refuses (`SKILL_MODE_MISMATCH`) if any entry
+still holding numbers was decided under the other mode, i.e. the mode was
+changed while entries existed. Set `skill_mode` before a competition opens and
+never change it afterwards.
+
+`NOT_REQUIRED` needs migration `0005_skill_verdict_not_required.sql`, which
+rebuilds the `allocation` table to widen its `skill_verdict` CHECKs. Existing
+rows are copied unchanged.
+
 ## How allocation works
 
 The pool is **materialised**: one row per number. "Next number" is the lowest

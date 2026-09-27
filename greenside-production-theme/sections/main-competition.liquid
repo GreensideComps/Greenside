@@ -5,6 +5,7 @@
   assign cash_alternative = product.metafields.custom.cash_alternative
   assign skill_question = product.metafields.custom.skill_question.value
   assign skill_answers = product.metafields.custom.skill_answers.value
+  assign skill_mode = product.metafields.custom.skill_mode.value | default: 'required' | strip
   assign competition_type = product.metafields.custom.competition_type.value
   assign whats_included = product.metafields.custom.whats_included
   assign how_drawn = product.metafields.custom.how_drawn
@@ -130,22 +131,29 @@
             -%}
               {%- render 'entry-selector', product: product -%}
 
-              {%- if skill_question != blank -%}
-                {%- comment -%}
-                  The order must record three things, identically to the postal
-                  route (docs/COMPETITION-DATA-MODEL.md): the answer given, the
-                  question that was actually asked, and which route the entry
-                  came in by. The question text is carried on the order rather
-                  than looked up later, because the metafield can be edited
-                  after entries exist -- an order has to prove what its entrant
-                  was actually shown.
+              {%- comment -%}
+                Every online entry records its route, identically to the postal
+                route (docs/COMPETITION-DATA-MODEL.md), whether or not the
+                competition asks a question. Keys prefixed with an underscore
+                are hidden from the customer in cart and checkout by Shopify
+                convention.
+              {%- endcomment -%}
+              <input type="hidden" name="properties[_entry_route]" value="online">
 
-                  Keys prefixed with an underscore are hidden from the customer
-                  in cart and checkout by Shopify convention, so the answer
-                  shows and the bookkeeping does not.
+              {%- comment -%}
+                custom.skill_mode = none: the competition asks no question, so
+                nothing is shown and no answer is required. Unset keeps the
+                question, exactly as before skill_mode existed.
+              {%- endcomment -%}
+              {%- if skill_mode != 'none' and skill_question != blank -%}
+                {%- comment -%}
+                  A question competition also records the answer given and the
+                  question that was actually asked. The question text is carried
+                  on the order rather than looked up later, because the metafield
+                  can be edited after entries exist -- an order has to prove what
+                  its entrant was actually shown.
                 {%- endcomment -%}
                 <input type="hidden" name="properties[_skill_question]" value="{{ skill_question | escape }}">
-                <input type="hidden" name="properties[_entry_route]" value="online">
 
                 <fieldset class="skill-question">
                   <legend class="skill-question__legend">

@@ -26,7 +26,8 @@ exactly `custom.<key>`.
 | `entry_bundles` | List of integers | Preset entry amounts, e.g. `1, 5, 10, 25` |
 | `instant_win` | True or false | "Instant win" badge |
 | `competition_type` | Single line text | Eyebrow above the title, e.g. "Live draw" |
-| `skill_question` | Single line text | The question shown before checkout |
+| `skill_mode` | Single line text | `none` = no skill question for this competition. Leave unset for a question competition. Set before opening; never change it afterwards. Admin access must allow the allocator app to read it, like the other allocator metafields |
+| `skill_question` | Single line text | The question shown before checkout (ignored when `skill_mode` is `none`) |
 | `skill_answers` | List of single line text | Multiple choice answers. Omit for a free-text answer. |
 | `whats_included` | Rich text | "What's included" accordion |
 | `how_drawn` | Rich text | "How the winner is drawn" accordion |

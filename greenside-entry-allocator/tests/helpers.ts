@@ -176,13 +176,13 @@ export function seedAllocation(
     competitionId: string;
     orderId: string;
     lineItemId: string;
-    verdict?: 'CORRECT' | 'INCORRECT' | 'UNJUDGED';
+    verdict?: 'CORRECT' | 'INCORRECT' | 'UNJUDGED' | 'NOT_REQUIRED';
     entriesPerUnit?: number;
     orderedQuantity?: number;
   },
 ): void {
   const verdict = args.verdict ?? 'CORRECT';
-  const judged = verdict !== 'UNJUDGED';
+  const judged = verdict !== 'UNJUDGED' && verdict !== 'NOT_REQUIRED';
   db.sqlite
     .prepare(
       `INSERT INTO allocation (

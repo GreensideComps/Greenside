@@ -55,9 +55,11 @@ export interface FrozenSnapshot {
 /**
  * Read the eligible entry list.
  *
- * Eligibility is `status = ALLOCATED AND skill_verdict = CORRECT`. Entries
- * excluded for a wrong answer are NOT voided -- the entrant keeps the numbers
- * and the history keeps the answer; the draw simply does not see them.
+ * Eligibility is `status = ALLOCATED AND skill_verdict IN (CORRECT,
+ * NOT_REQUIRED)`: a correct answer, or a competition that asked no question
+ * (custom.skill_mode = none). Entries excluded for a wrong answer are NOT
+ * voided -- the entrant keeps the numbers and the history keeps the answer;
+ * the draw simply does not see them.
  */
 export async function readSnapshot(args: {
   db: D1Like;

@@ -16,6 +16,7 @@
  */
 
 import {
+  COUNT_SKILL_MODE_MISMATCH,
   COUNT_UNJUDGED,
   FREEZE_COMPETITION,
   SELECT_AUDIT_GAPS,
@@ -25,12 +26,14 @@ import {
   type D1Like,
 } from './db';
 import { poolCounts } from './pool';
+import type { SkillMode } from './skill';
 
 export interface FreezeBlocker {
   code:
     | 'NOT_OPEN'
     | 'CONFIG_INVALID'
     | 'UNJUDGED_ALLOCATIONS'
+    | 'SKILL_MODE_MISMATCH'
     | 'ORPHANED_CLAIMS'
     | 'POOL_SIZE_MISMATCH'
     | 'ALLOCATION_LEDGER_DRIFT'
@@ -53,7 +56,10 @@ export async function freezeBlockers(args: {
   expectedCapacity: number;
   configValid: boolean;
   configDetail?: string;
+  /** From custom.skill_mode. Defaults to 'required', the behaviour before skill_mode existed. */
+  skillMode?: SkillMode;
 }): Promise<FreezeBlocker[]> {
+  const skillMode: SkillMode = args.skillMode ?? 'required';
   const blockers: FreezeBlocker[] = [];
 
   if (args.competitionStatus !== 'OPEN') {
@@ -64,14 +70,35 @@ export async function freezeBlockers(args: {
     blockers.push({ code: 'CONFIG_INVALID', detail: args.configDetail ?? 'competition configuration is invalid' });
   }
 
-  // A competition that cannot judge its own skill question must not reach a
-  // draw: the skill element is what makes this a competition rather than a
-  // lottery, and an UNJUDGED entry cannot be included or excluded honestly.
-  const unjudged = await args.db.prepare(COUNT_UNJUDGED).bind(args.competitionId).first<{ n: number }>();
-  if ((unjudged?.n ?? 0) > 0) {
+  // A competition that asks a skill question and cannot judge it must not
+  // reach a draw: an UNJUDGED entry cannot be included or excluded honestly.
+  // A competition that asks no question (skill_mode = none) has nothing to
+  // judge, so this check does not apply to it.
+  if (skillMode === 'required') {
+    const unjudged = await args.db.prepare(COUNT_UNJUDGED).bind(args.competitionId).first<{ n: number }>();
+    if ((unjudged?.n ?? 0) > 0) {
+      blockers.push({
+        code: 'UNJUDGED_ALLOCATIONS',
+        detail: `${unjudged?.n} allocation(s) have skill_verdict UNJUDGED`,
+      });
+    }
+  }
+
+  // Every entry must have been decided under the mode the competition is
+  // frozen in. A mode changed while entries existed would otherwise let
+  // NOT_REQUIRED entries into a question draw, or silently drop judged or
+  // unjudged entries from a no-question one.
+  const mismatch = await args.db
+    .prepare(COUNT_SKILL_MODE_MISMATCH)
+    .bind(args.competitionId, skillMode === 'none' ? 1 : 0)
+    .first<{ n: number }>();
+  if ((mismatch?.n ?? 0) > 0) {
     blockers.push({
-      code: 'UNJUDGED_ALLOCATIONS',
-      detail: `${unjudged?.n} allocation(s) have skill_verdict UNJUDGED`,
+      code: 'SKILL_MODE_MISMATCH',
+      detail:
+        skillMode === 'none'
+          ? `${mismatch?.n} allocation(s) were judged under a skill question, but skill_mode is none`
+          : `${mismatch?.n} allocation(s) are NOT_REQUIRED, but the competition asks a skill question`,
     });
   }
 
@@ -133,6 +160,7 @@ export async function freeze(args: {
   expectedCapacity: number;
   configValid: boolean;
   configDetail?: string;
+  skillMode?: SkillMode;
   now: string;
 }): Promise<FreezeResult> {
   const blockers = await freezeBlockers(args);
