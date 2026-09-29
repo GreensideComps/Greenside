@@ -1,0 +1,816 @@
+{
+  "errors": [],
+  "orders": [
+    {
+      "cancelledAt": "2026-09-21T13:13:03Z",
+      "createdAt": "2026-09-21T08:06:15Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13541777539446",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39008255181174",
+            "product": {
+              "id": "gid://shopify/Product/15891458556278"
+            },
+            "quantity": 1,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1001",
+      "tags": [
+        "cap-race-A",
+        "delete-me",
+        "test-fixture"
+      ],
+      "updatedAt": "2026-09-21T13:13:03Z"
+    },
+    {
+      "cancelledAt": "2026-09-21T13:13:04Z",
+      "createdAt": "2026-09-21T08:06:24Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13541777998198",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39008255902070",
+            "product": {
+              "id": "gid://shopify/Product/15891458556278"
+            },
+            "quantity": 1,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1002",
+      "tags": [
+        "cap-race-B",
+        "delete-me",
+        "test-fixture"
+      ],
+      "updatedAt": "2026-09-21T13:13:04Z"
+    },
+    {
+      "cancelledAt": "2026-09-21T13:12:50Z",
+      "createdAt": "2026-09-21T08:08:48Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13541783896438",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39008267796854",
+            "product": {
+              "id": "gid://shopify/Product/15889358815606"
+            },
+            "quantity": 1,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1003",
+      "tags": [
+        "delete-me",
+        "postal-entry",
+        "test-fixture"
+      ],
+      "updatedAt": "2026-09-21T13:12:50Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-21T13:33:35Z",
+      "displayFinancialStatus": "VOIDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13542857539958",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39010608152950",
+            "product": {
+              "id": "gid://shopify/Product/15892136296822"
+            },
+            "quantity": 2,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1004",
+      "tags": [],
+      "updatedAt": "2026-09-23T07:31:14Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-22T11:00:29Z",
+      "displayFinancialStatus": "PENDING",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13546702143862",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 1,
+            "id": "gid://shopify/LineItem/39017791947126",
+            "product": {
+              "id": "gid://shopify/Product/15892136460662"
+            },
+            "quantity": 1,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1005",
+      "tags": [],
+      "updatedAt": "2026-09-22T11:00:31Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-22T12:19:04Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13546958455158",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 1,
+            "id": "gid://shopify/LineItem/39018351231350",
+            "product": {
+              "id": "gid://shopify/Product/15893655716214"
+            },
+            "quantity": 1,
+            "sku": "QA-3-CLOSER"
+          }
+        ]
+      },
+      "name": "#1006",
+      "tags": [],
+      "updatedAt": "2026-09-22T12:19:05Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-22T16:59:50Z",
+      "displayFinancialStatus": "PENDING",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13547847811446",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 5,
+            "id": "gid://shopify/LineItem/39020336578934",
+            "product": {
+              "id": "gid://shopify/Product/15892136296822"
+            },
+            "quantity": 5,
+            "sku": null
+          },
+          {
+            "currentQuantity": 15,
+            "id": "gid://shopify/LineItem/39020336611702",
+            "product": {
+              "id": "gid://shopify/Product/15892136460662"
+            },
+            "quantity": 15,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1007",
+      "tags": [],
+      "updatedAt": "2026-09-22T16:59:53Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-22T19:16:00Z",
+      "displayFinancialStatus": "PENDING",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13548207407478",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 5,
+            "id": "gid://shopify/LineItem/39021128548726",
+            "product": {
+              "id": "gid://shopify/Product/15892136460662"
+            },
+            "quantity": 5,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1008",
+      "tags": [],
+      "updatedAt": "2026-09-22T19:16:02Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-23T07:38:14Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13549712998774",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 3,
+            "id": "gid://shopify/LineItem/39027315573110",
+            "product": {
+              "id": "gid://shopify/Product/15893655716214"
+            },
+            "quantity": 5,
+            "sku": "QA-3-CLOSER"
+          }
+        ]
+      },
+      "name": "#1009",
+      "tags": [],
+      "updatedAt": "2026-09-23T07:45:23Z"
+    },
+    {
+      "cancelledAt": "2026-09-24T13:03:07Z",
+      "createdAt": "2026-09-24T12:09:54Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13553457299830",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39036234269046",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 1,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1010",
+      "tags": [
+        "qa-allocator-e2e"
+      ],
+      "updatedAt": "2026-09-24T13:03:07Z"
+    },
+    {
+      "cancelledAt": "2026-09-24T16:36:44Z",
+      "createdAt": "2026-09-24T15:26:03Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13554076451190",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39037617406326",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 1,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1011",
+      "tags": [
+        "qa-allocator-e2e"
+      ],
+      "updatedAt": "2026-09-24T16:36:44Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-24T16:51:36Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13554311102838",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 2,
+            "id": "gid://shopify/LineItem/39038151033206",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1012",
+      "tags": [
+        "qa-allocator-e2e"
+      ],
+      "updatedAt": "2026-09-24T16:51:37Z"
+    },
+    {
+      "cancelledAt": "2026-09-24T17:59:16Z",
+      "createdAt": "2026-09-24T17:40:16Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13554436407670",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39038426481014",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1013",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-c2-refund"
+      ],
+      "updatedAt": "2026-09-24T17:59:16Z"
+    },
+    {
+      "cancelledAt": "2026-09-26T10:04:23Z",
+      "createdAt": "2026-09-25T22:11:37Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13558545842550",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39047250772342",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1014",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw1"
+      ],
+      "updatedAt": "2026-09-26T10:04:23Z"
+    },
+    {
+      "cancelledAt": "2026-09-27T17:29:51Z",
+      "createdAt": "2026-09-27T13:11:26Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13562907001206",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39056652697974",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1015",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw4"
+      ],
+      "updatedAt": "2026-09-27T17:29:51Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-27T13:11:29Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13562907197814",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 3,
+            "id": "gid://shopify/LineItem/39056652894582",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 3,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1016",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw4"
+      ],
+      "updatedAt": "2026-09-27T13:11:30Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-27T13:11:31Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13562907263350",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 1,
+            "id": "gid://shopify/LineItem/39056653058422",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 1,
+            "sku": "QA-ALLOCATOR-E2E"
+          },
+          {
+            "currentQuantity": 1,
+            "id": "gid://shopify/LineItem/39056653091190",
+            "product": {
+              "id": "gid://shopify/Product/15902004674934"
+            },
+            "quantity": 1,
+            "sku": "QA-ALLOCATOR-E2E-B"
+          }
+        ]
+      },
+      "name": "#1017",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw4"
+      ],
+      "updatedAt": "2026-09-27T13:11:34Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-27T13:11:34Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13562907394422",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 2,
+            "id": "gid://shopify/LineItem/39056653222262",
+            "product": {
+              "id": "gid://shopify/Product/15897614614902"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E"
+          }
+        ]
+      },
+      "name": "#1018",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw4"
+      ],
+      "updatedAt": "2026-09-27T13:11:35Z"
+    },
+    {
+      "cancelledAt": null,
+      "createdAt": "2026-09-27T13:11:36Z",
+      "displayFinancialStatus": "PAID",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13562907558262",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 2,
+            "id": "gid://shopify/LineItem/39056653451638",
+            "product": {
+              "id": "gid://shopify/Product/15902004674934"
+            },
+            "quantity": 2,
+            "sku": "QA-ALLOCATOR-E2E-B"
+          }
+        ]
+      },
+      "name": "#1019",
+      "tags": [
+        "qa-allocator-e2e",
+        "qa-sw4"
+      ],
+      "updatedAt": "2026-09-27T13:11:37Z"
+    },
+    {
+      "cancelledAt": "2026-09-28T11:12:54Z",
+      "createdAt": "2026-09-28T09:04:24Z",
+      "displayFinancialStatus": "REFUNDED",
+      "displayFulfillmentStatus": "UNFULFILLED",
+      "id": "gid://shopify/Order/13565295559030",
+      "lineItems": {
+        "nodes": [
+          {
+            "currentQuantity": 0,
+            "id": "gid://shopify/LineItem/39062023864694",
+            "product": {
+              "id": "gid://shopify/Product/15902724817270"
+            },
+            "quantity": 1,
+            "sku": null
+          }
+        ]
+      },
+      "name": "#1020",
+      "tags": [],
+      "updatedAt": "2026-09-28T11:12:54Z"
+    }
+  ],
+  "product_a": {
+    "createdAt": "2026-09-24T10:34:49Z",
+    "descriptionHtml": "<p>Disposable QA fixture for the entry-number allocator end-to-end test. Not a real competition. Do not buy.</p>",
+    "handle": "qa-allocator-e2e-test",
+    "id": "gid://shopify/Product/15897614614902",
+    "metafields": {
+      "nodes": [
+        {
+          "key": "entry_prefix",
+          "namespace": "custom",
+          "type": "single_line_text_field",
+          "value": "QAE"
+        },
+        {
+          "key": "entry_start_number",
+          "namespace": "custom",
+          "type": "number_integer",
+          "value": "1001"
+        },
+        {
+          "key": "entries_total",
+          "namespace": "custom",
+          "type": "number_integer",
+          "value": "10"
+        },
+        {
+          "key": "skill_question",
+          "namespace": "custom",
+          "type": "single_line_text_field",
+          "value": "What is a sand pit traditionally called in golf?"
+        },
+        {
+          "key": "skill_answers",
+          "namespace": "custom",
+          "type": "list.single_line_text_field",
+          "value": "[\"Rough\",\"Bunker\",\"Fairway\"]"
+        },
+        {
+          "key": "skill_answer_correct",
+          "namespace": "custom",
+          "type": "single_line_text_field",
+          "value": "Bunker"
+        },
+        {
+          "key": "badge",
+          "namespace": "judgeme",
+          "type": "string",
+          "value": "<div style='display:none' class='jdgm-prev-badge' data-average-rating='0.00' data-number-of-reviews='0' data-number-of-questions='0'> <span class='jdgm-prev-badge__stars' data-score='0.00' tabindex='0' aria-label='0.00 stars' role='button'> <span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span> </span> <span class='jdgm-prev-badge__text'> No reviews </span> </div>"
+        },
+        {
+          "key": "widget",
+          "namespace": "judgeme",
+          "type": "string",
+          "value": "<div></div>"
+        },
+        {
+          "key": "review_widget_data",
+          "namespace": "judgeme",
+          "type": "json",
+          "value": "{\"number_of_reviews\":0,\"average_rating\":\"0.00\",\"number_of_questions\":0,\"product_name\":\"QA — Allocator E2E Test\",\"product_external_id\":15897614614902,\"product_coupons_enabled\":true,\"image_url\":null,\"histogram\":[{\"rating\":5,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":4,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":3,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":2,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":1,\"frequency\":0,\"percentage\":0,\"extra_class\":null}],\"review_keywords\":null,\"product_medals\":[],\"custom_form_filters_and_averages\":null,\"photo_gallery\":null,\"review_summary_text\":\"Be the first to write a review\",\"ai_summary_text\":\"\",\"sort_key\":\"created_at\",\"multi_language_sorting_enabled\":false,\"metafield_updated_at\":\"2026-09-24T10:35:19Z\",\"reviews\":[],\"pagination\":{\"total_pages\":0,\"current_page\":1,\"per_page\":5}}"
+        }
+      ]
+    },
+    "onlineStoreUrl": null,
+    "options": [
+      {
+        "name": "Title",
+        "values": [
+          "Default Title"
+        ]
+      }
+    ],
+    "productType": "",
+    "publishedAt": null,
+    "status": "ACTIVE",
+    "tags": [
+      "allocator-e2e",
+      "delete-me",
+      "qa-test"
+    ],
+    "templateSuffix": null,
+    "title": "QA — Allocator E2E Test",
+    "totalInventory": 7,
+    "tracksInventory": true,
+    "updatedAt": "2026-09-27T17:30:02Z",
+    "variants": {
+      "nodes": [
+        {
+          "barcode": null,
+          "compareAtPrice": null,
+          "id": "gid://shopify/ProductVariant/58810706297206",
+          "inventoryItem": {
+            "id": "gid://shopify/InventoryItem/57285118558582",
+            "measurement": {
+              "weight": {
+                "unit": "POUNDS",
+                "value": 0.0
+              }
+            },
+            "requiresShipping": true,
+            "tracked": true
+          },
+          "inventoryPolicy": "DENY",
+          "inventoryQuantity": 7,
+          "metafields": {
+            "nodes": []
+          },
+          "price": "1.00",
+          "selectedOptions": [
+            {
+              "name": "Title",
+              "value": "Default Title"
+            }
+          ],
+          "sku": "QA-ALLOCATOR-E2E",
+          "taxable": true,
+          "title": "Default Title"
+        }
+      ]
+    },
+    "vendor": "Greenside Competitions"
+  },
+  "product_b": {
+    "createdAt": "2026-09-28T07:43:48Z",
+    "descriptionHtml": "",
+    "handle": "qa-allocator-no-skill-test",
+    "id": "gid://shopify/Product/15902724817270",
+    "metafields": {
+      "nodes": [
+        {
+          "key": "badge",
+          "namespace": "judgeme",
+          "type": "string",
+          "value": "<div style='display:none' class='jdgm-prev-badge' data-average-rating='0.00' data-number-of-reviews='0' data-number-of-questions='0'> <span class='jdgm-prev-badge__stars' data-score='0.00' tabindex='0' aria-label='0.00 stars' role='button'> <span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span><span class='jdgm-star jdgm--off'></span> </span> <span class='jdgm-prev-badge__text'> No reviews </span> </div>"
+        },
+        {
+          "key": "widget",
+          "namespace": "judgeme",
+          "type": "string",
+          "value": "<div></div>"
+        },
+        {
+          "key": "review_widget_data",
+          "namespace": "judgeme",
+          "type": "json",
+          "value": "{\"number_of_reviews\":0,\"average_rating\":\"0.00\",\"number_of_questions\":0,\"product_name\":\"QA — Allocator No-Skill Test\",\"product_external_id\":15902724817270,\"product_coupons_enabled\":true,\"image_url\":null,\"histogram\":[{\"rating\":5,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":4,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":3,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":2,\"frequency\":0,\"percentage\":0,\"extra_class\":null},{\"rating\":1,\"frequency\":0,\"percentage\":0,\"extra_class\":null}],\"review_keywords\":null,\"product_medals\":[],\"custom_form_filters_and_averages\":null,\"photo_gallery\":null,\"review_summary_text\":\"Be the first to write a review\",\"ai_summary_text\":\"\",\"sort_key\":\"created_at\",\"multi_language_sorting_enabled\":false,\"metafield_updated_at\":\"2026-09-28T07:44:27Z\",\"reviews\":[],\"pagination\":{\"total_pages\":0,\"current_page\":1,\"per_page\":5}}"
+        },
+        {
+          "key": "entry_prefix",
+          "namespace": "custom",
+          "type": "single_line_text_field",
+          "value": "QAG"
+        },
+        {
+          "key": "entry_start_number",
+          "namespace": "custom",
+          "type": "number_integer",
+          "value": "1001"
+        },
+        {
+          "key": "entries_total",
+          "namespace": "custom",
+          "type": "number_integer",
+          "value": "5"
+        },
+        {
+          "key": "skill_mode",
+          "namespace": "custom",
+          "type": "single_line_text_field",
+          "value": "none"
+        }
+      ]
+    },
+    "onlineStoreUrl": null,
+    "options": [
+      {
+        "name": "Title",
+        "values": [
+          "Default Title"
+        ]
+      }
+    ],
+    "productType": "",
+    "publishedAt": "2026-09-28T07:43:49Z",
+    "status": "ACTIVE",
+    "tags": [],
+    "templateSuffix": "",
+    "title": "QA — Allocator No-Skill Test",
+    "totalInventory": 5,
+    "tracksInventory": true,
+    "updatedAt": "2026-09-28T11:12:57Z",
+    "variants": {
+      "nodes": [
+        {
+          "barcode": null,
+          "compareAtPrice": null,
+          "id": "gid://shopify/ProductVariant/58836250591606",
+          "inventoryItem": {
+            "id": "gid://shopify/InventoryItem/57310948622710",
+            "measurement": {
+              "weight": {
+                "unit": "POUNDS",
+                "value": 0.0
+              }
+            },
+            "requiresShipping": true,
+            "tracked": true
+          },
+          "inventoryPolicy": "DENY",
+          "inventoryQuantity": 5,
+          "metafields": {
+            "nodes": []
+          },
+          "price": "1.00",
+          "selectedOptions": [
+            {
+              "name": "Title",
+              "value": "Default Title"
+            }
+          ],
+          "sku": null,
+          "taxable": true,
+          "title": "Default Title"
+        }
+      ]
+    },
+    "vendor": "Greenside Competitions"
+  },
+  "products": [
+    {
+      "handle": "taylormade-qi10-driver-test",
+      "id": "gid://shopify/Product/15889358815606",
+      "status": "DRAFT",
+      "title": "Win a TaylorMade Qi10 driver",
+      "totalInventory": 4000,
+      "updatedAt": "2026-09-21T13:13:07Z"
+    },
+    {
+      "handle": "zz-test-inventory-cap",
+      "id": "gid://shopify/Product/15891458556278",
+      "status": "DRAFT",
+      "title": "ZZ TEST FIXTURE - inventory cap test - DO NOT BUY",
+      "totalInventory": 1,
+      "updatedAt": "2026-09-21T13:13:13Z"
+    },
+    {
+      "handle": "qa-titleist-pro-v1",
+      "id": "gid://shopify/Product/15892136296822",
+      "status": "ACTIVE",
+      "title": "Win a dozen Titleist Pro V1 golf balls",
+      "totalInventory": 493,
+      "updatedAt": "2026-09-22T17:00:05Z"
+    },
+    {
+      "handle": "qa-garmin-approach-s70",
+      "id": "gid://shopify/Product/15892136460662",
+      "status": "ACTIVE",
+      "title": "Win a Garmin Approach S70 golf watch",
+      "totalInventory": 597,
+      "updatedAt": "2026-09-22T19:16:17Z"
+    },
+    {
+      "handle": "qa-3-competition-closer-test",
+      "id": "gid://shopify/Product/15893655716214",
+      "status": "ACTIVE",
+      "title": "QA-3 — Competition Closer Test",
+      "totalInventory": 4,
+      "updatedAt": "2026-09-23T07:38:21Z"
+    },
+    {
+      "handle": "qa-allocator-e2e-test",
+      "id": "gid://shopify/Product/15897614614902",
+      "status": "ACTIVE",
+      "title": "QA — Allocator E2E Test",
+      "totalInventory": 7,
+      "updatedAt": "2026-09-27T17:30:02Z"
+    },
+    {
+      "handle": "qa-allocator-e2e-test-b",
+      "id": "gid://shopify/Product/15902004674934",
+      "status": "ACTIVE",
+      "title": "QA — Allocator E2E Test B",
+      "totalInventory": 1,
+      "updatedAt": "2026-09-27T13:11:54Z"
+    },
+    {
+      "handle": "qa-allocator-no-skill-test",
+      "id": "gid://shopify/Product/15902724817270",
+      "status": "ACTIVE",
+      "title": "QA — Allocator No-Skill Test",
+      "totalInventory": 5,
+      "updatedAt": "2026-09-28T11:12:57Z"
+    }
+  ]
+}

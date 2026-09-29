@@ -1,0 +1,24 @@
+14:22:53 start pre pid 510
+14:23:13 start pre2 pid 646
+14:35:44 RESTART pre (process exited) -> restarts=1
+14:35:44 start pre pid 6911
+14:35:44 RESTART pre2 (process exited) -> restarts=1
+14:35:44 start pre2 pid 6925
+14:44:49 RESTART pre2 (process exited) -> restarts=2
+14:44:49 start pre2 pid 11539
+14:45:37 RESTART pre (process exited) -> restarts=2
+14:45:37 start pre pid 11967
+14:46:44 RESTART pre (process exited) -> restarts=3
+14:46:44 start pre pid 12545
+14:46:44 RESTART pre2 (process exited) -> restarts=3
+14:46:44 start pre2 pid 12559
+14:56:03 RESTART pre (process exited) -> restarts=4
+14:56:03 start pre pid 17217
+15:01:29 start conf pid 20202
+15:02:16 RESTART pre2 (process exited) -> restarts=4
+15:02:16 start pre2 pid 20867
+15:13:46 RESTART pre2 (process exited) -> restarts=5
+15:13:46 start pre2 pid 28230
+15:13:56 RESTART conf (no events >10s) -> restarts=1
+15:13:56 start conf pid 28363
+15:15:58 supervisor stopped

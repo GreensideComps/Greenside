@@ -1,0 +1,6528 @@
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607739246,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-544",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a0e24f87dfe6",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607743702,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-545",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a0fe2d1ffa3f",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607748216,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-546",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a11a4ebbef8d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607751511,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-1-14632",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a12ee8cdb56a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607752497,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-547",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1351940ed82",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607757260,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-2-25284",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a152d9b01eff",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607758473,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-548",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a15a6f0c9a74",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607763059,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-549",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a177187c422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607763661,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-3-30304",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a17ad9b8bfa0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607767552,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-550",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1932f57b65d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607768436,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-4-1468",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a198aae98c47",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "02af2f80-6c22-4c57-8894-076de969cabc"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607772030,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-551",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1af28a23294",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607772838,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-5-23722",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1b40a6f7460",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607776474,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-552",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1cae87fcfe0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607777342,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-6-3580",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1d05eae2729",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607781301,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-553",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1e90b8fc016",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607781929,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-7-30834",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a1ecdbda8c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607786404,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-554",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a208fa10869a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607786822,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-8-25725",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a20b9e6bbcdd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607791160,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-555",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a226bf48104b",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607791593,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-9-642",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a2296b5112be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607795973,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-10-27300",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a244cd675f74",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607795994,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-556",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a244ecaa2c12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607800245,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=restore-11-20961",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a25f7f70c07d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607800625,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-557",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a261dd8f0f37",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607804889,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-558",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a27c7cbd8674",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607809088,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-559",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a296bee28c1d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607815639,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-560",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a2bfa832714b",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607820559,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-561",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a2de7d28c3dd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607824840,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-562",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a2f93a7112be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607829041,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-563",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3137e348c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607833461,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-564",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a32f0aca0ee5",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607838253,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-565",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a34cfeff1a12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607844340,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-566",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3731f1853c7",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607849353,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-567",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3926d9e8c1d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607853556,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-568",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3aca9f1422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607857800,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-569",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3c73baddfe6",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607862003,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-570",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3e17d918c60",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607866257,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-571",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a3fc19418674",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607870823,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-572",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4189ea1c3dd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607875082,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-573",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4332b25c882",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607879704,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-574",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4500948bf72",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607884730,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-575",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a46f8b0d12be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607888950,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-576",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a489eee4406c",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607893129,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-577",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4a409318c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607897348,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-578",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4be5ff13d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607901534,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-579",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4d88d870f37",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607905771,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-580",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a4f30e16b03a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607909978,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-581",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a50d5e881705",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607914257,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-582",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a5280ccd8674",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607918797,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-583",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a54478980ee5",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607923592,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-584",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a5626c2abfbf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607928241,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-585",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a57f7f98406c",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607932437,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-586",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a599ae07b095",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607936636,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-587",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a5b3e8240f37",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607940847,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-588",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a5ce487612be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607945061,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-589",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a5e89bde3d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607949372,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-590",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6038b051705",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607953549,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-591",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a61dad2ac882",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607957720,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-592",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a637bbe1c07d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607961947,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-593",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6521b24bfdb",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607966376,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-594",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a66ddeb1104b",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607970847,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-595",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a689cc06c3dd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607975161,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-596",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6a4a894b2bc",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607979518,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-597",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6bffc5012be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607983713,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-598",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6da2e9575b1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607988130,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-599",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a6f5cd95f770",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607992350,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-600",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a7102e408c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790607996543,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-601",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a72a69bac882",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608001234,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-602",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a747a8901a12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608006331,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-603",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a7678a078c1d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608010694,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-604",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a782cb1ab2bc",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608014892,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-605",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a79d0dd58c60",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608019356,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-606",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a7b8fdd3c3aa",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608023593,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-607",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a7d36e0a7d14",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608028043,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-608",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a7ef2972cfe0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608032288,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-609",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a809bd28b911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608036471,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-610",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a823ecda12be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608040831,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-611",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a83f298b8c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608045182,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-612",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a85a5ef953c7",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608049503,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-613",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a8755c6d3d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608053708,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-614",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a88faa884909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608057906,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-615",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a8a9ccde42bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608062095,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-616",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a8c40f2ec07d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608066285,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-617",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a8de3b9b422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608070777,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-618",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a8fa5935cfe0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608075169,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-619",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a915c9518674",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608080657,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-620",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a9380b88c016",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608085266,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-621",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a954d92c42bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608089511,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-622",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a96f68d4406c",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608093742,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-623",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a989dbb03d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608097945,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-624",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a9a4189e8c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608102128,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-625",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a9be4fe512be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608106406,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-626",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a9d8fc690f37",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608111088,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-627",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423a9f63be8c00c",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608115904,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-628",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa145b68153e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608120342,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-629",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa301876cfe0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608124559,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-630",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa4a789442bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608128988,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-631",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa662ef00ee5",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608133231,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-632",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa80a99f12be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608137746,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-633",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aa9cdeebe84d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608142200,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-634",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aab8bc03e8a1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608146650,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-635",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aad47e8b1702",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608150904,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-636",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aaef198cd4a4",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 3,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608155089,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-637",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab0948f08c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608159547,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-638",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab252f7fc3dd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608163977,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-639",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab40cde11543",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608168823,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-640",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab5f1d881a12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608173489,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-641",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab7c3d26055a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608177684,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-642",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ab967f8c42bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608182191,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-643",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423abb2af5b1702",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608186452,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-644",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423abcd4d25d4a4",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608190655,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-645",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423abe78cb58c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608195088,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-646",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac034d20e8a1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608199470,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-647",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac1eae4fb911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608203669,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-648",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac38eda54909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608208085,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-649",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac547a2b0ee5",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608212348,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-650",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac6f1fbd53ee",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608217053,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-651",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ac8c8f8bec97",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608221286,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-652",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aca6fd9f8c1d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608225667,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-653",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423acc26b661543",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608230221,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-654",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423acdedca2e84d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608234436,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-655",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423acf92c63de94",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608238809,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-656",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ad148fbd153e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608243029,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-657",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ad2eef768c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608247255,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-658",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ad494a833d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608251978,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-659",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ad66dc6d1a12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608256955,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-660",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ad85df9153c7",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608261954,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-661",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ada52a19bf72",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608266472,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-662",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423adc15e0d8c1d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608270884,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-663",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423addcf9dbcfe0",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608275290,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-664",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423adf88e6be84d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608279517,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-665",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ae12ffd1b911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608283690,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-666",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ae2d0bed0f37",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608287880,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-667",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ae473d4942bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608292223,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-668",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ae626c064909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608297243,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-669",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423ae81b86d1eff",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608302968,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-670",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aea58ae2e8a1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608307202,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-671",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aebff8a312be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 3,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608311427,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-672",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aeda5f15422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608315621,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-673",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423aef49f0e8c42",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608320081,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-674",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af107b84e84d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608324394,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-675",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af2b6a3bb911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608328614,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-676",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af45c8144909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608332812,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-677",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af600b8e3d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 4,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608337333,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-678",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af7c4c8ce8a1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608341763,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-679",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423af97fd6bf68f",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608345989,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-680",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423afb25ba5406c",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608350178,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-681",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423afcc8b35381d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608354819,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-682",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423afe99e53c3dd",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608359046,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-683",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b004096eb911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608363568,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-684",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b0203d9853c7",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608368116,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-685",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b03cbd594909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608372323,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-686",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b056fd9f50ca",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608377094,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-687",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b074cc781a12",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608381754,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-688",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b091ed01422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608386070,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-689",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b0aceedf42bf",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608390577,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-690",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b0c91f89e8a1",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608394810,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-691",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b0e3788612be",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608399293,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-692",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b0ff8df353c7",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608403539,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-693",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b11a1a05c07d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608407738,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-694",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b1345bfbb911",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608412129,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-695",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b14fc976153e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608416465,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-696",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b16ade9c4909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608420904,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-697",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b1869fa8422e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608425106,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-698",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b1a0d97cbfdb",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608443430,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-702",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b2136a36381d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608447611,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-703",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b22d8cedd73b",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608452305,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-704",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b24ada35b085",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608456940,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-705",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b267da4a3d50",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608461152,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-706",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b2822d671600",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608465475,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-707",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b29d2cc5c013",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608470108,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-708",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b2ba2cddf68f",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608474332,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-709",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b2d488e0523f",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608478912,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-710",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b2f128a76471",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608483641,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-711",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b30ebced807e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608488023,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-712",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b32a1ff9153e",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608492821,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-713",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b3480ac0adc5",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608498847,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-714",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b36dbdc1813a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608503567,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-715",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b38b3cd30711",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608509353,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-716",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b3af6cdcbf72",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608513919,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-717",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b3cbfb12c013",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608518785,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-718",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b3ea5f8ab085",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608523440,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-719",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b4077ea67277",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608527828,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-720",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b422dfb51543",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608532626,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-721",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b440df2315e2",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 2,
+  "cpuTime": 1,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608537380,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-722",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b45e9b0b1600",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608541731,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-723",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b479ceb233ed",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 0,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608545934,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-724",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b4940a397a0f",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608550642,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-725",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b4b17ddd3d8a",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
+{
+  "wallTime": 1796,
+  "cpuTime": 5,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [
+    {
+      "message": [
+        "{\"level\":\"info\",\"event\":\"reconcile_started\",\"timestamp\":\"2026-09-28T15:15:46.432Z\",\"run_id\":\"878fac83-ff5d-43e4-8eb0-f47af1c198c7\",\"dry_run\":true,\"cron\":\"*/15 * * * *\",\"scheduled_time_utc\":\"2026-09-28T15:15:30.000Z\",\"mode\":\"trailing\",\"report\":true}"
+      ],
+      "level": "log",
+      "timestamp": 1790608546432
+    },
+    {
+      "message": [
+        "{\"level\":\"info\",\"event\":\"reconcile_summary\",\"timestamp\":\"2026-09-28T15:15:48.223Z\",\"run_id\":\"878fac83-ff5d-43e4-8eb0-f47af1c198c7\",\"dry_run\":true,\"mode\":\"trailing\",\"report\":true,\"search\":\"updated_at:>='2026-09-28T13:15:46Z'\",\"pages\":1,\"orders_seen\":0,\"in_scope\":0,\"mismatched\":0,\"converged_orders\":0,\"claimed\":0,\"released\":0,\"refused_not_open\":0,\"unreadable\":0,\"errors\":0,\"truncated\":false,\"aged_held\":0}"
+      ],
+      "level": "log",
+      "timestamp": 1790608548223
+    }
+  ],
+  "eventTimestamp": 1790608546417,
+  "event": {
+    "cron": "*/15 * * * *",
+    "scheduledTime": 1790608530000
+  }
+}
+{
+  "wallTime": 1,
+  "cpuTime": 0,
+  "truncated": false,
+  "executionModel": "stateless",
+  "outcome": "ok",
+  "scriptVersion": {
+    "id": "3cf4cd12-9652-4a0b-92eb-d26cfc804c18"
+  },
+  "scriptName": "greenside-entry-allocator-qa",
+  "diagnosticsChannelEvents": [],
+  "exceptions": [],
+  "logs": [],
+  "eventTimestamp": 1790608556809,
+  "event": {
+    "request": {
+      "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-726",
+      "method": "GET",
+      "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, br",
+        "cf-ray": "a423b4d7fc34b056",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+        "user-agent": "curl/8.5.0",
+        "x-forwarded-proto": "https"
+      }
+    },
+    "response": {
+      "status": 200
+    }
+  }
+}
