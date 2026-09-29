@@ -69,8 +69,12 @@ if scen('race'):  # restart 2s BEFORE qag-start, noticed by the guard only after
 if scen('tolerated'):  # during the test pre is down 9s and restarts; pre2 covers every probe -> tolerated, continue
     r = Rig('tolerated'); time.sleep(6); r.start_guard(); r.arm(); time.sleep(4)
     r.down.add('pre'); time.sleep(9); r.restart('pre'); r.down.discard('pre')
-    rc = r.wait(28); r.done()
-    ev = json.load(open(f'{r.d}/evidence.json'))
+    rc = r.wait(28)
+    ev = None  # read while the guard is still running: it rewrites evidence.json every loop, so retry until a complete JSON is read
+    for _ in range(40):
+        try: ev = json.load(open(f'{r.d}/evidence.json')); break
+        except (ValueError, FileNotFoundError): time.sleep(0.25)
+    r.done()
     chk('one tail restarts during the test, the other covers everything -> continue', rc is None and 'during the test: tolerated' in r.log() and 'STOP' not in r.log() and ev['result'] == 'INTACT' and ev['coverage']['result'] == 'CONTINUOUS', f"evidence {ev['result']} {ev['coverage']['result']} restarts={ev['restarts']}")
 if scen('tolerated-old'):  # the same scenario on the OLD guard: stops on the restart itself
     r = Rig('tolerated-old', guard=f'{N}/harness-v2-before/guard.sh'); time.sleep(6); r.start_guard(); r.arm(); time.sleep(4)

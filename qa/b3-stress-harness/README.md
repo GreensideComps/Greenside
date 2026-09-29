@@ -10,6 +10,7 @@ from the environment and never prints them.
 | Path | Purpose |
 | --- | --- |
 | `b3stress/` | go-live, gate, guard, restore, postcheck, state checkers (`cstate`, `dstate`, `shopstate`), `overlap.py`, `coverage.py`, `evidence.py` |
+| `b3stress/harness-v2-before/guard.sh` | the previous guard, used only by the before/after regression test |
 | `b3obs/obsq.py` | read-only Workers Logs gap-recovery source used by `evidence.py` (tails stay primary) |
 | `b3obs/wlfetch.py`, `ingest.py`, `q.sh` | validation-only Workers Logs tools |
 | `b3stress-selftest-cmds/` | offline and read-only test suites; `run-all.sh` runs everything |
