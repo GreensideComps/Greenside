@@ -1,0 +1,1 @@
+{"result": "PASS", "sweeps": [{"cron": "*/15 * * * *", "run_id": "c3ba2e48-4c74-4840-9614-2948d74d938d", "mode": "trailing", "orders_seen": 0, "in_scope": 0, "mismatched": 0, "errors": 0, "bad": {}}, {"cron": "20,50 * * * *", "run_id": "ac83d5f5-9448-4955-8bfe-aa3708a3ad7c", "mode": "deep", "orders_seen": 24, "in_scope": 15, "mismatched": 0, "errors": 0, "bad": {}}]}

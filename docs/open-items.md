@@ -1,6 +1,6 @@
 # Open items
 
-Status as of 2026-09-29. Each item needs its own approval before any change.
+Status as of 2026-10-05 (after S4 PASS). Each item needs its own approval before any change.
 
 ## Safety and configuration
 
@@ -15,15 +15,21 @@ Status as of 2026-09-29. Each item needs its own approval before any change.
 
 | Item | Notes |
 |---|---|
-| No integration branch | Theme (default branch `claude/shopify-live-theme-5bbrdw`), allocator (`claude/epic-gauss-db0icm`), QA and docs (`claude/greenside-allocator-qa-verify-f9at5v`) live on different branches. This briefing currently exists only on the QA branch. A separate Git architecture decision. |
-| QA evidence not committed | B-series and A-series results exist only in session records (historical / uncommitted). Only the SW1–SW3 plan and the B3 harness are committed. |
+| No integration branch | Theme (default branch `claude/shopify-live-theme-5bbrdw`), allocator (`claude/epic-gauss-db0icm`), QA and docs (`claude/greenside-allocator-qa-verify-f9at5v`) live on different branches. The current briefing and the S4 close-out are on `claude/compassionate-pascal-5vjgnd`. A separate Git architecture decision. |
+| QA evidence not committed | B-series and A-series (including A5) results exist only in session records (historical / uncommitted). Committed: the SW1–SW3 plan, the B3 harness and the S4 evidence (both attempts, under `qa/b3-stress-harness/evidence/`). |
+| No production deploy runbook | There is a QA live-window runbook but no step-by-step runbook for deploying the production allocator, provisioning its D1 and registering production webhooks. Write and review one before launch. |
 
 ## Concurrency testing
 
 | Item | Notes |
 |---|---|
-| Genuine concurrency proof | A5 INCONCLUSIVE. Next: QA Stress Driver S1 → S4 (`qa/concurrency-testing.md`). |
-| Stress Driver app | Configured with `write_draft_orders`; installation and credentials to be verified in S1. |
+| Genuine concurrency proof | **Closed: S4 PASS, 5 Oct 2026** (`qa/concurrency-testing.md`; evidence `/qa/b3-stress-harness/evidence/s4-2026-10-05-qaj/`). One six-entry competition, four concurrent completions; a correctness proof, not a load test. A5 (inconclusive) and the failed 30 Sep attempt are history. |
+| Stress Driver app | Verified 2026-09-30 (S1): app "Greenside QA Stress Driver", token scope `write_draft_orders` (`accessScopes` also lists the implied `read_draft_orders`). S4 proved it can complete draft orders and that the resulting orders are PAID. QA use only. |
+| Earlier QA fixtures | D1 also holds QAE, QAF, QAG, QAH and PUT from earlier QA tests (spent). Their Shopify products/orders are part of the QA-data decision above; cleanup only with approval. |
+| Spent QA fixtures left in the live store | QAI: product 15905304379766 (ACTIVE, unpublished, stock 6), drafts #D28-#D31 OPEN, D1 QAI pool AVAILABLE. QAJ: product 15915106926966 (ACTIVE, unpublished, 0 available / 6 committed), drafts #D32-#D35 COMPLETED, orders #1025-#1028 PAID and unfulfilled, D1 QAJ1001-QAJ1006 ALLOCATED. Both are live-store objects; cleanup is a separate approved task (do not touch before then). |
+| Workers Logs real-window tests | Fixed 2026-10-05: `run-all.sh` runs `wltest.py --no-real` (the fixed 28 Sep windows A13/A14/C1-C5 have aged out of retention); live coverage is the opt-in rolling `b3stress-selftest-cmds/wlreal_recent.py`. |
+| Unexplained environment credential names | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `CLOUDSDK_AUTH_ACCESS_TOKEN` are present in the session environment (names only; origin unverified; nothing in this repository uses them). Owner to confirm or remove. `gs verify` warns about them. |
+| Connector app scopes | The "Shopify Claude Connector App" holds write scopes far beyond any Greenside rule (`write_orders`, `write_products`, `write_inventory`, `write_themes`, `write_customers`, ...). Consider narrowing; needs approval (`operating-layer.md`). |
 
 ## Launch and business (not verified in this repository)
 

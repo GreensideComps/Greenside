@@ -34,6 +34,9 @@ Implementation: Repo — `/qa/b3-stress-harness/` (this branch). Measurements be
   - paging with `offset` + `offsetDirection=next` is exact
 - Limitation: Workers Logs cannot prove that no other invocation happened. A missing required
   webhook still fails the lifecycle checks and deadlines.
+- Retention: 7 days on the Workers Paid plan (3 on Free; Cloudflare docs, checked 2026-10-05). Real checks against fixed historical
+  windows therefore expire: the default harness runs `wltest.py --no-real`, and the live check is the opt-in rolling
+  `b3stress-selftest-cmds/wlreal_recent.py`.
 
 ## Concurrency evidence
 

@@ -1,0 +1,1 @@
+{"window": ["09:19:52", "09:31:01"], "probes": 161, "covered": 161, "missing": [], "by_tail": {"pre.jsonl": 161, "pre2.jsonl": 161}, "max_gap_ms": 5000, "edge_gap_ms": [170, 881], "result": "CONTINUOUS"}

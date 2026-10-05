@@ -1,0 +1,42 @@
+09:31:51 guard start TG=1791192711604 NEW=991799d3 restarts=0/0/0 (stress, 4 orders)
+09:32:01 armed at 09:31:59
+09:44:59 bound orders: gid://shopify/Order/13591534010742 gid://shopify/Order/13591534043510 gid://shopify/Order/13591534076278 gid://shopify/Order/13591534141814 
+09:44:59 POOL COMPLETE: {"allocated":6,"allocations":[{"allocation_id":"dc999a6bb7e04dfb24392996b3a274c7f631509af50291e601c8fb5f4650b047","order_id":"13591534043510","order_name":"#1025","qty":2,"held":2,"source":"webhook","entries":["QAJ1001","QAJ1002"],"first_event":42,"entry_route":"unknown"},{"allocation_id":"61c94834926af0ef550b99a81f7fd17de5319f740f886f4457ad5701ba6f1b36","order_id":"13591534076278","order_name":"#1027","qty":2,"held":2,"source":"webhook","entries":["QAJ1003","QAJ1004"],"first_event":44,"entry_route":"unknown"},{"allocation_id":"587779c6e0a4e29e9c86e2897f0d1408a9a238ede590e648b27083026d27dc05","order_id":"13591534010742","order_name":"#1026","qty":1,"held":1,"source":"webhook","entries":["QAJ1005"],"first_event":46,"entry_route":"unknown"},{"allocation_id":"9abe152879c8157f3e0251d780dd365dd7d9128b066d65ccaacda2b8ff6c8d53","order_id":"13591534141814","order_name":"#1028","qty":1,"held":1,"source":"webhook","entries":["QAJ1006"],"first_event":47,"entry_route":"unknown"}],"new_events":6}
+09:44:59 webhook 1: {"topic":"orders/paid","order":"gid://shopify/Order/13591534043510","webhook_id":"ff682ae3-302e-5612-aed0-8dd1f5f65bce","triggered_at":"2026-10-05T09:44:51.377893615Z","ts":1791193493331,"wall":895,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:44:59 webhook 2: {"topic":"orders/paid","order":"gid://shopify/Order/13591534076278","webhook_id":"cd9c26a9-d2ef-5bf6-b478-c4e25b60450a","triggered_at":"2026-10-05T09:44:51.491881258Z","ts":1791193493693,"wall":847,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:44:59 webhook 3: {"topic":"orders/paid","order":"gid://shopify/Order/13591534010742","webhook_id":"db739e8c-feec-50af-ada4-e6595667e2b7","triggered_at":"2026-10-05T09:44:51.446631769Z","ts":1791193493839,"wall":819,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:44:59 webhook 4: {"topic":"orders/paid","order":"gid://shopify/Order/13591534141814","webhook_id":"a905f0f8-8488-5acd-93cf-b37cf2c3376b","triggered_at":"2026-10-05T09:44:51.564462969Z","ts":1791193493849,"wall":878,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:44:59 webhook 5: {"topic":"orders/create","order":"gid://shopify/Order/13591534141814","webhook_id":"1e633fa3-339a-5e72-aa50-2f61dca1ef36","triggered_at":"2026-10-05T09:44:53.117789631Z","ts":1791193495365,"wall":299,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:45:06 webhook 6: {"topic":"orders/create","order":"gid://shopify/Order/13591534010742","webhook_id":"c320d7f8-73ab-550e-aae9-2addcd9a5d0c","triggered_at":"2026-10-05T09:44:53.009366481Z","ts":1791193496356,"wall":291,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:45:06 webhook 7: {"topic":"orders/create","order":"gid://shopify/Order/13591534043510","webhook_id":"1b5544ea-3bdc-528a-97c0-74b8453918ec","triggered_at":"2026-10-05T09:44:53.004363423Z","ts":1791193496533,"wall":618,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:45:06 webhook 8: {"topic":"orders/create","order":"gid://shopify/Order/13591534076278","webhook_id":"08e1d001-a998-5031-a52d-9542b41bbcc5","triggered_at":"2026-10-05T09:44:53.001183303Z","ts":1791193497053,"wall":649,"status":200,"version":"991799d3","hmac_header":true,"lines":1}
+09:45:59 sweep 1 OK: {"run_id":"978f2587-1ae0-4cb9-be2c-b10f3837453d","cron":"*/15 * * * *","mode":"trailing","after_complete":true,"summary":{"orders_seen":4,"in_scope":4,"mismatched":0,"converged_orders":0,"claimed":0,"released":0,"refused_not_open":0,"unreadable":0,"errors":0,"truncated":false,"aged_held":0},"converged":[]}
+09:46:02 complete; holding the planned restore until the evidence check has covered 09:46:02 (about 15s)
+09:46:21 EVIDENCE INTACT from gate PASSED through 09:46:03: {"coverage":{"probes":204,"covered":204,"max_gap_ms":5000,"result":"CONTINUOUS"},"restarts":[],"both_unavailable":[]}
+09:46:22 CONCURRENCY: {"verdict":"CONCURRENT","counts":{"cross_order":8,"same_order":0,"hook_sweep":0},"peak_in_flight":4}
+09:46:22 stress test complete: pool complete, Shopify complete {"stock":[0,0],"stock_expected":0}, per-topic {"gid://shopify/Order/13591534043510|orders/paid":1,"gid://shopify/Order/13591534076278|orders/paid":1,"gid://shopify/Order/13591534010742|orders/paid":1,"gid://shopify/Order/13591534141814|orders/paid":1,"gid://shopify/Order/13591534141814|orders/create":1,"gid://shopify/Order/13591534010742|orders/create":1,"gid://shopify/Order/13591534043510|orders/create":1,"gid://shopify/Order/13591534076278|orders/create":1}, 1 qualifying zero sweep(s) -> planned restore
+09:46:22 stress window done -> planned strict restore
+=== restore: deploy --env qa (09:46:22) ===
+    exit=0
+      - DRY_RUN: "true"
+    restored version: d5710fab-e3b6-4f3d-a40f-fb8cc1156b02
+    restore-1-4411 09:46:27: dry_run=false served_by=991799d3 streak=0 (served by 991799d3 (not target): reset)
+    restore-2-5172 09:46:31: dry_run=true served_by=d5710fab streak=1 (tail-confirmed d5710fab)
+    restore-3-13928 09:46:36: dry_run=true served_by=d5710fab streak=2 (tail-confirmed d5710fab)
+    restore-4-8766 09:46:40: dry_run=false served_by=991799d3 streak=0 (served by 991799d3 (not target): reset)
+    restore-5-25058 09:46:44: dry_run=true served_by=d5710fab streak=1 (tail-confirmed d5710fab)
+    restore-6-14743 09:46:48: dry_run=true served_by=d5710fab streak=2 (tail-confirmed d5710fab)
+    restore-7-16165 09:46:53: dry_run=true served_by=d5710fab streak=3 (tail-confirmed d5710fab)
+    restore-8-15795 09:46:57: dry_run=true served_by=d5710fab streak=4 (tail-confirmed d5710fab)
+    restore-9-31070 09:47:01: dry_run=true served_by=d5710fab streak=5 (tail-confirmed d5710fab)
+    restore-10-6154 09:47:05: dry_run=true served_by=d5710fab streak=6 (tail-confirmed d5710fab)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 09:46:41
+RESTORE GATE PASSED (09:47:14)
+09:47:14 restoregate.txt: PASSED
+=== postcheck: waiting for a dry-run sweep on d5710fab (09:47:14) ===
+{"result": "PASS", "cron": "20,50 * * * *", "run_id": "ba07b9fa-7481-4ddd-9bd4-ba1dcee25d45", "mode": "deep", "in_scope": 19, "bad": {}}
+
+    D1 identical to last live snapshot: True | integrity {'dup_events': 0, 'audit_gaps': 0, 'ledger_drift': 0, 'orphans': 0, 'events_total': 47, 'allocations_total': 19, 'entry_order_mismatch': 0, 'dup_issue': 0, 'multi_held': 0, 'dup_release': 0, 'dup_return': 0, 'freeze_audit': 0, 'bad_events': 0}
+POSTCHECK PASSED (09:51:08)
+09:51:08 postcheck.txt: PASSED

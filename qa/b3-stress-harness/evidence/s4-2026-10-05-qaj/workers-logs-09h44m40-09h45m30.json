@@ -1,0 +1,985 @@
+{
+ "complete": true,
+ "problems": [],
+ "pages": 1,
+ "records": 28,
+ "series_total": 28,
+ "sample_intervals": [
+  1
+ ],
+ "invocations": [
+  {
+   "eventTimestamp": 1791193482909,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q71MY0000000000000002",
+    "requestId": "a337710b1a736388fb108d1b96766647",
+    "end": 1791193482910
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-646",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.129",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7d442e1fa9d6",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.129"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193487082,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q75QB0000000000000002",
+    "requestId": "b92a6503f4a2fab40ed744af7a52e3ae",
+    "end": 1791193487083
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-647",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.24",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7d5e3e90e645",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.24"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193491242,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q79SB0000000000000002",
+    "requestId": "be2077f9c8e417840ee8effd8d5d6d9c",
+    "end": 1791193491243
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-648",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.139",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7d784eeaabe9",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.139"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193493323,
+   "wallTime": 895,
+   "cpuTime": 22,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:54.218Z\", \"run_id\": \"deeec0ed-4636-47c6-b434-121670d3eecd\", \"topic\": \"orders/paid\", \"order_gid\": \"gid://shopify/Order/13591534043510\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193494218
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7CPA000000000000001K",
+    "requestId": "853a3035d04cc4c216ab556cba8daa20",
+    "end": 1791193494218
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/paid",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.141.204.156",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d852ba20b34",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5159",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.141.204.156",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "0044f163-0a28-43e2-836c-cda6bc5a459f",
+      "x-shopify-hmac-sha256": "zPWf9Ky8Lhqcf14OJI9YoQLdVg+Q4qDHggJfkI4mTyg=",
+      "x-shopify-order-id": "13591534043510",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/paid",
+      "x-shopify-triggered-at": "2026-10-05T09:44:51.377893615Z",
+      "x-shopify-webhook-id": "ff682ae3-302e-5612-aed0-8dd1f5f65bce"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193493696,
+   "wallTime": 847,
+   "cpuTime": 16,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:54.543Z\", \"run_id\": \"ac2efc0b-5b66-4e0b-b9ad-d45a385081d4\", \"topic\": \"orders/paid\", \"order_gid\": \"gid://shopify/Order/13591534076278\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193494543
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7D0F000000000000001K",
+    "requestId": "02a6da25a05048c0b2a7960abfbc049f",
+    "end": 1791193494543
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/paid",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.91.99.114",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d8769244f9d",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.91.99.114",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "5d1a3026-0d80-4f0b-8ba2-6b0ee69379e6",
+      "x-shopify-hmac-sha256": "2yeLvOuh5zEqakKc3kj7BKe8tiD1B5ilGLdjy1jqWro=",
+      "x-shopify-order-id": "13591534076278",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/paid",
+      "x-shopify-triggered-at": "2026-10-05T09:44:51.491881258Z",
+      "x-shopify-webhook-id": "cd9c26a9-d2ef-5bf6-b478-c4e25b60450a"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193493833,
+   "wallTime": 819,
+   "cpuTime": 13,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:54.652Z\", \"run_id\": \"f6ebbc4a-22c8-48bb-99ec-daea40cbf917\", \"topic\": \"orders/paid\", \"order_gid\": \"gid://shopify/Order/13591534010742\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193494652
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7D3W000000000000001K",
+    "requestId": "3a330c1050a04ee069f254e955b05bcb",
+    "end": 1791193494652
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/paid",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.141.204.156",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d887989b6a8",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.141.204.156",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "c145109d-a163-4dc6-a3b0-d05c33b1a638",
+      "x-shopify-hmac-sha256": "5HAbxp6b/MLGYbweyMIB1aSs1ZCO4fXI3hwaRR2yiKM=",
+      "x-shopify-order-id": "13591534010742",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/paid",
+      "x-shopify-triggered-at": "2026-10-05T09:44:51.446631769Z",
+      "x-shopify-webhook-id": "db739e8c-feec-50af-ada4-e6595667e2b7"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193493838,
+   "wallTime": 878,
+   "cpuTime": 14,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:54.716Z\", \"run_id\": \"b8739d2a-5f55-483f-b128-ab2c4b59db03\", \"topic\": \"orders/paid\", \"order_gid\": \"gid://shopify/Order/13591534141814\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193494716
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7D5W000000000000001K",
+    "requestId": "d48e05e2baed8dc54df765d235813f9d",
+    "end": 1791193494716
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/paid",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.178.74.21",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d888eb1bd8d",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.178.74.21",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "efa2ec75-dd38-4497-ae01-c0f15a789751",
+      "x-shopify-hmac-sha256": "wXx7lwkIXZdRgZVc/5MkZgQcuA7JieHAh1C1ykSp/zc=",
+      "x-shopify-order-id": "13591534141814",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/paid",
+      "x-shopify-triggered-at": "2026-10-05T09:44:51.564462969Z",
+      "x-shopify-webhook-id": "a905f0f8-8488-5acd-93cf-b37cf2c3376b"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193495344,
+   "wallTime": 299,
+   "cpuTime": 6,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:55.643Z\", \"run_id\": \"53543a92-2dfc-412c-8192-a9c1cd7a7412\", \"topic\": \"orders/create\", \"order_gid\": \"gid://shopify/Order/13591534141814\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193495643
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7E2V000000000000001A",
+    "requestId": "85547d0e429f15dd4c16f7a8256888be",
+    "end": 1791193495643
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/create",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.12.238.2",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d91fd518069",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.12.238.2",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "47f16fb0-08d3-4803-be30-11907fd669f9",
+      "x-shopify-hmac-sha256": "wXx7lwkIXZdRgZVc/5MkZgQcuA7JieHAh1C1ykSp/zc=",
+      "x-shopify-order-id": "13591534141814",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/create",
+      "x-shopify-triggered-at": "2026-10-05T09:44:53.117789631Z",
+      "x-shopify-webhook-id": "1e633fa3-339a-5e72-aa50-2f61dca1ef36"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193495405,
+   "wallTime": 0,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7DVD0000000000000002",
+    "requestId": "d14f808d12c53f0aba600d7e58d3a231",
+    "end": 1791193495405
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-649",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.140",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7d924ba61011",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.140"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193496337,
+   "wallTime": 291,
+   "cpuTime": 5,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:56.628Z\", \"run_id\": \"84788ce5-a7ef-4c93-8da2-6c20ffc65f8a\", \"topic\": \"orders/create\", \"order_gid\": \"gid://shopify/Order/13591534010742\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193496628
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7F1M000000000000001A",
+    "requestId": "1c9d0530c62a3e669ca7080133f07a01",
+    "end": 1791193496628
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/create",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.91.99.114",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d98280a4f9d",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.91.99.114",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "b411966a-2aa8-4585-bdc7-a6fbe30738f1",
+      "x-shopify-hmac-sha256": "5HAbxp6b/MLGYbweyMIB1aSs1ZCO4fXI3hwaRR2yiKM=",
+      "x-shopify-order-id": "13591534010742",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/create",
+      "x-shopify-triggered-at": "2026-10-05T09:44:53.009366481Z",
+      "x-shopify-webhook-id": "c320d7f8-73ab-550e-aae9-2addcd9a5d0c"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193496524,
+   "wallTime": 618,
+   "cpuTime": 13,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:57.142Z\", \"run_id\": \"578f9241-331c-433c-9918-5ab0db034de6\", \"topic\": \"orders/create\", \"order_gid\": \"gid://shopify/Order/13591534043510\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193497142
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7FHP000000000000001D",
+    "requestId": "2d33af7826637829d31c4d0ea171e746",
+    "end": 1791193497142
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/create",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.141.204.156",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d9948aee247",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5159",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.141.204.156",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "f8234526-3bae-441f-bd12-eeedc8ec843b",
+      "x-shopify-hmac-sha256": "zPWf9Ky8Lhqcf14OJI9YoQLdVg+Q4qDHggJfkI4mTyg=",
+      "x-shopify-order-id": "13591534043510",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/create",
+      "x-shopify-triggered-at": "2026-10-05T09:44:53.004363423Z",
+      "x-shopify-webhook-id": "1b5544ea-3bdc-528a-97c0-74b8453918ec"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193497041,
+   "wallTime": 649,
+   "cpuTime": 11,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [
+    {
+     "message": [
+      "{\"dry_run\": false, \"level\": \"info\", \"event\": \"webhook_processed\", \"timestamp\": \"2026-10-05T09:44:57.690Z\", \"run_id\": \"900802e0-b179-4d1e-bbb6-ac8dc920641e\", \"topic\": \"orders/create\", \"order_gid\": \"gid://shopify/Order/13591534076278\", \"lines\": 1}"
+     ],
+     "level": "info",
+     "timestamp": 1791193497690
+    }
+   ],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7G2T000000000000001D",
+    "requestId": "ce4d6fc3a998b6d2dd57496c277158f7",
+    "end": 1791193497690
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/orders/create",
+     "method": "POST",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "34.6.157.49",
+      "cf-ipcountry": "NL",
+      "cf-ray": "a45b7d9c8d81f5c1",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "content-length": "5161",
+      "content-type": "application/json",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "Shopify-Captain-Hook",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "34.6.157.49",
+      "x-shopify-api-version": "2026-07",
+      "x-shopify-event-id": "25800c20-f0b9-42ea-bf0d-868041a21e22",
+      "x-shopify-hmac-sha256": "2yeLvOuh5zEqakKc3kj7BKe8tiD1B5ilGLdjy1jqWro=",
+      "x-shopify-order-id": "13591534076278",
+      "x-shopify-shop-domain": "7r5csb-1j.myshopify.com",
+      "x-shopify-test": "false",
+      "x-shopify-topic": "orders/create",
+      "x-shopify-triggered-at": "2026-10-05T09:44:53.001183303Z",
+      "x-shopify-webhook-id": "08e1d001-a998-5031-a52d-9542b41bbcc5"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193499577,
+   "wallTime": 0,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7HXS0000000000000002",
+    "requestId": "d4884eee40fe52e4f6ec344f39d8f00e",
+    "end": 1791193499577
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-650",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.135",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7dac5c30198a",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.135"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193503723,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7NZC0000000000000002",
+    "requestId": "2ee7ab9b6afbac1959b59bbf97095afc",
+    "end": 1791193503724
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-651",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.19",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7dc63d811fd3",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.19"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193507915,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7T2C0000000000000002",
+    "requestId": "de20f289582e48d887c1ba5bef286766",
+    "end": 1791193507916
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-652",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.140",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7de06bb420cf",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.140"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193512077,
+   "wallTime": 0,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q7Y4D0000000000000002",
+    "requestId": "2ccf32ce5abe78a3bfd532a8fc88e807",
+    "end": 1791193512077
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-653",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.22",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7dfa7809b154",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.22"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193516238,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q826F0000000000000002",
+    "requestId": "2ce6167442ee7366e187f573ed8651c4",
+    "end": 1791193516239
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-654",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.131",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7e14798a7fd5",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.131"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193520393,
+   "wallTime": 1,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q868A0000000000000002",
+    "requestId": "9b443dd520828f566c7616680c5c9cc0",
+    "end": 1791193520394
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-655",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.139",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7e2e6f09dda4",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.139"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193524772,
+   "wallTime": 0,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q8AH40000000000000002",
+    "requestId": "ff48aa116f318d008014bc0ac98118ae",
+    "end": 1791193524772
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-656",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.137",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7e49ceb816cb",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.137"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  },
+  {
+   "eventTimestamp": 1791193528949,
+   "wallTime": 0,
+   "cpuTime": 0,
+   "outcome": "ok",
+   "scriptName": "greenside-entry-allocator-qa",
+   "scriptVersion": {
+    "id": "991799d3-3d2c-4a8f-aa06-e092cb63f3c5"
+   },
+   "exceptions": [],
+   "truncated": false,
+   "logs": [],
+   "_source": "workers-logs",
+   "_wl": {
+    "id": "01M45Q8EKN0000000000000002",
+    "requestId": "317f6a90b6750c7675be3af58843ffc6",
+    "end": 1791193528949
+   },
+   "event": {
+    "request": {
+     "url": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/health?probe=hb-657",
+     "method": "GET",
+     "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip, br",
+      "cf-connecting-ip": "160.79.106.143",
+      "cf-ipcountry": "US",
+      "cf-ray": "a45b7e63eb4de98e",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "connection": "Keep-Alive",
+      "host": "greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev",
+      "user-agent": "curl/8.5.0",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "160.79.106.143"
+     }
+    },
+    "response": {
+     "status": 200
+    }
+   }
+  }
+ ],
+ "invalid": []
+}

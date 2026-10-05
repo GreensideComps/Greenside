@@ -1,0 +1,17 @@
+=== [1] deploy --env qa --var DRY_RUN:false (10:31:04) ===
+    exit=0
+      - DRY_RUN: "(hidden)"
+    new version: ad67fcf2-9ea3-413f-8e29-784ee7d116b0
+=== [2] fresh confirmation tail; must capture a request (10:31:09) ===
+    conf pid=25914  pre alive=yes
+    confirmation tail captured warm-5085 (served by ad67fcf2) at 10:31:11
+=== [3] STRICT gate: 5 x dry_run=false over >=20s, tail-confirmed on ad67fcf2, zero other-version requests seen by any tail (budget 180s from deploy) ===
+    gate-1-10560 10:31:12: dry_run=false served_by=ad67fcf2 streak=1 (tail-confirmed ad67fcf2)
+    gate-2-29868 10:31:17: dry_run=false served_by=ad67fcf2 streak=2 (tail-confirmed ad67fcf2)
+    gate-3-25461 10:31:21: dry_run=false served_by=ad67fcf2 streak=3 (tail-confirmed ad67fcf2)
+    gate-4-21008 10:31:25: dry_run=false served_by=ad67fcf2 streak=4 (tail-confirmed ad67fcf2)
+    gate-5-13820 10:31:30: dry_run=false served_by=ad67fcf2 streak=5 (tail-confirmed ad67fcf2)
+    gate-6-7104 10:31:34: dry_run=false served_by=ad67fcf2 streak=6 (tail-confirmed ad67fcf2)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 10:31:09
+    GATE PASSED (10:31:42, 33s after deploy). Worker LIVE; tails + watchdog + heartbeat stay on. Waiting for the next automatic sweep.

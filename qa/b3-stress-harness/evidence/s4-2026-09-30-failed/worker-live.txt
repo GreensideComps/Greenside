@@ -1,0 +1,3 @@
+{"created_on":"2026-09-30T10:31:07.72422Z","versions":[{"version_id":"ad67fcf2-9ea3-413f-8e29-784ee7d116b0","percentage":100}]}
+["false"]
+["*/15 * * * *","20,50 * * * *"]

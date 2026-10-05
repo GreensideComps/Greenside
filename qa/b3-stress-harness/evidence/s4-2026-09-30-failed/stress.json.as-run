@@ -1,0 +1,44 @@
+{
+  "_comment": "Stress test config (B3). Filled in during approved setup A1-A3.",
+  "competition_id": "15905304379766",
+  "product_gid": "gid://shopify/Product/15905304379766",
+  "prefix": "QAI",
+  "start_number": 1001,
+  "capacity": 6,
+  "order_quantities": [
+    1,
+    1,
+    2,
+    2
+  ],
+  "order_tag": "qa-stress",
+  "shop_stock_start": 6,
+  "dry_version": "0fe475af-e265-4f59-a599-655c86373d70",
+  "d1_registration_snapshot": "/tmp/claude-0/-home-user/2332faed-caf6-5f71-85c8-6d43514fb4f8/scratchpad/b3stress/reg/snap-post.json",
+  "handle": "qa-allocator-stress-test-b",
+  "title": "QA — Allocator Stress Test B",
+  "variant_gid": "gid://shopify/ProductVariant/58850638201206",
+  "inventory_item_gid": "gid://shopify/InventoryItem/57325550600566",
+  "draft_orders": [
+    {
+      "id": "gid://shopify/DraftOrder/1613906051446",
+      "name": "#D28",
+      "qty": 1
+    },
+    {
+      "id": "gid://shopify/DraftOrder/1613906116982",
+      "name": "#D29",
+      "qty": 1
+    },
+    {
+      "id": "gid://shopify/DraftOrder/1613906149750",
+      "name": "#D30",
+      "qty": 2
+    },
+    {
+      "id": "gid://shopify/DraftOrder/1613906182518",
+      "name": "#D31",
+      "qty": 2
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+10:31:42 guard start TG=1790764302321 NEW=ad67fcf2 restarts=0/0/0 (stress, 4 orders)
+10:31:53 armed at 10:31:50
+10:45:37 sweep 1 OK: {"run_id":"5167a986-8fc8-4524-94ad-56d6cb23fa96","cron":"*/15 * * * *","mode":"trailing","after_complete":false,"summary":{"orders_seen":0,"in_scope":0,"mismatched":0,"converged_orders":0,"claimed":0,"released":0,"refused_not_open":0,"unreadable":0,"errors":0,"truncated":false,"aged_held":0},"converged":[]}
+10:45:40 STOP: MANUAL STOP: S4 fire did not execute: 4x SSLEOFError at send, no draft completed, no order; ending window (operator: Claude, per approved procedure) -> strict restore
+=== restore: deploy --env qa (10:45:40) ===
+    exit=0
+      - DRY_RUN: "true"
+    restored version: 6b7dbf38-cc22-4e06-8cce-b8d50ba396c3
+    restore-1-32178 10:45:46: dry_run=false served_by=ad67fcf2 streak=0 (served by ad67fcf2 (not target): reset)
+    restore-2-28910 10:45:50: dry_run=true served_by=6b7dbf38 streak=1 (tail-confirmed 6b7dbf38)
+    restore-3-7158 10:45:54: dry_run=true served_by=6b7dbf38 streak=2 (tail-confirmed 6b7dbf38)
+    restore-4-8274 10:45:58: dry_run=true served_by=6b7dbf38 streak=3 (tail-confirmed 6b7dbf38)
+    restore-5-10370 10:46:03: dry_run=true served_by=6b7dbf38 streak=4 (tail-confirmed 6b7dbf38)
+    restore-6-26023 10:46:07: dry_run=true served_by=6b7dbf38 streak=5 (tail-confirmed 6b7dbf38)
+    restore-7-20377 10:46:12: dry_run=true served_by=6b7dbf38 streak=6 (tail-confirmed 6b7dbf38)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 10:45:47
+RESTORE GATE PASSED (10:46:20)
+10:46:20 restoregate.txt: PASSED
+=== postcheck: waiting for a dry-run sweep on 6b7dbf38 (10:46:20) ===
+{"result": "PASS", "cron": "20,50 * * * *", "run_id": "680e7bb5-1303-4ce0-92ff-3cd666b02c97", "mode": "deep", "in_scope": 15, "bad": {}}
+
+    D1 identical to last live snapshot: True | integrity {'dup_events': 0, 'audit_gaps': 0, 'ledger_drift': 0, 'orphans': 0, 'events_total': 41, 'allocations_total': 15, 'entry_order_mismatch': 0, 'dup_issue': 0, 'multi_held': 0, 'dup_release': 0, 'dup_return': 0, 'freeze_audit': 0, 'bad_events': 0}
+POSTCHECK PASSED (10:50:44)
+10:50:44 postcheck.txt: PASSED

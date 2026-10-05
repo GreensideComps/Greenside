@@ -1,0 +1,81 @@
+{
+ "app": "Greenside QA Stress Driver",
+ "document": "mutation CompleteQaiDraft($id: ID!) { draftOrderComplete(id: $id) { draftOrder { id name status } userErrors { field message } } }",
+ "endpoint": "https://7r5csb-1j.myshopify.com/admin/api/2025-10/graphql.json",
+ "fixture": {
+  "competition_id": "15905304379766",
+  "prefix": "QAI",
+  "product_gid": "gid://shopify/Product/15905304379766",
+  "variant_gid": "gid://shopify/ProductVariant/58850638201206"
+ },
+ "live_gates_at_start": [],
+ "mode": "live",
+ "overlap": {
+  "all_four_overlap": true,
+  "genuine_overlap": true,
+  "latest_send_to_earliest_done_ms": 0.146,
+  "peak_in_flight": 4,
+  "requests_sent": 4,
+  "start_spread_ms": 0.866
+ },
+ "requests": [
+  {
+   "duration_ms": 1.012,
+   "error": "SSLEOFError",
+   "n": 1,
+   "name": "#D28",
+   "operation": "draftOrderComplete",
+   "qty": 1,
+   "release_utc": "2026-09-30T10:44:50.000Z",
+   "result": "UNKNOWN",
+   "t_done_ms_after_main_release": 1.391,
+   "t_release_ms_after_main_release": 0.299,
+   "t_send_ms_after_main_release": 0.379,
+   "target_id": "gid://shopify/DraftOrder/1613906051446"
+  },
+  {
+   "duration_ms": 0.999,
+   "error": "SSLEOFError",
+   "n": 2,
+   "name": "#D29",
+   "operation": "draftOrderComplete",
+   "qty": 1,
+   "release_utc": "2026-09-30T10:44:50.000Z",
+   "result": "UNKNOWN",
+   "t_done_ms_after_main_release": 1.663,
+   "t_release_ms_after_main_release": 0.598,
+   "t_send_ms_after_main_release": 0.664,
+   "target_id": "gid://shopify/DraftOrder/1613906116982"
+  },
+  {
+   "duration_ms": 1.042,
+   "error": "SSLEOFError",
+   "n": 3,
+   "name": "#D30",
+   "operation": "draftOrderComplete",
+   "qty": 2,
+   "release_utc": "2026-09-30T10:44:50.001Z",
+   "result": "UNKNOWN",
+   "t_done_ms_after_main_release": 1.975,
+   "t_release_ms_after_main_release": 0.882,
+   "t_send_ms_after_main_release": 0.933,
+   "target_id": "gid://shopify/DraftOrder/1613906149750"
+  },
+  {
+   "duration_ms": 0.615,
+   "error": "SSLEOFError",
+   "n": 4,
+   "name": "#D31",
+   "operation": "draftOrderComplete",
+   "qty": 2,
+   "release_utc": "2026-09-30T10:44:50.001Z",
+   "result": "UNKNOWN",
+   "t_done_ms_after_main_release": 1.861,
+   "t_release_ms_after_main_release": 1.209,
+   "t_send_ms_after_main_release": 1.246,
+   "target_id": "gid://shopify/DraftOrder/1613906182518"
+  }
+ ],
+ "script_sha256": "68614111aa6d7113c98cc3f8b2d855b249666b5eb28e5f10bda71524cfa5ac22",
+ "shop": "7r5csb-1j.myshopify.com"
+}

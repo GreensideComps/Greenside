@@ -1,0 +1,40 @@
+{
+  "_comment": "Expected Greenside state. gs verify/audit compare live state against this file. Changing it changes what counts as safe: review like a safety gate.",
+  "shop": "7r5csb-1j.myshopify.com",
+  "shopify_api_version": "2026-07",
+  "apps": {
+    "allocator": {
+      "env_id": "SHOPIFY_CLIENT_ID", "env_secret": "SHOPIFY_CLIENT_SECRET",
+      "title": "Greenside Entry Allocator",
+      "scopes_exact": ["read_orders", "read_products"],
+      "scopes_forbidden": ["write_inventory"]
+    },
+    "stress_driver": {
+      "env_id": "QA_STRESS_SHOPIFY_CLIENT_ID", "env_secret": "QA_STRESS_SHOPIFY_CLIENT_SECRET",
+      "title": "Greenside QA Stress Driver",
+      "scopes_required": ["write_draft_orders"],
+      "scopes_allowed": ["write_draft_orders", "read_draft_orders"]
+    }
+  },
+  "webhooks": {
+    "app": "allocator",
+    "topics": ["ORDERS_CANCELLED", "ORDERS_CREATE", "ORDERS_EDITED", "ORDERS_PAID", "REFUNDS_CREATE"],
+    "callback_prefix": "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev"
+  },
+  "cloudflare": {
+    "qa_worker": "greenside-entry-allocator-qa",
+    "prod_worker": "greenside-entry-allocator",
+    "qa_d1_name": "greenside_entries_qa",
+    "expected_crons": ["*/15 * * * *", "20,50 * * * *"],
+    "expected_dry_run": "true"
+  },
+  "d1": {
+    "summary_pool_competitions": {"900001": "put_summary"},
+    "integrity_zero": ["dup_events", "audit_gaps", "ledger_drift", "orphans", "entry_order_mismatch", "dup_issue", "multi_held", "dup_release", "dup_return", "freeze_audit", "bad_events"]
+  },
+  "claude_config": {
+    "risky_allow_patterns": ["mcp__Shopify__graphql_mutation", "mcp__Shopify__create-product", "mcp__Shopify__update-product", "mcp__Shopify__set-inventory", "mcp__Shopify__bulk-update-product-status", "mcp__Shopify__create-discount", "mcp__Cloudflare_Developer_Platform__d1_database_delete", "mcp__Cloudflare_Developer_Platform__d1_database_query", "mcp__Klaviyo__send_campaign", "Bash(*)"]
+  },
+  "credential_env_names": ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "SHOPIFY_CLIENT_ID", "SHOPIFY_CLIENT_SECRET", "QA_STRESS_SHOPIFY_CLIENT_ID", "QA_STRESS_SHOPIFY_CLIENT_SECRET"],
+  "unexpected_env_names": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "CLOUDSDK_AUTH_ACCESS_TOKEN"]
+}

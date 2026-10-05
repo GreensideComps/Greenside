@@ -1,0 +1,1 @@
+{"invocations": [{"start": "10:45:32.163", "ms": 786, "kind": "sweep", "key": "*/15 * * * *"}], "counts": {"cross_order": 0, "same_order": 0, "hook_sweep": 0}, "peak_in_flight": 1, "verdict": "SEQUENTIAL", "pairs": {"cross_order": [], "same_order": [], "hook_sweep": []}}

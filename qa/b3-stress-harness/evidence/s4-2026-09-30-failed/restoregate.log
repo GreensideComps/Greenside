@@ -1,0 +1,10 @@
+    restore-1-32178 10:45:46: dry_run=false served_by=ad67fcf2 streak=0 (served by ad67fcf2 (not target): reset)
+    restore-2-28910 10:45:50: dry_run=true served_by=6b7dbf38 streak=1 (tail-confirmed 6b7dbf38)
+    restore-3-7158 10:45:54: dry_run=true served_by=6b7dbf38 streak=2 (tail-confirmed 6b7dbf38)
+    restore-4-8274 10:45:58: dry_run=true served_by=6b7dbf38 streak=3 (tail-confirmed 6b7dbf38)
+    restore-5-10370 10:46:03: dry_run=true served_by=6b7dbf38 streak=4 (tail-confirmed 6b7dbf38)
+    restore-6-26023 10:46:07: dry_run=true served_by=6b7dbf38 streak=5 (tail-confirmed 6b7dbf38)
+    restore-7-20377 10:46:12: dry_run=true served_by=6b7dbf38 streak=6 (tail-confirmed 6b7dbf38)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 10:45:47
+PASSED

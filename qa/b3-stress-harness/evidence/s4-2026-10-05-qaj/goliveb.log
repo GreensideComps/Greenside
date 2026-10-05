@@ -1,0 +1,40 @@
+monitoring since 08:59:37 UTC
+{"created_on":"2026-09-30T10:45:43.087725Z","versions":[{"version_id":"6b7dbf38-cc22-4e06-8cce-b8d50ba396c3","percentage":100}]}
+["true"]
+["*/15 * * * *","20,50 * * * *"]
+shopify reference: {"orders":24,"qae":7,"stress":[6,6]}
+d1 reference: identical to post-registration True, stress OPEN pool ['QAJ1001/AVAILABLE', 'QAJ1002/AVAILABLE', 'QAJ1003/AVAILABLE', 'QAJ1004/AVAILABLE', 'QAJ1005/AVAILABLE', 'QAJ1006/AVAILABLE'], integrity {'dup_events': 0, 'audit_gaps': 0, 'ledger_drift': 0, 'orphans': 0, 'events_total': 41, 'allocations_total': 15, 'entry_order_mismatch': 0, 'dup_issue': 0, 'multi_held': 0, 'dup_release': 0, 'dup_return': 0, 'freeze_audit': 0, 'bad_events': 0}
+slot: 09:31:00 UTC (10:31:00 BST); preceding deep sweep captured after monitor start
+planned fire: 09:44:50 UTC, 10s before the live */15 sweep at 09:45:00 UTC
+{"result": "PASS", "sweeps": [{"cron": "*/15 * * * *", "run_id": "c3ba2e48-4c74-4840-9614-2948d74d938d", "mode": "trailing", "orders_seen": 0, "in_scope": 0, "mismatched": 0, "errors": 0, "bad": {}}, {"cron": "20,50 * * * *", "run_id": "ac83d5f5-9448-4955-8bfe-aa3708a3ad7c", "mode": "deep", "orders_seen": 24, "in_scope": 15, "mismatched": 0, "errors": 0, "bad": {}}]}
+
+{"window": ["09:19:52", "09:31:01"], "probes": 161, "covered": 161, "missing": [], "by_tail": {"pre.jsonl": 161, "pre2.jsonl": 161}, "max_gap_ms": 5000, "edge_gap_ms": [170, 881], "result": "CONTINUOUS"}
+
+{"result":"INTACT","mode":"workers-logs-recovery","coverage":{"probes":157,"covered":157,"max_gap_ms":5000,"result":"CONTINUOUS"},"gaps":[]}
+shopify(prelive): orders identical YES, products identical YES, orders 24, stock QAJ 6
+d1(prelive): identical to reference
+=== [1] deploy --env qa --var DRY_RUN:false (09:31:05) ===
+    exit=0
+      - DRY_RUN: "(hidden)"
+    new version: 991799d3-3d2c-4a8f-aa06-e092cb63f3c5
+=== [2] fresh confirmation tail; must capture a request (09:31:10) ===
+    conf pid=32106  pre alive=yes
+    confirmation tail captured warm-1390 (served by 991799d3) at 09:31:20
+=== [3] STRICT gate: 5 x dry_run=false over >=20s, tail-confirmed on 991799d3, zero other-version requests seen by any tail (budget 180s from deploy) ===
+    gate-1-31015 09:31:22: dry_run=false served_by=991799d3 streak=1 (tail-confirmed 991799d3)
+    gate-2-11666 09:31:26: dry_run=false served_by=991799d3 streak=2 (tail-confirmed 991799d3)
+    gate-3-6301 09:31:30: dry_run=false served_by=991799d3 streak=3 (tail-confirmed 991799d3)
+    gate-4-17738 09:31:34: dry_run=false served_by=991799d3 streak=4 (tail-confirmed 991799d3)
+    gate-5-5901 09:31:39: dry_run=false served_by=991799d3 streak=5 (tail-confirmed 991799d3)
+    gate-6-12551 09:31:43: dry_run=false served_by=991799d3 streak=6 (tail-confirmed 991799d3)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 09:31:19
+    GATE PASSED (09:31:51, 41s after deploy). Worker LIVE; tails + watchdog + heartbeat stay on. Waiting for the next automatic sweep.
+--- gate.txt: PASSED
+09:31:51 guard start TG=1791192711604 NEW=991799d3 restarts=0/0/0 (stress, 4 orders)
+guard running pid 32597
+{"created_on":"2026-10-05T09:31:08.420024Z","versions":[{"version_id":"991799d3-3d2c-4a8f-aa06-e092cb63f3c5","percentage":100}]}
+["false"]
+["*/15 * * * *","20,50 * * * *"]
+Shopify + D1 unchanged, 0 webhooks at 09:31:59
+STRESS test armed at 09:31:59 UTC — READY FOR GO. planned fire: 09:44:50 UTC, 10s before the live */15 sweep at 09:45:00 UTC. First order must be seen within 1200s.

@@ -31,7 +31,9 @@ discrepancy. The previous briefing is kept in `docs/history/CLAUDE-2026-09-14.md
      used for production.
 8. **Report results as evidenced.** A5 was INCONCLUSIVE as a genuine concurrency proof: the
    Shopify connector serialised the supposedly parallel calls. Do not describe it as a
-   successful concurrency test (`docs/qa/concurrency-testing.md`).
+   successful concurrency test. The concurrency proof is S4 (PASS, 5 Oct 2026): one six-entry
+   competition, four concurrent completions, a correctness proof, not a load test
+   (`docs/qa/concurrency-testing.md`).
 
 ## Architecture (high level)
 
@@ -53,9 +55,11 @@ discrepancy. The previous briefing is kept in `docs/history/CLAUDE-2026-09-14.md
 ## Current state (high level; re-verify before relying on it)
 
 - Deployed: only the QA Worker `greenside-entry-allocator-qa` (DRY_RUN=true) and QA D1
-  `greenside_entries_qa`. Verified read-only on 2026-09-29.
+  `greenside_entries_qa`. Verified read-only on 2026-10-05 (`gs verify`).
 - The production allocator is not deployed, and its production D1 is not provisioned.
-- Genuine concurrency has not yet been proven; the next step uses the QA Stress Driver app.
+- Concurrency: **S4 PASS (5 Oct 2026, QA)**. Four concurrent Shopify completions → four PAID orders → four overlapping
+  allocating Worker executions → QAJ1001–QAJ1006 each allocated exactly once, integrity 0. Evidence:
+  `qa/b3-stress-harness/evidence/s4-2026-10-05-qaj/` (immutable). QA fixtures QAH, QAI, QAJ are spent; cleanup needs approval.
 - Launch readiness and open items: `docs/production-readiness.md`, `docs/open-items.md`.
 
 ## Branch and commit discipline
@@ -67,11 +71,18 @@ discrepancy. The previous briefing is kept in `docs/history/CLAUDE-2026-09-14.md
   live on different branches. Check the current branch and repository state before assuming
   where a change belongs.
 
+## Operating layer (read-only, verify first)
+
+`python3 tools/gs/gs.py verify` checks live state against `tools/gs/policy.json` (Workers, D1, both Shopify apps' scopes,
+webhooks); `status` and `d1 query "SELECT ..."` inspect it. `gs` cannot write. Capability matrix, gaps, safety contract for future
+write commands and recovery notes: `docs/operating-layer.md`. Run `gs verify` at the start of any operational session.
+
 ## Where things are
 
 | Need | Location |
 |---|---|
 | Documentation index | `docs/README.md` |
+| What Claude can see and do; `gs` commands; gaps | `docs/operating-layer.md` |
 | Allocator architecture | `docs/architecture/allocator.md` (+ the allocator README on its branch) |
 | Production readiness checklist | `docs/production-readiness.md` |
 | QA live-window procedure | `docs/runbooks/qa-live-window.md` |

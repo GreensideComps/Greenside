@@ -1,0 +1,492 @@
+#!/usr/bin/env python3
+"""B3 S4 fire script: exactly four concurrent draftOrderComplete calls for the QAI fixture (D28, D29, D30, D31).
+
+Modes
+  validate  read-only. Checks config, app identity, scopes, schema and the four drafts. Never builds or sends the mutation.
+  dry       validate, then the same four-thread barrier machinery using a READ-ONLY query (draftOrder id/name/status) per draft.
+  live      validate, then the live gates (QA Worker armed, production Worker absent, arming fresh), then the four mutations.
+            Refused unless --confirm carries the exact phrase. Needs explicit S4 approval. Never run without it.
+
+Usage  fire.py MODE [--out FILE] [--state-dir DIR] [--fire-at EPOCH_MS] [--confirm PHRASE]
+Exit   0 all requests succeeded | 2 refused before any request was sent | 3 requests sent, at least one did not complete
+
+Reads QA_STRESS_SHOPIFY_CLIENT_ID / QA_STRESS_SHOPIFY_CLIENT_SECRET (client-credentials grant, token in memory only) and, for the
+live gates, CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID (read-only GETs). Prints and writes no credential or token.
+See FIRE.md for the endpoint, scope, payload, concurrency and failure contract.
+"""
+import argparse, datetime, hashlib, http.client, json, os, ssl, sys, threading, time, urllib.parse
+
+# ---- fixed target: nothing below is configurable from the command line or environment -------------------------------------------
+SHOP = "7r5csb-1j.myshopify.com"          # QA and production share this store; QA separation is the fixture + the QA Worker
+API_VERSION = "2025-10"
+GRAPHQL_PATH = f"/admin/api/{API_VERSION}/graphql.json"
+TOKEN_PATH = "/admin/oauth/access_token"
+APP_NAME = "Greenside QA Stress Driver"
+REQUIRED_SCOPE = "write_draft_orders"
+ALLOWED_SCOPES = {"write_draft_orders", "read_draft_orders"}     # read_ is implied by write_ (S1 finding)
+CF_HOST = "api.cloudflare.com"
+QA_WORKER = "greenside-entry-allocator-qa"
+PROD_WORKER = "greenside-entry-allocator"
+CONFIRM_PHRASE = "FIRE-QAI-D28-D31-4-COMPLETIONS"
+FIXTURE = {
+    "competition_id": "15905304379766", "product_gid": "gid://shopify/Product/15905304379766", "prefix": "QAI",
+    "variant_gid": "gid://shopify/ProductVariant/58850638201206", "capacity": 6, "order_quantities": [1, 1, 2, 2],
+    "line_title": "QA — Allocator Stress Test B", "currency": "GBP", "unit_price": "1.00", "tags": ["QAI", "qa-stress"],
+    "drafts": [
+        {"name": "#D28", "id": "gid://shopify/DraftOrder/1613906051446", "qty": 1},
+        {"name": "#D29", "id": "gid://shopify/DraftOrder/1613906116982", "qty": 1},
+        {"name": "#D30", "id": "gid://shopify/DraftOrder/1613906149750", "qty": 2},
+        {"name": "#D31", "id": "gid://shopify/DraftOrder/1613906182518", "qty": 2},
+    ],
+}
+TARGET_IDS = [d["id"] for d in FIXTURE["drafts"]]
+N = len(TARGET_IDS)
+
+# ---- the only three GraphQL documents this script can send after the token exchange -------------------------------------------
+# Selection sets are limited to fields the Stress Driver (write_draft_orders only) can read; `order`, `variant` and `product` would
+# be ACCESS_DENIED for it. paymentPending is deprecated (default false) and deliberately omitted.
+MUTATION = ("mutation CompleteQaiDraft($id: ID!) { draftOrderComplete(id: $id) { draftOrder { id name status } "
+            "userErrors { field message } } }")
+PROBE = "query ProbeQaiDraft($id: ID!) { draftOrder(id: $id) { id name status } }"
+CHECK_DRAFT = ("query CheckQaiDraft($id: ID!) { draftOrder(id: $id) { id name status tags currencyCode totalPriceSet { shopMoney "
+               "{ amount currencyCode } } lineItems(first: 5) { nodes { quantity title } } } }")
+CHECK_APP = "{ shop { myshopifyDomain } currentAppInstallation { app { title } accessScopes { handle } } }"
+CHECK_SCHEMA = ('{ m: __type(name: "Mutation") { fields { name args(includeDeprecated: true) { name type { kind name ofType { name } } } '
+                'type { name } } } p: __type(name: "DraftOrderCompletePayload") { fields { name } } }')
+CHECK_LIST = "{ draftOrders(first: 10, sortKey: ID, reverse: true) { nodes { id name status tags } } }"
+ALLOWED_DOCUMENTS = {MUTATION, PROBE, CHECK_DRAFT, CHECK_APP, CHECK_SCHEMA, CHECK_LIST}
+
+MAX_FIRE_AHEAD_MS = 30 * 60 * 1000
+ARMING_MAX_AGE_S = 1200          # goliveb/guard deadline: no order within 1200 s of arming
+REQUEST_TIMEOUT_S = 60
+BARRIER_TIMEOUT_S = 15
+
+
+class Refused(Exception):
+    """Raised before any mutation or probe request is sent."""
+
+
+# ---- transports (host is fixed per class; there is no host parameter anywhere) -------------------------------------------------
+class _Conn:
+    def __init__(self, raw):
+        self.raw = raw
+
+    def is_open(self):
+        return getattr(self.raw, "sock", None) is not None
+
+    def request(self, method, path, body, headers):
+        self.raw.request(method, path, body, headers)
+        r = self.raw.getresponse()
+        return r.status, {k.lower(): v for k, v in r.getheaders()}, r.read()
+
+    def send_phase(self, method, path, body, headers):
+        """Split form used by fire(): (send, receive_headers, read_body) so each phase can be timestamped."""
+        self.raw.request(method, path, body, headers)
+        return lambda: self.raw.getresponse()
+
+    def close(self):
+        try:
+            self.raw.close()
+        except Exception:
+            pass
+
+
+class _ProxyTransport:
+    HOST = None
+
+    def open(self):
+        px = urllib.parse.urlparse(os.environ["HTTPS_PROXY"])
+        ca = "/root/.ccr/ca-bundle.crt"
+        ctx = ssl.create_default_context(cafile=ca if os.path.exists(ca) else None)
+        hdr = {}
+        if px.username:
+            import base64
+            cred = f"{urllib.parse.unquote(px.username)}:{urllib.parse.unquote(px.password or '')}".encode()
+            hdr["Proxy-Authorization"] = "Basic " + base64.b64encode(cred).decode()
+        c = http.client.HTTPSConnection(px.hostname, px.port, context=ctx, timeout=REQUEST_TIMEOUT_S)
+        c.set_tunnel(self.HOST, 443, headers=hdr)
+        c.connect()
+        return _Conn(c)
+
+
+class ShopifyTransport(_ProxyTransport):
+    HOST = SHOP
+
+
+class CloudflareTransport(_ProxyTransport):
+    HOST = CF_HOST
+
+
+# ---- helpers ------------------------------------------------------------------------------------------------------------------
+def iso(ns):
+    return datetime.datetime.fromtimestamp(ns / 1e9, datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+class Session:
+    """One Shopify access token, held in memory only."""
+
+    def __init__(self, tx, env):
+        self.tx, self.token, self.scope, self.secrets = tx, None, None, []
+        cid, sec = env.get("QA_STRESS_SHOPIFY_CLIENT_ID"), env.get("QA_STRESS_SHOPIFY_CLIENT_SECRET")
+        if not cid or not sec:
+            raise Refused("QA_STRESS_SHOPIFY_CLIENT_ID / QA_STRESS_SHOPIFY_CLIENT_SECRET not set")
+        self.secrets += [cid, sec]
+        c = tx.open()
+        try:
+            st, _, raw = c.request("POST", TOKEN_PATH, urllib.parse.urlencode(
+                {"client_id": cid, "client_secret": sec, "grant_type": "client_credentials"}),
+                {"Content-Type": "application/x-www-form-urlencoded"})
+        finally:
+            c.close()
+        try:
+            j = json.loads(raw)
+        except Exception:
+            raise Refused(f"token exchange returned HTTP {st} with a non-JSON body")
+        if st != 200 or not j.get("access_token"):
+            raise Refused(f"token exchange failed: HTTP {st}")
+        self.token, self.scope = j["access_token"], j.get("scope")
+        self.secrets.append(self.token)
+
+    def headers(self):
+        return {"Content-Type": "application/json", "X-Shopify-Access-Token": self.token}
+
+    def body(self, document, variables=None):
+        if document not in ALLOWED_DOCUMENTS:
+            raise Refused("document not in the allow-list")
+        d = {"query": document}
+        if variables is not None:
+            d["variables"] = variables
+        return json.dumps(d)
+
+    def read(self, document, variables=None):
+        """Read-only query on a short-lived connection. Never accepts MUTATION."""
+        if document == MUTATION:
+            raise Refused("read() cannot send the mutation")
+        c = self.tx.open()
+        try:
+            st, _, raw = c.request("POST", GRAPHQL_PATH, self.body(document, variables), self.headers())
+        finally:
+            c.close()
+        try:
+            return st, json.loads(raw)
+        except Exception:
+            return st, {"errors": [{"message": "non-JSON response"}]}
+
+
+def complete_body(draft_id):
+    """The one and only mutation payload. The id must be one of the four fixture drafts."""
+    if draft_id not in TARGET_IDS:
+        raise Refused(f"{draft_id} is not one of the four QAI fixture drafts")
+    return json.dumps({"query": MUTATION, "variables": {"id": draft_id}})
+
+
+# ---- preconditions (read-only; everything the Stress Driver can see) ----------------------------------------------------------
+def check_config(state_dir):
+    fails = []
+    try:
+        cfg = json.load(open(os.path.join(state_dir, "stress.json")))
+    except Exception as e:
+        return [f"stress.json unreadable: {type(e).__name__}"]
+    for k in ("competition_id", "product_gid", "prefix", "variant_gid", "capacity", "order_quantities"):
+        if cfg.get(k) != FIXTURE[k]:
+            fails.append(f"stress.json {k} = {cfg.get(k)!r}, expected {FIXTURE[k]!r}")
+    if cfg.get("draft_orders") != FIXTURE["drafts"]:
+        fails.append("stress.json draft_orders differ from the four expected drafts")
+    if sum(FIXTURE["order_quantities"]) != FIXTURE["capacity"]:
+        fails.append("fixture quantities do not sum to capacity")
+    return fails
+
+
+def check_shopify(sess):
+    fails = []
+    if set(str(sess.scope or "").replace(",", " ").split()) != {REQUIRED_SCOPE}:
+        fails.append(f"token scope is {sess.scope!r}, expected exactly {REQUIRED_SCOPE}")
+    st, d = sess.read(CHECK_APP)
+    a = (d.get("data") or {}).get("currentAppInstallation") or {}
+    if d.get("errors") or st != 200:
+        fails.append(f"app query failed: HTTP {st}")
+    if ((d.get("data") or {}).get("shop") or {}).get("myshopifyDomain") != SHOP:
+        fails.append("shop is not " + SHOP)
+    if (a.get("app") or {}).get("title") != APP_NAME:
+        fails.append(f"app is {(a.get('app') or {}).get('title')!r}, expected {APP_NAME!r}")
+    scopes = {s["handle"] for s in a.get("accessScopes") or []}
+    if REQUIRED_SCOPE not in scopes or not scopes <= ALLOWED_SCOPES:
+        fails.append(f"effective scopes {sorted(scopes)} not within {sorted(ALLOWED_SCOPES)}")
+    st, d = sess.read(CHECK_SCHEMA)
+    fs = {f["name"]: f for f in ((d.get("data") or {}).get("m") or {}).get("fields") or []}
+    f = fs.get("draftOrderComplete")
+    args = {x["name"]: x for x in (f or {}).get("args") or []}
+    idt = (args.get("id") or {}).get("type") or {}
+    if not f or "id" not in args or idt.get("kind") != "NON_NULL" or (idt.get("ofType") or {}).get("name") != "ID" \
+            or not set(args) <= {"id", "paymentPending", "paymentGatewayId", "sourceName"}:
+        fails.append(f"draftOrderComplete signature unexpected: {sorted(args)}")
+    if {"draftOrder", "userErrors"} - {x["name"] for x in ((d.get("data") or {}).get("p") or {}).get("fields") or []}:
+        fails.append("DraftOrderCompletePayload lacks draftOrder/userErrors")
+    for dr in FIXTURE["drafts"]:
+        st, d = sess.read(CHECK_DRAFT, {"id": dr["id"]})
+        o = (d.get("data") or {}).get("draftOrder")
+        if d.get("errors") or not o:
+            fails.append(f"{dr['name']}: unreadable (HTTP {st}, {[e.get('message') for e in d.get('errors') or []][:1]})")
+            continue
+        li = (o.get("lineItems") or {}).get("nodes") or []
+        m = (o.get("totalPriceSet") or {}).get("shopMoney") or {}
+        want = f"{dr['qty'] * 1:.2f}"
+        bad = [n for n, ok in (
+            ("id", o.get("id") == dr["id"]), ("name", o.get("name") == dr["name"]), ("status", o.get("status") == "OPEN"),
+            ("tags", sorted(o.get("tags") or []) == FIXTURE["tags"]),
+            ("lines", len(li) == 1 and li[0].get("quantity") == dr["qty"] and li[0].get("title") == FIXTURE["line_title"]),
+            ("currency", o.get("currencyCode") == FIXTURE["currency"] and m.get("currencyCode") == FIXTURE["currency"]),
+            ("total", m.get("amount") is not None and abs(float(m["amount"]) - float(want)) < 0.005)) if not ok]
+        if bad:
+            fails.append(f"{dr['name']}: mismatch in {bad}")
+    st, d = sess.read(CHECK_LIST)
+    nodes = ((d.get("data") or {}).get("draftOrders") or {}).get("nodes") or []
+    qai = [n for n in nodes if "QAI" in (n.get("tags") or [])]
+    if sorted(n["id"] for n in qai) != sorted(TARGET_IDS) or any(n.get("status") != "OPEN" for n in qai):
+        fails.append("QAI-tagged drafts among the latest 10 are not exactly the four OPEN fixture drafts")
+    return fails
+
+
+def cf_json(cf, path, token):
+    c = cf.open()
+    try:
+        st, _, raw = c.request("GET", path, None, {"Authorization": "Bearer " + token})
+    finally:
+        c.close()
+    try:
+        return st, json.loads(raw)
+    except Exception:
+        return st, {}
+
+
+def check_live_gates(cf, env, state_dir, now_s):
+    """Everything that must hold only at the moment of the live fire. Read-only GETs plus local state files."""
+    fails = []
+    acct = env.get("CLOUDFLARE_ACCOUNT_ID")
+    if not acct or not env.get("CLOUDFLARE_API_TOKEN"):
+        return ["CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN not set, cannot verify the Worker"]
+    base, tok = f"/client/v4/accounts/{acct}/workers/scripts", env["CLOUDFLARE_API_TOKEN"]
+    st, d = cf_json(cf, f"{base}/{PROD_WORKER}/settings", tok)
+    if st != 404 and not (st == 200 and d.get("success") is False):
+        fails.append(f"production Worker {PROD_WORKER} is present or unverifiable (HTTP {st}); refusing")
+    st, d = cf_json(cf, f"{base}/{QA_WORKER}/deployments", tok)
+    dep = ((d.get("result") or {}).get("deployments") or [{}])[0].get("versions") or []
+    st2, s = cf_json(cf, f"{base}/{QA_WORKER}/settings", tok)
+    dry = [b.get("text") for b in (s.get("result") or {}).get("bindings", []) if b.get("name") == "DRY_RUN"]
+    if dry != ["false"]:
+        fails.append(f"QA Worker DRY_RUN is {dry}, expected ['false'] (gate not passed)")
+
+    def rd(name):
+        try:
+            return open(os.path.join(state_dir, name)).read().strip()
+        except OSError:
+            return None
+    newver, gate, armed = rd("newver.txt"), rd("gate.txt"), rd("qag-start")
+    if gate != "PASSED":
+        fails.append(f"gate.txt is {gate!r}, expected PASSED")
+    if len(dep) != 1 or dep[0].get("percentage") != 100 or not newver or dep[0].get("version_id") != newver:
+        fails.append("QA Worker is not on the single 100% gate-passed version")
+    try:
+        age = now_s - int(armed) / 1000
+        if not 0 <= age <= ARMING_MAX_AGE_S:
+            fails.append(f"arming is {age:.0f}s old (must be 0..{ARMING_MAX_AGE_S}s)")
+    except (TypeError, ValueError):
+        fails.append("qag-start (arming time) missing")
+    pid = rd("guard.pid")
+    try:
+        os.kill(int(pid), 0)
+    except (TypeError, ValueError, OSError):
+        fails.append("guard.sh is not running")
+    if os.path.exists(os.path.join(state_dir, "manual-stop")):
+        fails.append("manual-stop present")
+    return fails
+
+
+# ---- the concurrent fire ------------------------------------------------------------------------------------------------------
+def fire(tx, sess, mode, fire_at_ms=None, marker=None, clock_ns=time.perf_counter_ns, wall_ns=time.time_ns):
+    """Opens N connections, then releases N worker threads plus this thread from one barrier. No retries, no second attempt."""
+    conns = [tx.open() for _ in range(N)]
+    if not all(c.is_open() for c in conns):
+        for c in conns:
+            c.close()
+        raise Refused("not all connections are open before the barrier; nothing sent")
+    if mode == "live":
+        bodies = [complete_body(i) for i in TARGET_IDS]
+    else:
+        bodies = [sess.body(PROBE, {"id": i}) for i in TARGET_IDS]
+    hdr = sess.headers()
+    barrier = threading.Barrier(N + 1)
+    recs = [None] * N
+
+    def worker(i):
+        rec = {"n": i + 1, "target_id": TARGET_IDS[i], "name": FIXTURE["drafts"][i]["name"], "qty": FIXTURE["drafts"][i]["qty"],
+               "operation": "draftOrderComplete" if mode == "live" else "draftOrder(read)", "result": "NOT_SENT"}
+        recs[i] = rec
+        try:
+            barrier.wait(timeout=BARRIER_TIMEOUT_S if fire_at_ms is None else MAX_FIRE_AHEAD_MS / 1000 + BARRIER_TIMEOUT_S)
+        except threading.BrokenBarrierError:
+            return
+        rec["t_release_ns"] = clock_ns()
+        rec["release_utc"] = iso(wall_ns())
+        try:
+            rec["t_send_ns"] = clock_ns()
+            recv = conns[i].send_phase("POST", GRAPHQL_PATH, bodies[i], hdr)
+            rec["t_sent_ns"] = clock_ns()
+            resp = recv()
+            rec["t_headers_ns"] = clock_ns()
+            raw = resp.read()
+            rec["t_done_ns"] = clock_ns()
+        except Exception as e:                                  # includes timeouts: outcome unknown, never retried
+            rec["t_done_ns"] = clock_ns()
+            rec["result"], rec["error"] = "UNKNOWN", type(e).__name__
+            return
+        rec["http_status"] = resp.status
+        rec["request_id"] = resp.getheader("x-request-id")
+        try:
+            d = json.loads(raw)
+        except Exception:
+            d = {}
+            rec["error"] = "non-JSON response"
+        rec["throttle"] = ((d.get("extensions") or {}).get("cost") or {}).get("throttleStatus")
+        rec["graphql_errors"] = [e.get("message") for e in d.get("errors") or []]
+        data = d.get("data") or {}
+        if mode == "live":
+            p = data.get("draftOrderComplete") or {}
+            rec["user_errors"] = p.get("userErrors") or []
+            dr = p.get("draftOrder") or {}
+            ok_status = "COMPLETED"
+        else:
+            rec["user_errors"], dr, ok_status = [], data.get("draftOrder") or {}, "OPEN"
+        rec["draft_status_after"] = dr.get("status")
+        good = (resp.status == 200 and not rec["graphql_errors"] and not rec["user_errors"]
+                and dr.get("id") == TARGET_IDS[i] and dr.get("status") == ok_status)
+        rec["result"] = ("COMPLETED" if mode == "live" else "READ_OK") if good else "ERROR"
+
+    threads = [threading.Thread(target=worker, args=(i,), name=f"fire-{i + 1}") for i in range(N)]
+    [t.start() for t in threads]
+    try:
+        if fire_at_ms is not None:
+            while True:
+                left = fire_at_ms / 1000 - time.time()
+                if left <= 0:
+                    break
+                time.sleep(min(left, 0.5) if left > 0.05 else 0)
+        if marker:                                              # written just before the release: a second live run is refused
+            fd = os.open(marker, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            os.write(fd, iso(wall_ns()).encode())
+            os.close(fd)
+        t_main = clock_ns()
+        barrier.wait(timeout=BARRIER_TIMEOUT_S)
+    except BaseException:
+        barrier.abort()
+        [t.join() for t in threads]
+        for c in conns:
+            c.close()
+        raise
+    [t.join() for t in threads]
+    for c in conns:
+        c.close()
+    return recs, t_main
+
+
+def analyse(recs):
+    iv = [(r["t_send_ns"], r["t_done_ns"]) for r in recs if "t_send_ns" in r and "t_done_ns" in r]
+    ev = sorted([(s, 1) for s, _ in iv] + [(e, -1) for _, e in iv], key=lambda x: (x[0], x[1]))
+    cur = peak = 0
+    for _, dl in ev:
+        cur += dl
+        peak = max(peak, cur)
+    all_overlap = len(iv) == N and max(s for s, _ in iv) < min(e for _, e in iv)
+    return {"requests_sent": len(iv), "peak_in_flight": peak, "all_four_overlap": all_overlap,
+            "genuine_overlap": peak >= 2,
+            "start_spread_ms": round((max(s for s, _ in iv) - min(s for s, _ in iv)) / 1e6, 3) if iv else None,
+            "latest_send_to_earliest_done_ms": round((min(e for _, e in iv) - max(s for s, _ in iv)) / 1e6, 3) if iv else None}
+
+
+def render(recs, t_main):
+    out = []
+    for r in recs:
+        o = dict(r)
+        base = t_main
+        for k in ("t_release_ns", "t_send_ns", "t_sent_ns", "t_headers_ns", "t_done_ns"):
+            if k in o:
+                o[k.replace("_ns", "_ms_after_main_release")] = round((o.pop(k) - base) / 1e6, 3)
+        if "t_send_ms_after_main_release" in o and "t_done_ms_after_main_release" in o:
+            o["duration_ms"] = round(o["t_done_ms_after_main_release"] - o["t_send_ms_after_main_release"], 3)
+        out.append(o)
+    return out
+
+
+# ---- entry point --------------------------------------------------------------------------------------------------------------
+def main(argv=None, env=None, tx=None, cf=None, out=None, now=time.time):
+    env = os.environ if env is None else env
+    out = out or sys.stdout
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("mode", choices=["validate", "dry", "live"])
+    ap.add_argument("--out")
+    ap.add_argument("--state-dir", default=os.path.dirname(os.path.abspath(__file__)))
+    ap.add_argument("--fire-at", type=int, help="epoch milliseconds at which the barrier is released")
+    ap.add_argument("--confirm", default="")
+    a = ap.parse_args(argv)
+    P = lambda *s: print(*s, file=out)
+    tx = tx or ShopifyTransport()
+    cf = cf or CloudflareTransport()
+    sess = None
+    try:
+        if a.mode == "live":
+            if a.confirm != CONFIRM_PHRASE:
+                raise Refused("live mode needs --confirm with the exact S4 phrase (explicit S4 approval)")
+            if os.path.exists(os.path.join(a.state_dir, f"fire-{FIXTURE['competition_id']}.done")):
+                raise Refused("a live fire was already attempted for this fixture (fire-*.done exists); no automatic re-run")
+            if a.fire_at is not None and not (-2000 <= a.fire_at - now() * 1000 <= MAX_FIRE_AHEAD_MS):
+                raise Refused("--fire-at must be within [-2 s, +30 min] of now")
+        elif a.fire_at is not None and not (-2000 <= a.fire_at - now() * 1000 <= MAX_FIRE_AHEAD_MS):
+            raise Refused("--fire-at must be within [-2 s, +30 min] of now")
+        fails = check_config(a.state_dir)
+        if fails:
+            raise Refused("; ".join(fails))
+        sess = Session(tx, env)
+        fails = check_shopify(sess)
+        gates = check_live_gates(cf, env, a.state_dir, now()) if (a.mode == "live" or env.get("CLOUDFLARE_API_TOKEN")) else ["not evaluated (no Cloudflare credentials)"]
+        if fails:
+            raise Refused("; ".join(fails))
+        P(f"preconditions: PASS (shop {SHOP}, app {APP_NAME}, 4 drafts OPEN qty 1,1,2,2)")
+        if a.mode == "live" and gates:
+            raise Refused("live gates: " + "; ".join(gates))
+        if a.mode == "validate":
+            P("live gates now (informational): " + ("PASS" if not gates else "; ".join(gates)))
+            P("VALIDATE OK: no mutation built or sent")
+            return 0
+        recs, t_main = fire(tx, sess, a.mode, a.fire_at, os.path.join(a.state_dir, f"fire-{FIXTURE['competition_id']}.done") if a.mode == "live" else None)
+    except Refused as e:
+        P(f"REFUSED (nothing sent): {e}")
+        return 2
+    except threading.BrokenBarrierError:
+        P("ABORTED at the barrier (nothing sent)")
+        return 2
+    ev = {"script_sha256": hashlib.sha256(open(__file__, "rb").read()).hexdigest(), "mode": a.mode, "shop": SHOP,
+          "endpoint": f"https://{SHOP}{GRAPHQL_PATH}", "app": APP_NAME, "document": MUTATION if a.mode == "live" else PROBE,
+          "fixture": {k: FIXTURE[k] for k in ("competition_id", "prefix", "product_gid", "variant_gid")},
+          "live_gates_at_start": gates, "requests": render(recs, t_main), "overlap": analyse(recs)}
+    blob = json.dumps(ev, indent=1, sort_keys=True)
+    if any(s and s in blob for s in sess.secrets):
+        raise SystemExit("BUG: a credential appeared in the evidence; not written")
+    if a.out:
+        with open(a.out, "w") as f:
+            f.write(blob)
+    P("n | target | qty | send ms | done ms | dur ms | HTTP | request id | result")
+    for r in ev["requests"]:
+        P(f"{r['n']} | {r['name']} {r['target_id'].split('/')[-1]} | {r['qty']} | {r.get('t_send_ms_after_main_release')} | "
+          f"{r.get('t_done_ms_after_main_release')} | {r.get('duration_ms')} | {r.get('http_status')} | {r.get('request_id')} | {r['result']}"
+          + (f" errors={r.get('graphql_errors')} user_errors={r.get('user_errors')} exc={r.get('error')}" if r["result"] not in ("COMPLETED", "READ_OK") else ""))
+    P("overlap: " + json.dumps(ev["overlap"]))
+    ok_word = "COMPLETED" if a.mode == "live" else "READ_OK"
+    if all(r["result"] == ok_word for r in ev["requests"]):
+        P(f"FIRE {a.mode.upper()} OK: 4/4 {ok_word}")
+        return 0
+    P("FIRE INCOMPLETE: at least one request did not succeed. DO NOT RE-RUN. Inspect Shopify and D1 before any decision.")
+    return 3
+
+
+if __name__ == "__main__":
+    sys.exit(main())

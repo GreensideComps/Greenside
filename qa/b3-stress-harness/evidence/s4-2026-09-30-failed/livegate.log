@@ -1,0 +1,9 @@
+    gate-1-10560 10:31:12: dry_run=false served_by=ad67fcf2 streak=1 (tail-confirmed ad67fcf2)
+    gate-2-29868 10:31:17: dry_run=false served_by=ad67fcf2 streak=2 (tail-confirmed ad67fcf2)
+    gate-3-25461 10:31:21: dry_run=false served_by=ad67fcf2 streak=3 (tail-confirmed ad67fcf2)
+    gate-4-21008 10:31:25: dry_run=false served_by=ad67fcf2 streak=4 (tail-confirmed ad67fcf2)
+    gate-5-13820 10:31:30: dry_run=false served_by=ad67fcf2 streak=5 (tail-confirmed ad67fcf2)
+    gate-6-7104 10:31:34: dry_run=false served_by=ad67fcf2 streak=6 (tail-confirmed ad67fcf2)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 10:31:09
+PASSED
