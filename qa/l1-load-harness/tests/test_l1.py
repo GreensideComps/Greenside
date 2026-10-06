@@ -3,6 +3,7 @@
 from the allocator's own migrations (git show e917bb5). Test names carry the requirement number (R01..R38) they prove.
 Run: python3 -m unittest -v test_l1   (from this directory)  or  ../run-tests.sh"""
 import contextlib, hashlib, io, json, os, random, shutil, sqlite3, subprocess, sys, tempfile, unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 L1 = os.path.abspath(os.path.join(HERE, "..", "l1"))
@@ -864,8 +865,8 @@ class StageCanaryTests(unittest.TestCase):
         state = {"existing": [{"id": "gid://shopify/DraftOrder/1"}], "n": 0}
 
         def h(body):
-            if "draftOrders(first" in body["query"]:
-                return 200, {}, {"data": {"draftOrders": {"nodes": state["existing"]}}}
+            if "qaload:" in body["query"]:
+                return 200, {}, {"data": {"qal": {"nodes": state["existing"]}, "qaload": {"nodes": []}}}
             state["n"] += 1
             inp = body["variables"]["input"]
             return 200, {"x-request-id": f"q{state['n']}"}, {"data": {"draftOrderCreate": {"draftOrder": {
@@ -888,8 +889,8 @@ class StageCanaryTests(unittest.TestCase):
         n = {"k": 0}
 
         def h(body):
-            if "draftOrders(first" in body["query"]:
-                return 200, {}, {"data": {"draftOrders": {"nodes": []}}}
+            if "qaload:" in body["query"]:
+                return 200, {}, {"data": {"qal": {"nodes": []}, "qaload": {"nodes": []}}}
             n["k"] += 1
             if n["k"] == 3:
                 return 200, {"x-request-id": "e"}, {"data": {"draftOrderCreate": {"draftOrder": None, "userErrors": [{"message": "x"}]}}}
@@ -914,16 +915,22 @@ class StageCanaryTests(unittest.TestCase):
                         "status": "OPEN", "totalPriceSet": {"shopMoney": {"amount": "0.0"}}}, "userErrors": []}}}
             return 200, {"x-request-id": "c2"}, {"data": {"draftOrderComplete": {"draftOrder": {"status": "COMPLETED"}, "userErrors": []}}}
         c = shop.Client("stress_driver", {stage.DRAFT_CREATE, load.MUTATION}, ENV, FakeTx(h, "write_draft_orders"))
+        # now that the Stage 2 canary exists, any further canary run is refused before anything is sent
         with self.assertRaises(Refused):
-            canary.run_canary(good_canary(), [], L1_CID, c, lambda: "true", d, "no", FakeClock())
-        with self.assertRaises(Refused):                # registered in D1
-            canary.run_canary(good_canary(), ["888000111"], L1_CID, c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
-        with self.assertRaises(Refused):                # is the L1 competition
-            canary.run_canary(good_canary(), [], "888000111", c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
-        with self.assertRaises(Refused):                # QA Worker live
-            canary.run_canary(good_canary(), [], L1_CID, c, lambda: "false", d, CONFIRM_CANARY, FakeClock())
+            canary.run_canary(good_canary(), [], L1_CID, c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
         self.assertEqual(sent, [])
-        r = canary.run_canary(good_canary(), [], L1_CID, c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
+        # the original single-run gates, each exercised on its own (as they stood before Stage 2)
+        with mock.patch.dict(common.KNOWN_CANARY, {"order_gid": None}):
+            with self.assertRaises(Refused):
+                canary.run_canary(good_canary(), [], L1_CID, c, lambda: "true", d, "no", FakeClock())
+            with self.assertRaises(Refused):                # registered in D1
+                canary.run_canary(good_canary(), ["888000111"], L1_CID, c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
+            with self.assertRaises(Refused):                # is the L1 competition
+                canary.run_canary(good_canary(), [], "888000111", c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
+            with self.assertRaises(Refused):                # QA Worker live
+                canary.run_canary(good_canary(), [], L1_CID, c, lambda: "false", d, CONFIRM_CANARY, FakeClock())
+            self.assertEqual(sent, [])
+            r = canary.run_canary(good_canary(), [], L1_CID, c, lambda: "true", d, CONFIRM_CANARY, FakeClock())
         self.assertEqual(r["result"], "COMPLETED")
         self.assertEqual(len(sent), 2)
         inp = canary.canary_input("v")
@@ -1191,6 +1198,150 @@ class ReconTests(unittest.TestCase):
             self.assertTrue(ok, f"{name}: {why}")
         with self.assertRaises(ValueError):
             loadrecon.render("SELECT :cid", {"cid": "1' OR '1"})
+
+
+# =================================================================================================================================
+CANARY_DRAFT = {"id": "gid://shopify/DraftOrder/1614955151734", "name": "#D36", "status": "COMPLETED", "tags": ["qa-load", "QAL-CANARY"]}
+
+
+def canary_order(gid="gid://shopify/Order/13599260639606", name="#1029", tags=("qa-load", "QAL-CANARY")):
+    return {"id": gid, "name": name, "test": False, "cancelledAt": None, "displayFinancialStatus": "PAID", "tags": list(tags),
+            "totalPriceSet": {"shopMoney": {"amount": "0.0"}}, "totalTaxSet": {"shopMoney": {"amount": "0.0"}},
+            "lineItems": {"nodes": [{"id": "gid://shopify/LineItem/1", "quantity": 1, "product": {"id": "gid://shopify/Product/15916653642102"}}]}}
+
+
+def listing_handler(qal, qaload, created=None):
+    """Fake Stress Driver: the two-list draft precheck, then draftOrderCreate."""
+    n = {"k": 0}
+
+    def h(body):
+        if "qaload:" in body["query"]:
+            return 200, {}, {"data": {"qal": {"nodes": list(qal)}, "qaload": {"nodes": list(qaload)}}}
+        n["k"] += 1
+        if created is not None:
+            created.append(body)
+        return 200, {"x-request-id": f"q{n['k']}"}, {"data": {"draftOrderCreate": {"draftOrder": {
+            "id": f"gid://shopify/DraftOrder/{77000 + n['k']}", "name": f"#D{n['k']}", "status": "OPEN",
+            "tags": body["variables"]["input"]["tags"], "totalPriceSet": {"shopMoney": {"amount": "0.0"}}}, "userErrors": []}}}
+    return h
+
+
+class CanaryExclusionTests(unittest.TestCase):
+    """Stage 2 follow-up (6 Oct 2026): the known canary (draft 1614955151734, order 13599260639606 / #1029) is excluded by exact ID."""
+
+    def test_C00_single_explicit_record(self):
+        self.assertEqual(common.KNOWN_CANARY["draft_gid"], "gid://shopify/DraftOrder/1614955151734")
+        self.assertEqual(common.KNOWN_CANARY["order_gid"], "gid://shopify/Order/13599260639606")
+        # exact GID only: no tag, name, bare number or prefix matches
+        for x in ("QAL-CANARY", "qa-load", "#1029", "13599260639606", "gid://shopify/Order/135992606396", None,
+                  "gid://shopify/Order/13599260639606 ", "gid://shopify/DraftOrder/13599260639606"):
+            self.assertFalse(common.is_known_canary_order(x), x)
+        for x in ("QAL-CANARY", "#D36", "1614955151734", "gid://shopify/Order/1614955151734", None):
+            self.assertFalse(common.is_known_canary_draft(x), x)
+
+    def test_C01_canary_does_not_block_staging(self):
+        d = tmpdir()
+        c = shop.Client("stress_driver", {stage.DRAFT_CREATE, stage.LIST_QAL}, ENV,
+                        FakeTx(listing_handler([CANARY_DRAFT], [CANARY_DRAFT]), "write_draft_orders"))
+        r = stage.stage(plan_template(), good_product(), c, FakeClock(), d, True, CONFIRM_STAGE)
+        self.assertEqual((r["status"], r["created"]), ("COMPLETE", 750))
+        shutil.rmtree(d)
+
+    def test_C01b_unexpected_drafts_still_refuse_staging(self):
+        others = [
+            ([CANARY_DRAFT, {"id": "gid://shopify/DraftOrder/9", "name": "#D99", "tags": ["QAL"]}], [CANARY_DRAFT]),     # extra QAL
+            ([CANARY_DRAFT], [CANARY_DRAFT, {"id": "gid://shopify/DraftOrder/8", "name": "#D98", "tags": ["qa-load"]}]),  # extra qa-load
+            ([{"id": "gid://shopify/DraftOrder/7", "name": "#D97", "tags": ["qa-load", "QAL-CANARY"]}], []),              # second canary
+        ]
+        for qal, qaload in others:
+            d = tmpdir()
+            created = []
+            c = shop.Client("stress_driver", {stage.DRAFT_CREATE, stage.LIST_QAL}, ENV,
+                            FakeTx(listing_handler(qal, qaload, created), "write_draft_orders"))
+            with self.assertRaises(Refused):
+                stage.stage(plan_template(), good_product(), c, FakeClock(), d, True, CONFIRM_STAGE)
+            self.assertEqual(created, [], "a draft was created despite an unexpected existing draft")
+            shutil.rmtree(d)
+        with self.assertRaises(Refused):             # a failed listing is never read as "no drafts"
+            stage.existing_load_drafts(200, {"data": {"qal": {"nodes": []}}})
+
+    def test_C02_canary_excluded_from_reconciliation_population(self):
+        w = World750()
+        inp = w.inputs()
+        inp["orders"].append(canary_order())
+        inp["drafts"].append({"id": CANARY_DRAFT["id"], "status": "COMPLETED"})
+        r = loadrecon.reconcile(inp)
+        self.assertEqual(failed(r), [])
+        self.assertEqual(r["excluded_known_canary"], ["gid://shopify/Order/13599260639606"])
+        bind, probs = shopsnapl.check(inp["orders"], w.plan)
+        self.assertEqual((len(bind), probs), (750, []))
+
+    def test_C03_other_non_plan_order_still_fails(self):
+        w = World750()
+        for extra in (canary_order(gid="gid://shopify/Order/13599260639607", name="#1030", tags=("qa-load",)),
+                      canary_order(gid="gid://shopify/Order/1", name="#1029")):           # same name, different id: not excluded
+            inp = w.inputs()
+            inp["orders"] += [canary_order(), extra]
+            r = loadrecon.reconcile(inp)
+            self.assertIn("shopify.orders_bind_to_plan", failed(r))
+            self.assertEqual(r["result"], "FAIL")
+            _, probs = shopsnapl.check(inp["orders"], w.plan)
+            self.assertTrue(probs)
+
+    def test_C04_second_canary_like_order_not_ignored(self):
+        w = World750()
+        inp = w.inputs()
+        inp["orders"] += [canary_order(), canary_order(gid="gid://shopify/Order/13599260640000", name="#1031")]
+        r = loadrecon.reconcile(inp)
+        self.assertIn("shopify.orders_bind_to_plan", failed(r))
+        self.assertEqual(r["excluded_known_canary"], ["gid://shopify/Order/13599260639606"])
+        _, probs = shopsnapl.check(inp["orders"], w.plan)
+        self.assertEqual(len(probs), 1)
+        inp = w.inputs()                              # a second canary-like DRAFT is an unexpected draft
+        inp["drafts"] += [{"id": CANARY_DRAFT["id"], "status": "COMPLETED"}, {"id": "gid://shopify/DraftOrder/7", "status": "COMPLETED"}]
+        self.assertIn("shopify.no_unexpected_drafts", failed(loadrecon.reconcile(inp)))
+        with self.assertRaises(Refused):              # and canary.py refuses to create a second canary
+            canary.run_canary(good_canary(), [], L1_CID, None, lambda: "true", tmpdir(), CONFIRM_CANARY, FakeClock())
+
+    def test_C05_expected_population_stays_750(self):
+        w = World750()
+        inp = w.inputs()
+        inp["orders"].append(canary_order())
+        r = loadrecon.reconcile(inp)
+        self.assertEqual((r["expected_orders"], r["expected_units"]), (750, 1650))
+        self.assertEqual(r["stage_counts"]["shopify_orders"], 750)
+        self.assertEqual(len(plan_template()["rows"]), 750)
+        self.assertNotIn(common.KNOWN_CANARY["draft_gid"], {x["draft_id"] for x in bound_plan()["rows"]})
+
+    def test_C06_canary_cannot_contribute_to_qal_counts(self):
+        w = World750()
+        w._alloc(L1_CID, "13599260639606", "#1029", "1", 1, "QAL", [2651], "2026-10-06T14:00:00.000Z")
+        inp = w.inputs()
+        inp["orders"].append(canary_order())
+        r = loadrecon.reconcile(inp)
+        for c in ("d1.known_canary_has_no_allocation", "d1.pool_counts", "d1.allocation_set_equals_orders",
+                  "events.count_equals_units"):
+            self.assertIn(c, failed(r))
+        sq = w.sql()
+        self.assertEqual(sq["allocation_count"], "FAIL")
+        self.assertEqual(sq["units_sum"], "FAIL")
+        # a canary carrying a plan tag is still excluded, so it can never stand in for a plan order
+        w2 = World750()
+        inp2 = w2.inputs()
+        planted = canary_order(tags=("qa-load", "QAL", w2.rows[0]["tag"]))
+        inp2["orders"] = [o for o in inp2["orders"] if w2.rows[0]["tag"] not in o["tags"]] + [planted]
+        self.assertIn("shopify.orders_bind_to_plan", failed(loadrecon.reconcile(inp2)))
+
+    def test_C07_safety_and_allowlist_unchanged(self):
+        # the guard's D1 allow-list knows nothing about the canary: an allocation for it is a SAFETY deviation as before
+        w = World750(n_orders=3)
+        w._alloc(L1_CID, "13599260639606", "#1029", "1", 1, "QAL", [1010], "x")
+        dev = guardl.allowlist(w.pre, snapshot(w.conn), L1_CID, [r["qty"] for r in w.rows], 1028)
+        self.assertTrue(any("not explained by a completed plan draft" in x for x in dev))
+        self.assertTrue(guardl.Guard().tick(1.0, {"allowlist": {"ts": 1.0, "deviations": dev}, "worker": {"dry_run": "false"},
+                                                  "driver": {"started": 0.0}})["safety"])
+        # and the load driver never accepts the canary draft as a plan draft
+        self.assertFalse(common.allowed_draft(bound_plan(), common.KNOWN_CANARY["draft_gid"]))
 
 
 # =================================================================================================================================

@@ -30,6 +30,31 @@ RETIRED_COMPETITIONS = {                # QA D1, read-only listing of 6 Oct 2026
     "15903096668534": "QAH", "15905304379766": "QAI", "15915106926966": "QAJ",
 }
 
+# ---- the ONE known Stage 2 canary (6 Oct 2026; evidence/canary-2026-10-06). Shopify tag search is not exact, so the canary
+# draft matches "tag:QAL" and its order matches "tag:qa-load". It is excluded from L1 by these exact IDs only, never by tag; any
+# other non-plan draft or order (including a second canary) still fails the checks.
+KNOWN_CANARY = {
+    "draft_gid": "gid://shopify/DraftOrder/1614955151734",
+    "order_gid": "gid://shopify/Order/13599260639606",
+    "order_name": "#1029",
+    "product_gid": "gid://shopify/Product/15916653642102",
+}
+
+
+def is_known_canary_draft(gid):
+    return gid == KNOWN_CANARY["draft_gid"]
+
+
+def is_known_canary_order(gid):
+    return gid == KNOWN_CANARY["order_gid"]
+
+
+def split_known_canary_orders(orders):
+    """(population, excluded): the known canary order removed by its exact GID; everything else stays in the population."""
+    pop = [o for o in orders if not is_known_canary_order(o.get("id"))]
+    return pop, [o for o in orders if is_known_canary_order(o.get("id"))]
+
+
 # ---- approval phrases (each stage needs its own explicit approval) -------------------------------------------------------------
 CONFIRM_LIVE = f"LOAD-{PREFIX}-{N_ORDERS}-ORDERS-{UNITS}-ENTRIES"
 APPROVE_T = "APPROVE-L1-T-THROTTLE-PROBE"

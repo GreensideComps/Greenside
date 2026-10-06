@@ -13,7 +13,8 @@ import argparse, json, os, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import (CANARY_TAG, CANARY_TITLE, CONFIRM_CANARY, DISCOUNT_TITLE, ORDER_TAG, RETIRED_COMPETITIONS, UNIT_PRICE,  # noqa: E402
+from common import (CANARY_TAG, CANARY_TITLE, CONFIRM_CANARY, DISCOUNT_TITLE, KNOWN_CANARY, ORDER_TAG, RETIRED_COMPETITIONS,  # noqa: E402
+                    UNIT_PRICE,
                     Refused, canonical, scrub, write_json)
 from load import MUTATION as COMPLETE, classify  # noqa: E402
 from stage import DRAFT_CREATE, NOTE  # noqa: E402
@@ -47,6 +48,9 @@ def canary_input(variant_gid):
 def run_canary(product, d1_competitions, l1_competition, client, dry_run_value, out_dir, confirm, clock):
     if confirm != CONFIRM_CANARY:
         raise Refused("canary: confirmation phrase missing or wrong")
+    if KNOWN_CANARY.get("order_gid"):
+        raise Refused(f"canary: the Stage 2 canary already exists ({KNOWN_CANARY['order_name']}); a second canary would not be on "
+                      "L1's exact-ID exclusion list and would fail the load reconciliation")
     probs = check_canary(product, d1_competitions, l1_competition)
     if probs:
         raise Refused("canary: " + "; ".join(probs))

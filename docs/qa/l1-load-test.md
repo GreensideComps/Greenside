@@ -68,6 +68,14 @@ matches the canary draft #D36 (tag QAL-CANARY), so `stage.py` would refuse to st
 canary order #1029, so the post-run export and reconciliation would count it as a non-plan order and fail L1. The canary order and
 draft must be excluded explicitly (by id) in those checks.
 
+Fixed offline (6 Oct 2026): `common.KNOWN_CANARY` holds the canary's exact draft and order GIDs. `stage.py` lists drafts tagged QAL
+and qa-load and refuses on any of them except that exact draft; `shopsnapl.py` and `loadrecon.py` remove only that exact order from
+the L1 population (reported as `excluded_known_canary`), fail on any other non-plan order or draft, and fail if the canary ever
+holds an allocation. `canary.py` now refuses to create a second canary. Nothing is excluded by tag.
+
+Stage 3 remains blocked until the owner confirms the side-effect checks for #1029 (staff email, UpPromote, Meta Events,
+Flow / automations / accounting).
+
 ## Open design points before Stage 4
 
 - Resolved (amendment of 6 Oct 2026): the staircase previously reached only 3.0/s (40 s steps, 500-order cap). It now judges every

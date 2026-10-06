@@ -15,15 +15,28 @@ import argparse, json, os, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from common import (CAPACITY, CONFIRM_STAGE, DISCOUNT_TITLE, ORDER_TAG, PREFIX, PRODUCT_HANDLE, PRODUCT_TAGS, PRODUCT_TITLE,  # noqa: E402
-                    RETIRED_COMPETITIONS, START_NUMBER, UNIT_PRICE, UNITS, Refused, canonical, plan_hash, plan_template,
+                    RETIRED_COMPETITIONS, is_known_canary_draft, START_NUMBER, UNIT_PRICE, UNITS, Refused, canonical, plan_hash, plan_template,
                     scrub, validate_plan, write_json)
 
 DRAFT_CREATE = ("mutation CreateL1Draft($input: DraftOrderInput!) { draftOrderCreate(input: $input) { draftOrder { id name status "
                 "tags totalPriceSet { shopMoney { amount } } } userErrors { field message } } }")
-LIST_QAL = '{ draftOrders(first: 5, query: "tag:QAL") { nodes { id name status tags } } }'
+LIST_QAL = ('{ qal: draftOrders(first: 20, query: "tag:QAL") { nodes { id name status tags } } '
+            'qaload: draftOrders(first: 20, query: "tag:qa-load") { nodes { id name status tags } } }')
 NOTE = "Greenside QA L1 allocator load test. QA ONLY. Not a sale. No customer. Total 0.00 (100% discount)."
 INPUT_KEYS = {"lineItems", "appliedDiscount", "tags", "note"}
 MAX_RATE_PER_S = 2.0
+
+
+def existing_load_drafts(status, body):
+    """Drafts matching tag:QAL or tag:qa-load, minus ONLY the known canary draft (exact GID). Raises if the listing failed."""
+    data = (body or {}).get("data") or {}
+    lists = [((data.get(k) or {}).get("nodes")) for k in ("qal", "qaload")]
+    if status != 200 or any(x is None for x in lists) or (body or {}).get("errors"):
+        raise Refused("stage: could not list existing QAL/qa-load drafts")
+    seen = {}
+    for n in lists[0] + lists[1]:
+        seen[n.get("id")] = n
+    return [n for gid, n in seen.items() if not is_known_canary_draft(gid)]
 
 
 def check_product(p):
@@ -82,11 +95,10 @@ def stage(template, product, client, clock, out_dir, execute=False, confirm=None
     if confirm != CONFIRM_STAGE:
         raise Refused("stage: confirmation phrase missing or wrong")
     st, _, body = client.post(LIST_QAL)
-    nodes = ((((body or {}).get("data") or {}).get("draftOrders") or {}).get("nodes"))
-    if st != 200 or nodes is None:
-        raise Refused("stage: could not list existing QAL drafts")
+    nodes = existing_load_drafts(st, body)
     if nodes:
-        raise Refused(f"stage: {len(nodes)}+ QAL-tagged draft(s) already exist; refusing to stage twice")
+        raise Refused(f"stage: unexpected QAL/qa-load draft(s) exist ({', '.join(str(n.get('name')) for n in nodes[:5])}); "
+                      "refusing to stage twice")
     bound = dict(template, kind="L1-plan-bound", competition_id=str(product["id"]).rsplit("/", 1)[-1],
                  product_gid=product["id"], variant_gid=variant, rows=[])
     log = os.path.join(out_dir, "stage-evidence.jsonl")

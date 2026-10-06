@@ -12,7 +12,8 @@ import argparse, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import CAPACITY, START_NUMBER, entry_number, parse_tag, write_json  # noqa: E402
+from common import (CAPACITY, KNOWN_CANARY, START_NUMBER, entry_number, is_known_canary_draft, parse_tag,  # noqa: E402
+                    split_known_canary_orders, write_json)
 
 # SW4C_SNAP column positions (b3stress/snap.sql)
 E_CID, E_SEQ, E_NUM, E_ST, E_AID, E_OID, E_LID, _, E_ASEQ = range(9)
@@ -47,7 +48,8 @@ def reconcile(inp):
         checks.append({"check": name, "result": "PASS" if ok else "FAIL", "detail": detail})
 
     # ---- Shopify
-    orders = inp.get("orders") or []
+    orders, excluded = split_known_canary_orders(inp.get("orders") or [])   # the one known canary, by exact GID only
+    ck("shopify.known_canary_excluded_by_id_only", len(excluded) <= 1, f"excluded {[o.get('id') for o in excluded]}")
     by_idx, bad_tags = {}, []
     for o in orders:
         t = parse_tag(o.get("tags"))
@@ -72,6 +74,9 @@ def reconcile(inp):
             wrongline.append(o["name"])
     ck("shopify.one_line_planned_quantity", not wrongline, f"{wrongline[:5]}")
     drafts = {d["id"]: d.get("status") for d in inp.get("drafts") or []}
+    plan_drafts = {r.get("draft_id") for r in plan["rows"]}
+    extra = [g for g in drafts if g not in plan_drafts and not is_known_canary_draft(g)]
+    ck("shopify.no_unexpected_drafts", not extra, f"{len(extra)} draft(s) outside the plan: {extra[:5]}")
     dbad = [rows[i]["draft_name"] if "draft_name" in rows[i] else i for i in rows
             if drafts.get(rows[i].get("draft_id")) != ("COMPLETED" if i in done else "OPEN")]
     ck("shopify.draft_statuses", not dbad, f"{len(dbad)} mismatched {dbad[:5]}")
@@ -108,6 +113,9 @@ def reconcile(inp):
     for i, o in by_idx.items():
         li = (((o.get("lineItems") or {}).get("nodes")) or [{}])[0]
         exp_lines[(num(o["id"]), num(li.get("id", "")))] = i
+    canary_oid = num(KNOWN_CANARY["order_gid"])
+    ck("d1.known_canary_has_no_allocation", all(k[0] != canary_oid for k in by_line)
+       and all(str(a[A_OID]) != canary_oid for a in post.get("allocations") or []), "")
     ck("d1.allocation_set_equals_orders", set(by_line) == set(exp_lines),
        f"allocations {len(by_line)}, orders {len(exp_lines)}, missing {len(set(exp_lines) - set(by_line))}, "
        f"unexpected {len(set(by_line) - set(exp_lines))}")
@@ -177,7 +185,7 @@ def reconcile(inp):
        and stage["d1_units"] == stage["events"] == units, json.dumps(stage))
     ok = all(c["result"] == "PASS" for c in checks)
     return {"result": "PASS" if ok else "FAIL", "expected_orders": len(done), "expected_units": units, "stage_counts": stage,
-            "checks": checks}
+            "excluded_known_canary": [o.get("id") for o in excluded], "checks": checks}
 
 
 # ---- recon.sql ---------------------------------------------------------------------------------------------------------------

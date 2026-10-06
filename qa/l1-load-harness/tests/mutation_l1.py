@@ -12,13 +12,23 @@ G, F, LD, CM, CL, SH, ST, CA, RS, GU, GS, SS, RC, RQ, MF, LM = (
     "l1/governor.py", "l1/failwatch.py", "l1/load.py", "l1/common.py", "l1/clamp.py", "l1/shop.py", "l1/stage.py", "l1/canary.py",
     "l1/regsql.py", "l1/guardl.py", "l1/guardl.sh", "l1/shopsnapl.py", "l1/loadrecon.py", "l1/recon.sql", "l1/manifest.py",
     "l1/loadmetrics.py")
-GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD = (
+GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
     "GovernorTests", "FailWatchTests", "DriverGateTests", "ClampTests", "SamplerTests", "StageCanaryTests", "ReconTests",
     "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests",
-    "StaircaseAmendmentTests")
+    "StaircaseAmendmentTests", "CanaryExclusionTests")
 
 # (description, file, old, new, test classes)
 MUTANTS = [
+    # known-canary exclusion (Stage 2 follow-up)
+    ("canex: canary excluded by tag instead of exact id", CM, [('pop = [o for o in orders if not is_known_canary_order(o.get("id"))]', 'pop = [o for o in orders if "QAL-CANARY" not in (o.get("tags") or [])]'), ('return pop, [o for o in orders if is_known_canary_order(o.get("id"))]', 'return pop, [o for o in orders if "QAL-CANARY" in (o.get("tags") or [])]')], None, [CEX]),
+    ("canex: canary order exclusion removed", CM, 'pop = [o for o in orders if not is_known_canary_order(o.get("id"))]', "pop = list(orders)", [CEX]),
+    ("canex: canary matched by id prefix", CM, 'return gid == KNOWN_CANARY["order_gid"]', 'return str(gid).startswith("gid://shopify/Order/135992606")', [CEX]),
+    ("canex: staging excludes any canary-tagged draft", ST, "return [n for gid, n in seen.items() if not is_known_canary_draft(gid)]", 'return [n for gid, n in seen.items() if "QAL-CANARY" not in (n.get("tags") or [])]', [CEX]),
+    ("canex: staging ignores qa-load drafts", ST, "for n in lists[0] + lists[1]:", "for n in lists[0]:", [CEX]),
+    ("canex: failed draft listing read as empty", ST, 'if status != 200 or any(x is None for x in lists) or (body or {}).get("errors"):', "if False:", [CEX]),
+    ("canex: unexpected drafts tolerated in reconciliation", RC, 'ck("shopify.no_unexpected_drafts", not extra,', 'ck("shopify.no_unexpected_drafts", True,', [CEX]),
+    ("canex: canary allocation tolerated", RC, 'ck("d1.known_canary_has_no_allocation", all(', 'ck("d1.known_canary_has_no_allocation", True or all(', [CEX]),
+    ("canex: second canary allowed", CA, 'if KNOWN_CANARY.get("order_gid"):', "if False:", [CEX, STC]),
     # governor
     ("governor: hard 5/s ceiling removed", G, "rate = min(rate, HARD_CEILING_PER_S)\n        assert 0.0 <= rate <= HARD_CEILING_PER_S", "rate = rate * 1.5", [GOV]),
     ("governor: WARNING in B ignored", G, '''            if why:
@@ -85,7 +95,7 @@ MUTANTS = [
     # stage / canary
     ("stage: discount not 100%", ST, '"value": 100.0', '"value": 99.0', [STC]),
     ("stage: requiresShipping not checked", ST, '("tracked", True),\n                        ("requiresShipping", False)):', '("tracked", True)):', [STC]),
-    ("stage: existing QAL drafts ignored", ST, 'if nodes:\n        raise Refused(f"stage: {len(nodes)}+', 'if False:\n        raise Refused(f"stage: {len(nodes)}+', [STC]),
+    ("stage: existing QAL drafts ignored", ST, 'if nodes:\n        raise Refused(f"stage: unexpected QAL/qa-load draft(s)', 'if False:\n        raise Refused(f"stage: unexpected QAL/qa-load draft(s)', [STC, CEX]),
     ("stage: continues after an error", ST, '        if not ok:\n            return {"mode": "execute", "status": "INCOMPLETE"', '        if False:\n            return {"mode": "execute", "status": "INCOMPLETE"', [STC]),
     ("stage: publication check removed", ST, 'if p.get("publications") != 0:', "if False:", [STC]),
     ("canary: registered product accepted", CA, "if cid in {str(c) for c in d1_competitions}:", "if False:", [STC]),
@@ -154,7 +164,7 @@ def run_one(desc, path, old, new, classes, base):
 def main(argv):
     sel = argv[argv.index("-k") + 1] if "-k" in argv else ""
     ms = [m for m in MUTANTS if sel in m[0]]
-    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD]
+    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX]
     _, st, _ = run_one("baseline", "l1/common.py", 'PREFIX = "QAL"', 'PREFIX = "QAL"', every, None)
     if st != "SURVIVED":
         print("BASELINE FAILED: the unmutated copy does not pass its own tests; kills would be meaningless")

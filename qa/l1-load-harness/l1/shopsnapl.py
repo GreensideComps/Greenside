@@ -11,7 +11,7 @@ import argparse, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import ORDER_TAG, Refused, canonical, parse_tag, read_json, write_json  # noqa: E402
+from common import ORDER_TAG, Refused, canonical, parse_tag, read_json, split_known_canary_orders, write_json  # noqa: E402
 
 ORDERS_DOC = ("query L1Orders($after: String) { orders(first: 100, after: $after, query: \"tag:qa-load\", sortKey: CREATED_AT) { "
               "pageInfo { hasNextPage endCursor } nodes { id name createdAt processedAt test cancelledAt displayFinancialStatus "
@@ -58,6 +58,7 @@ def check(orders, plan):
     rows = {r["index"]: r for r in plan["rows"]}
     product = plan.get("product_gid")
     bind, probs = {}, []
+    orders, _excluded = split_known_canary_orders(orders)       # the one known canary, by exact GID only
     for o in orders:
         tg = parse_tag(o.get("tags"))
         if ORDER_TAG not in (o.get("tags") or []):
@@ -92,7 +93,8 @@ def main(argv=None):
         from shop import Client
         r = export(Client("allocator", {ORDERS_DOC}), a.state_dir, plan["competition_id"])
         bind, probs = check(r["orders"], plan)
-        write_json(a.out, {**r, "bound": len(bind), "problems": probs})
+        _, excluded = split_known_canary_orders(r["orders"])
+        write_json(a.out, {**r, "bound": len(bind), "problems": probs, "excluded_known_canary": [o["id"] for o in excluded]})
         print(canonical({"pages": r["pages"], "orders": len(r["orders"]), "bound": len(bind), "problems": len(probs)}))
         return 0 if not probs else 1
     except Refused as e:
