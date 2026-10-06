@@ -30,6 +30,7 @@ repository root (for example `/qa/b3-stress-harness/`).
 | `runbooks/qa-live-window.md` | How a QA live window is opened, guarded and restored |
 | `runbooks/credentials.md` | Credential inventory (names and scopes only) and handling rules |
 | `qa/concurrency-testing.md` | Concurrency: **S4 PASS (5 Oct 2026)**, its scope and limits; history (A5, failed first attempt, repair) |
+| `qa/l1-load-test.md` | L1 load test design v2 (approved 6 Oct 2026): 750 orders, staircase, webhook safety envelope. Stage 1 (offline build) only |
 | `qa/evidence-and-observability.md` | Tail, heartbeat and Workers Logs evidence model |
 | `/qa/b3-stress-harness/README.md` | B3 stress harness: install, layout, the S4 fire script (`b3stress/FIRE.md`) |
 | `/tools/gs/` | `gs` read-only operating CLI (`gs.py`), `policy.json`, tests (`test_gs.py`), mutation check (`mutation_check.py`); see `operating-layer.md` |
