@@ -42,10 +42,39 @@ CONFIRM_REHEARSE = "REHEARSE-L1-READONLY-0-MUTATIONS"
 # ---- load profile (L1 v2) -----------------------------------------------------------------------------------------------------
 HARD_CEILING_PER_S = 5.0
 PHASE_A_ORDERS, PHASE_A_RATE = 50, 0.5
-STAIRCASE = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
-STEP_SECONDS = 40.0
-PHASE_B_MAX_ORDERS = 500
+# Default first-run staircase (amendment of 6 Oct 2026): 30 s per step at 1.0..4.0/s by 0.5, escalation stops after a fully
+# judged 4.0/s step. 4.5 and 5.0/s are never entered by the approved profile; HARD_CEILING_PER_S stays as the global guard.
+STAIRCASE = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
+STEP_SECONDS = 30.0
+STEP_QUOTAS = tuple(int(round(r * STEP_SECONDS)) for r in STAIRCASE)       # 30, 45, 60, 75, 90, 105, 120
+PHASE_B_MAX_ORDERS = sum(STEP_QUOTAS)                                        # 525: a full staircase, never cut short
 PHASE_T_ORDERS, PHASE_T_RATE = 40, 0.5
+assert STAIRCASE[-1] <= HARD_CEILING_PER_S and PHASE_B_MAX_ORDERS == 525
+
+
+def population_budget(n_orders=None, t_budget=0):
+    """The run's order budget, fixed before execution. T is excluded unless explicitly budgeted (t_budget = PHASE_T_ORDERS);
+    C gets everything else. Raises Refused if the phases cannot fit in the plan."""
+    n = N_ORDERS if n_orders is None else n_orders
+    if t_budget not in (0, PHASE_T_ORDERS):
+        raise Refused(f"T budget must be 0 (T not approved) or exactly {PHASE_T_ORDERS}")
+    c_min = n - PHASE_A_ORDERS - PHASE_B_MAX_ORDERS - t_budget
+    if n > N_ORDERS or c_min < 0:
+        raise Refused(f"population {n} cannot hold A {PHASE_A_ORDERS} + B {PHASE_B_MAX_ORDERS} + T {t_budget} (max {N_ORDERS})")
+    return {"total": n, "A": PHASE_A_ORDERS, "B_max": PHASE_B_MAX_ORDERS, "T": t_budget, "C_min": c_min}
+
+
+def stability_statement(bracket):
+    """The report wording for the stability point. Never claims an allocator ceiling."""
+    if not bracket:
+        return "Stability point not determined (the staircase did not run)."
+    lo, hi = bracket.get("low"), bracket.get("high")
+    if bracket.get("bracketed"):
+        if lo is None:
+            return f"Stability point below {hi} orders/s: even the {hi}/s baseline did not stay stable."
+        return f"Stability point in [{lo}, {hi}) orders/s: {lo}/s was sustained, {hi}/s was not."
+    return (f"Observed sustainable throughput >= {lo} orders/s; upper stability boundary not bracketed by L1 "
+            f"(L1 did not test above {lo}/s; this is not an allocator ceiling).")
 
 # ---- safety envelope (L1 v2 section 3) ----------------------------------------------------------------------------------------
 BUCKET_WARN = 1200          # allocator app bucket below this: WARNING (no increase; drop to r*)

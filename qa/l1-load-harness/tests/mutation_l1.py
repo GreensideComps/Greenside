@@ -12,9 +12,10 @@ G, F, LD, CM, CL, SH, ST, CA, RS, GU, GS, SS, RC, RQ, MF, LM = (
     "l1/governor.py", "l1/failwatch.py", "l1/load.py", "l1/common.py", "l1/clamp.py", "l1/shop.py", "l1/stage.py", "l1/canary.py",
     "l1/regsql.py", "l1/guardl.py", "l1/guardl.sh", "l1/shopsnapl.py", "l1/loadrecon.py", "l1/recon.sql", "l1/manifest.py",
     "l1/loadmetrics.py")
-GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN = (
+GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD = (
     "GovernorTests", "FailWatchTests", "DriverGateTests", "ClampTests", "SamplerTests", "StageCanaryTests", "ReconTests",
-    "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests")
+    "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests",
+    "StaircaseAmendmentTests")
 
 # (description, file, old, new, test classes)
 MUTANTS = [
@@ -33,7 +34,15 @@ MUTANTS = [
     ("governor: T on by default", G, "self.t_on, self.t2_on = approve_t == APPROVE_T, approve_t2 == APPROVE_T2", "self.t_on, self.t2_on = True, approve_t2 == APPROVE_T2", [GOV]),
     ("governor: T2 allowed without T", G, 'if approve_t2 and not approve_t:\n            raise Refused("T2 requires T to be approved as well")', "pass", [GOV]),
     ("governor: every step passes", G, "return sl >= SLOPE_PASS and mins >= BUCKET_WARN and not thr and done_ok", "return True", [GOV]),
-    ("governor: cap-cut step promoted to r*", G, 'ok, result = None, "INCOMPLETE"', 'ok, result = True, "PASS"', [GOV]),
+    # staircase amendment (6 Oct 2026). The old "cap-cut step promoted" mutant was removed: with the cap equal to the sum of the
+    # step quotas that defensive branch is unreachable, so a mutant there cannot be killed by any behaviour.
+    ("amend: step ends on time (40 s) instead of its 30 s quota", G, 'elif self.sent["B"] - self.step_base >= STEP_QUOTAS[self.step]:', "elif now - self.step_start >= 40.0:", [AMD]),
+    ("amend: staircase extended to 4.5 and 5.0/s", CM, [("STAIRCASE = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)", "STAIRCASE = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)"), ("assert STAIRCASE[-1] <= HARD_CEILING_PER_S and PHASE_B_MAX_ORDERS == 525", "assert True")], None, [AMD]),
+    ("amend: T approved without a budget", G, "if self.t_on and t_budget != PHASE_T_ORDERS:", "if False:", [AMD]),
+    ("amend: T budget silently taken from nowhere (C not reduced)", G, "self.reserve_t = t_budget", "self.reserve_t = 0", [AMD]),
+    ("amend: population check removed", CM, "if n > N_ORDERS or c_min < 0:", "if False:", [AMD]),
+    ("amend: unbracketed result worded as a ceiling", CM, 'return (f"Observed sustainable throughput >= {lo} orders/s; upper stability boundary not bracketed by L1 "', 'return (f"Allocator ceiling is {lo} orders/s "', [AMD]),
+    ("amend: lower bound not flagged in metrics", LM, 'lower_bound_only = bool(br) and not br.get("bracketed")', "lower_bound_only = False", [AMD]),
     ("governor: r* collapses on every tick in C", G, "if why and now - self.last_c_drop >= C_DROP_COOLDOWN_S:", "if why:", [GOV]),
     ("governor: LOAD STOP from failwatch ignored", G, 'if s.fw_level in ("LOAD_STOP",):', "if False:", [GOV]),
     # failwatch
@@ -145,7 +154,7 @@ def run_one(desc, path, old, new, classes, base):
 def main(argv):
     sel = argv[argv.index("-k") + 1] if "-k" in argv else ""
     ms = [m for m in MUTANTS if sel in m[0]]
-    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN]
+    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD]
     _, st, _ = run_one("baseline", "l1/common.py", 'PREFIX = "QAL"', 'PREFIX = "QAL"', every, None)
     if st != "SURVIVED":
         print("BASELINE FAILED: the unmutated copy does not pass its own tests; kills would be meaningless")

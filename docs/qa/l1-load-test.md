@@ -1,4 +1,4 @@
-# L1 allocator load test (design v2, approved 6 Oct 2026)
+# L1 allocator load test (design v2, approved 6 Oct 2026; staircase amended 6 Oct 2026)
 
 Status: **Stage 1 (offline build + tests) only.** Nothing has run live. No product, draft, D1 row, order, webhook or Worker
 change exists for L1. Harness: `/qa/l1-load-harness/` (README there lists every file and command).
@@ -26,10 +26,18 @@ The 2–3.6 orders/s figure is a **hypothesis** from point costs, not a measured
 
 - 750 orders, 1,650 entries, pool QAL1001–QAL3000 (350 headroom), seeded quantity mix 300×1, 225×2, 150×3, 60×5, 15×10, £0 via a
   100% draft discount, no customer/email/phone, `requiresShipping=false`.
-- A: 50 orders at 0.5/s. B: staircase 1.0 → 5.0/s in 0.5 steps, 40 s each, at most 500 orders; a step passes on a flat allocator
-  bucket, no THROTTLED and completions ≥ 95% of arrivals. C: the rest at r* (last passing step). E: drain.
-- Hard ceiling 5/s. No automatic retry or re-send of any draft. One-shot marker. T (read-only bucket clamp) and T2 (one induced
-  failure) exist only behind their own approval phrases.
+- A: 50 orders at 0.5/s.
+- B: staircase 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0 orders/s, 30 s per step (a step is complete when its quota, rate × 30 s, has been
+  sent: 30, 45, 60, 75, 90, 105, 120 = 525 orders if every step passes). A step passes on a flat allocator bucket, no THROTTLED
+  and completions ≥ 95% of arrivals. Escalation stops after a fully judged 4.0/s step; 4.5 and 5.0/s are never entered by the
+  default profile (the 5/s hard ceiling remains as a global guard).
+- C: every remaining order at r* (the last passing step): 175 orders if the whole staircase passes (50 + 525 + 175 = 750); more
+  if the staircase stops earlier. E: drain.
+- Reporting: a failing step gives the bracket [r*, r_fail). If every step through 4.0/s passes, the report says "Observed
+  sustainable throughput ≥ 4.0 orders/s; upper stability boundary not bracketed by L1" and never calls 4.0/s a ceiling.
+- No automatic retry or re-send of any draft. One-shot marker. T (read-only bucket clamp) and T2 (one induced failure) exist only
+  behind their own approval phrases, are excluded from the default budget, and when T is approved its 40 orders must be budgeted
+  before execution (C reduced to 135); the governor refuses otherwise. Total planned orders can never exceed 750.
 
 ## Safety envelope
 
@@ -51,8 +59,7 @@ order; no progress for 10 min → restore.
 
 ## Open design points before Stage 4
 
-- With 40 s steps and the 500-order B cap, the staircase can fully judge steps only up to 3.0/s (cumulative 400 orders); the
-  3.5/s step is cut by the cap and recorded INCOMPLETE. If capacity is above 3.0/s the stability point stays unbracketed
-  (reported as "≥ 3.0/s"). Raising the B cap to about 650 orders, or using 30 s steps, would reach 4.0/s; this needs a decision.
+- Resolved (amendment of 6 Oct 2026): the staircase previously reached only 3.0/s (40 s steps, 500-order cap). It now judges every
+  step through 4.0/s; above 4.0/s L1 reports a lower bound only.
 - Launch risk found by analysis (not by L1): under sustained throttling the allocator returns 500, and Admin-API subscriptions are
   deleted after 8 consecutive failures. See `docs/open-items.md`.

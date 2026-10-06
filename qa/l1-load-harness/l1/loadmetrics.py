@@ -12,7 +12,7 @@ import argparse, json, math, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import write_json  # noqa: E402
+from common import stability_statement, write_json  # noqa: E402
 
 WINDOWS = (10, 30, 60)
 
@@ -131,8 +131,12 @@ def compute(inp):
     m["stability_point"] = obs(br, "governor staircase: highest step that passed, first step that failed or warned")
     steps = g.get("steps") or []
     passed = [s["rate"] for s in steps if s.get("result") == "PASS"]
+    lower_bound_only = bool(br) and not br.get("bracketed")
     m["observed_sustainable_throughput"] = obs(max(passed) if passed else None,
-                                               "highest staircase rate whose step passed (flat bucket, no THROTTLED, completions >= 95%)")
+                                               "highest staircase rate whose step passed (flat bucket, no THROTTLED, completions >= 95%)"
+                                               + ("; a LOWER BOUND only: no step above it was tested" if lower_bound_only else ""))
+    m["observed_sustainable_throughput"]["lower_bound_only"] = lower_bound_only
+    m["stability_statement"] = obs(stability_statement(br), "report wording; never an allocator ceiling")
     # backlog growth above the stability point: during failing/warning steps, slope of the bucket and of the backlog
     growth = []
     for s in steps:

@@ -167,14 +167,12 @@ class GovernorTests(unittest.TestCase):
         self.assertEqual(r["summary"]["dispatched"], 750)
 
     def test_R03b_default_path_is_A_B_C_E(self):
-        r = sim_run(28.0)
+        r = sim_run(28.0)            # model capacity 3.57 orders/s
         seq = ["A"] + [x["event"].split("->")[1] for x in r["gov"].log if x["event"].startswith("phase")]
         self.assertEqual(seq, ["A", "B", "C", "E"])
-        # the B order cap cut the 3.5/s step short: it is INCOMPLETE, never promoted; the bracket stays open
         g = r["gov"].summary()
-        self.assertEqual(g["steps"][-1]["result"], "INCOMPLETE")
-        self.assertEqual(g["r_star"], 3.0)
-        self.assertEqual(g["stability_bracket"], {"low": 3.0, "high": None, "bracketed": False, "why": "B order cap reached"})
+        self.assertEqual([(s["rate"], s["result"]) for s in g["steps"]][-2:], [(3.5, "PASS"), (4.0, "FAIL")])
+        self.assertEqual(g["r_star"], 3.5)
 
     def test_R03c_persisting_warning_in_C_does_not_collapse_r_star(self):
         r = sim_run(48.0)            # model capacity 2.08/s
@@ -189,9 +187,10 @@ class GovernorTests(unittest.TestCase):
         g.sent["A"] = 50
         d = g.update(now, Signals(bucket=full))
         self.assertEqual((d["phase"], d["rate"]), ("B", 1.0))
-        # pass 1.0 and 1.5
+        # pass 1.0 and 1.5 (a step completes when its quota, rate x 30 s, has been sent)
         for k in range(2):
-            now += 41
+            now += 30
+            g.sent["B"] += common.STEP_QUOTAS[k]
             d = g.update(now, Signals(bucket=[(now - 30 + i * 2, 2000) for i in range(16)]))
         self.assertEqual((d["phase"], d["rate"]), ("B", 2.0))
         # one tick with a WARNING (bucket < 1200): the very same decision is already C at the last passing rate
@@ -352,13 +351,143 @@ class GovernorTests(unittest.TestCase):
         g = Governor()
         self.assertFalse(g.t_on or g.t2_on)
         self.assertEqual(g.reserve_t, 0)
-        g = Governor(approve_t=APPROVE_T)
+        g = Governor(approve_t=APPROVE_T, t_budget=40)
         self.assertTrue(g.t_on and not g.t2_on)
-        r = sim_run(28.0, gov=Governor(approve_t=APPROVE_T))
+        self.assertEqual(g.reserve_t, 40)
+        r = sim_run(28.0, gov=Governor(approve_t=APPROVE_T, t_budget=40))
         self.assertEqual(r["gov"].sent["T"], 40)
         self.assertEqual(r["gov"].sent["T2"], 0)
-        r = sim_run(28.0, gov=Governor(approve_t=APPROVE_T, approve_t2=APPROVE_T2))
+        r = sim_run(28.0, gov=Governor(approve_t=APPROVE_T, approve_t2=APPROVE_T2, t_budget=40))
         self.assertEqual((r["gov"].sent["T"], r["gov"].sent["T2"]), (20, 20))
+
+
+# =================================================================================================================================
+class StaircaseAmendmentTests(unittest.TestCase):
+    """Amendment of 6 Oct 2026: 30 s steps at 1.0..4.0/s, escalation stops after a judged 4.0/s step, explicit T budget."""
+
+    def test_A01_every_default_step_is_30_seconds(self):
+        self.assertEqual(common.STEP_SECONDS, 30.0)
+        self.assertEqual(common.STEP_QUOTAS, tuple(int(r * 30) for r in common.STAIRCASE))
+        r = sim_run(10.0)            # every step passes
+        steps = r["gov"].summary()["steps"]
+        starts = [x["t"] for x in r["gov"].log if x["event"] == "phase A->B"] + [x["t"] for x in steps[:-1]]
+        self.assertEqual(len(starts), 7)
+        for st, x in zip(starts, steps):
+            self.assertAlmostEqual(x["t"] - st, 30.0, delta=0.6, msg=f"step {x['rate']}/s lasted {x['t'] - st:.2f}s")
+
+    def test_A02_default_rates_exactly_1_to_4_by_half(self):
+        self.assertEqual(common.STAIRCASE, (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0))
+        r = sim_run(10.0)
+        self.assertEqual([x["rate"] for x in r["gov"].summary()["steps"]], [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0])
+
+    def test_A03_4_0_fully_judged_before_escalation_stops(self):
+        r = sim_run(10.0)
+        g = r["gov"].summary()
+        last = g["steps"][-1]
+        self.assertEqual((last["rate"], last["result"]), (4.0, "PASS"))
+        self.assertNotIn("note", last)                      # judged on its full quota, never cut by the cap branch
+        b = [d for d in r["evidence"].records if d["phase"] == "B"]
+        self.assertEqual(len(b), 525)
+        self.assertTrue(any("top step 4.0/s passed" in x.get("why", "") for x in g["log"]))
+
+    def test_A04_A05_4_5_and_5_0_never_entered(self):
+        for c in (1.0, 10.0, 20.0):
+            r = sim_run(c)
+            rates = {d["rate"] for d in r["evidence"].decisions if "rate" in d}
+            self.assertNotIn(4.5, rates, c)
+            self.assertNotIn(5.0, rates, c)
+            self.assertLessEqual(max(rates), 4.0, c)
+        self.assertEqual(common.HARD_CEILING_PER_S, 5.0)     # the global guard stays
+
+    def test_A06_A07_A08_full_staircase_population(self):
+        r = sim_run(10.0)
+        sent = r["gov"].summary()["sent"]
+        self.assertEqual(sent["B"], 525)
+        self.assertEqual(sent["A"] + sent["B"], 575)
+        self.assertEqual(750 - sent["A"] - sent["B"], 175)
+        self.assertEqual(sent["C"], 175)
+        self.assertEqual((sent["T"], sent["T2"]), (0, 0))
+        self.assertEqual(common.population_budget(), {"total": 750, "A": 50, "B_max": 525, "T": 0, "C_min": 175})
+
+    def test_A09_A10_all_pass_r_star_4_and_wording(self):
+        r = sim_run(10.0)
+        g = r["gov"].summary()
+        self.assertEqual(g["r_star"], 4.0)
+        br = g["stability_bracket"]
+        self.assertEqual((br["low"], br["high"], br["bracketed"]), (4.0, None, False))
+        st = br["statement"]
+        self.assertIn(">= 4.0 orders/s", st)
+        self.assertIn("upper stability boundary not bracketed by L1", st)
+        self.assertIn("not an allocator ceiling", st)
+        self.assertNotRegex(st.lower().replace("not an allocator ceiling", ""), r"ceiling|maximum|capacity is")
+        w = r["world"]
+        m = loadmetrics.compute({"arrivals": [t for t, _ in w.created], "completions": {str(i): t for t, i in w.completed},
+                                 "sampler": [], "governor": g})
+        self.assertTrue(m["observed_sustainable_throughput"]["lower_bound_only"])
+        self.assertEqual(m["observed_sustainable_throughput"]["value"], 4.0)
+        self.assertIn("LOWER BOUND", m["observed_sustainable_throughput"]["basis"])
+        self.assertEqual(m["stability_statement"]["value"], st)
+
+    def test_A11_failure_at_3_5_gives_3_0_to_3_5(self):
+        r = sim_run(30.0)            # model capacity 3.33 orders/s
+        br = r["gov"].summary()["stability_bracket"]
+        self.assertEqual((br["low"], br["high"], br["bracketed"]), (3.0, 3.5, True))
+        self.assertEqual(br["statement"], "Stability point in [3.0, 3.5) orders/s: 3.0/s was sustained, 3.5/s was not.")
+        m = loadmetrics.compute({"arrivals": [1.0], "completions": {"x": 2.0}, "sampler": [], "governor": r["gov"].summary()})
+        self.assertFalse(m["observed_sustainable_throughput"]["lower_bound_only"])
+
+    def test_A12_failure_at_4_0_gives_3_5_to_4_0(self):
+        r = sim_run(27.0)            # model capacity 3.70 orders/s
+        br = r["gov"].summary()["stability_bracket"]
+        self.assertEqual((br["low"], br["high"], br["bracketed"]), (3.5, 4.0, True))
+        self.assertEqual(r["gov"].summary()["steps"][-1]["rate"], 4.0)
+        self.assertEqual(br["statement"], "Stability point in [3.5, 4.0) orders/s: 3.5/s was sustained, 4.0/s was not.")
+
+    def test_A13_early_termination_grows_C(self):
+        full = sim_run(10.0)["gov"].summary()["sent"]["C"]
+        self.assertEqual(full, 175)
+        for c in (36.0, 48.0, 80.0):
+            g = sim_run(c)["gov"].summary()
+            self.assertLess(g["sent"]["B"], 525, c)
+            self.assertEqual(g["sent"]["A"] + g["sent"]["B"] + g["sent"]["C"], 750, c)
+            self.assertEqual(g["sent"]["C"], 750 - 50 - g["sent"]["B"], c)
+            self.assertGreater(g["sent"]["C"], full, c)
+        g = sim_run(36.0)["gov"].summary()           # 3.0/s fails on its full quota: B = 30+45+60+75+90
+        self.assertEqual((g["sent"]["B"], g["sent"]["C"]), (300, 400))
+
+    def test_A14_T_T2_excluded_from_default_budget(self):
+        g = Governor()
+        self.assertEqual((g.reserve_t, g.budget["T"], g.budget["C_min"]), (0, 0, 175))
+        r = sim_run(10.0)
+        self.assertEqual(r["gov"].summary()["sent"]["T"] + r["gov"].summary()["sent"]["T2"], 0)
+        with self.assertRaises(Refused):
+            Governor(t_budget=40)                            # a T budget without T approval is refused
+
+    def test_A15_enabling_T_requires_its_40_orders_reserved(self):
+        with self.assertRaises(Refused):
+            Governor(approve_t=APPROVE_T)                    # approved but not budgeted
+        with self.assertRaises(Refused):
+            Governor(approve_t=APPROVE_T, t_budget=20)
+        g = Governor(approve_t=APPROVE_T, t_budget=40)
+        self.assertEqual(g.budget, {"total": 750, "A": 50, "B_max": 525, "T": 40, "C_min": 135})
+        r = sim_run(10.0, gov=Governor(approve_t=APPROVE_T, t_budget=40))
+        sent = r["gov"].summary()["sent"]
+        self.assertEqual((sent["A"], sent["B"], sent["C"], sent["T"]), (50, 525, 135, 40))
+
+    def test_A16_total_never_exceeds_750(self):
+        for n in (751, 1000):
+            with self.assertRaises(Refused):
+                common.population_budget(n)
+        with self.assertRaises(Refused):
+            Governor(n_orders=600, approve_t=APPROVE_T, t_budget=40)      # 50 + 525 + 40 > 600
+        with self.assertRaises(Refused):
+            Governor(n_orders=574)
+        for c in (1.0, 10.0, 28.0, 48.0, 200.0):
+            for mk in (lambda: Governor(), lambda: Governor(approve_t=APPROVE_T, t_budget=40)):
+                r = sim_run(c, gov=mk())
+                self.assertLessEqual(r["gov"].total_sent(), 750, c)
+                self.assertLessEqual(r["summary"]["dispatched"], 750, c)
+                self.assertEqual(len(r["client"].calls), len(set(r["client"].calls)), c)
 
 
 # =================================================================================================================================

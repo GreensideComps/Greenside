@@ -12,17 +12,21 @@ only ever rise. Rules (L1 v2 section 3):
   LOAD STOP failwatch LOAD_STOP | unknown completion outcome | non-throttle completion error | bucket < 600 outside T/T2 |
             >= 3 THROTTLED in 10 s outside T/T2 | bucket telemetry stale -> rate 0, no new arrivals, phase E (window stays live)
   SAFETY    failwatch SAFETY_STOP | any external safety reason -> rate 0, action RESTORE_DRY_RUN on every tick until acknowledged
-A staircase step passes when, over its last 30 s: bucket slope >= -3 pts/s, minimum bucket >= 1200, no THROTTLED, and completions
->= 95% of (latency-shifted) arrivals."""
+A staircase step is complete when its quota (rate x 30 s) has been sent, i.e. 30 s at that rate; it passes when, over the step:
+bucket slope >= -3 pts/s, minimum bucket >= 1200, no THROTTLED, and completions >= 95% of (latency-shifted) arrivals.
+Default staircase (amendment of 6 Oct 2026): 1.0..4.0/s by 0.5, 30 s each, 525 orders if every step passes; escalation stops after a
+fully judged 4.0/s step (4.5 and 5.0/s are never entered). Population: A 50 + B up to 525 + C the rest; T only when approved AND
+its 40 orders are budgeted before execution (t_budget), which reduces C explicitly."""
 from common import (BUCKET_LOAD_STOP, BUCKET_WARN, HARD_CEILING_PER_S, N_ORDERS, PHASE_A_ORDERS, PHASE_A_RATE, PHASE_B_MAX_ORDERS,
-                    PHASE_T_ORDERS, PHASE_T_RATE, STAIRCASE, STEP_SECONDS, THROTTLE_LOAD_STOP_N, THROTTLE_LOAD_STOP_WINDOW_S,
+                    PHASE_T_ORDERS, PHASE_T_RATE, STAIRCASE, STEP_QUOTAS, STEP_SECONDS, THROTTLE_LOAD_STOP_N,
+                    THROTTLE_LOAD_STOP_WINDOW_S, population_budget, stability_statement,
                     WALL_WARN_MS, Refused, APPROVE_T, APPROVE_T2)
 
 STATES = ("RUNNING", "LOAD_STOP", "SAFETY_STOP", "DONE")
 SLOPE_PASS = -3.0           # pts/s over the step's last 30 s
 COMPLETION_PASS = 0.95
 PROJECT_S = 10.0
-MIN_JUDGE_S = 30.0          # a step must run this long before it can be judged
+MIN_JUDGE_S = 0.8 * STEP_SECONDS   # defensive cap branch only: a cut step shorter than this is INCOMPLETE
 C_DROP_COOLDOWN_S = 15.0    # in C, a persisting WARNING lowers r* at most one step per 15 s (no collapse on every tick)
 BUCKET_STALE_S = 8.0        # sampler runs every 2 s; four missed samples = blind -> LOAD STOP
 
@@ -53,7 +57,7 @@ def slope(samples, t0, t1):
 
 
 class Governor:
-    def __init__(self, approve_t=None, approve_t2=None, n_orders=N_ORDERS):
+    def __init__(self, approve_t=None, approve_t2=None, n_orders=N_ORDERS, t_budget=0):
         if approve_t not in (None, APPROVE_T):
             raise Refused("T approval phrase is wrong")
         if approve_t2 not in (None, APPROVE_T2):
@@ -61,11 +65,16 @@ class Governor:
         if approve_t2 and not approve_t:
             raise Refused("T2 requires T to be approved as well")
         self.t_on, self.t2_on = approve_t == APPROVE_T, approve_t2 == APPROVE_T2
+        if self.t_on and t_budget != PHASE_T_ORDERS:
+            raise Refused(f"T is approved but its {PHASE_T_ORDERS}-order population was not budgeted before execution")
+        if not self.t_on and t_budget:
+            raise Refused("a T budget was given but T is not approved")
+        self.budget = population_budget(n_orders, t_budget)      # refuses if the phases cannot fit in the plan
         self.n_orders = n_orders
-        self.reserve_t = PHASE_T_ORDERS if self.t_on else 0
+        self.reserve_t = t_budget
         self.phase, self.state = "A", "RUNNING"
         self.sent = {"A": 0, "B": 0, "C": 0, "T": 0, "T2": 0}
-        self.step, self.step_start, self.step_log = -1, None, []
+        self.step, self.step_start, self.step_base, self.step_log = -1, None, 0, []
         self.r_star, self.r_star_bracketed = None, False
         self.last_pass_rate = None
         self.log, self.warnings = [], []
@@ -101,6 +110,7 @@ class Governor:
         # the stability-point bracket is fixed here and never changed by later safety drops of r* in C
         self.bracket = {"low": self.last_pass_rate, "high": STAIRCASE[self.step] if bracketed and self.step >= 0 else
                         (PHASE_A_RATE if bracketed else None), "bracketed": bracketed, "why": why}
+        self.bracket["statement"] = stability_statement(self.bracket)
         self._go("C", now, f"{why}; r*={self.r_star}/s")
 
     # -- one tick
@@ -169,7 +179,19 @@ class Governor:
             if why:
                 self.step_log.append({"step": self.step, "rate": STAIRCASE[self.step], "result": "WARNING", "why": why, "t": now})
                 self._enter_c(self.last_pass_rate or PHASE_A_RATE, now, "WARNING in B: " + "; ".join(why), True)
-            elif self.sent["B"] >= PHASE_B_MAX_ORDERS:
+            elif self.sent["B"] - self.step_base >= STEP_QUOTAS[self.step]:
+                ok = self._step_passes(now, s)
+                self.step_log.append({"step": self.step, "rate": STAIRCASE[self.step], "result": "PASS" if ok else "FAIL", "t": now})
+                if ok:
+                    self.last_pass_rate = STAIRCASE[self.step]
+                    if self.step + 1 < len(STAIRCASE):
+                        self._start_step(self.step + 1, now)
+                    else:
+                        self._enter_c(self.last_pass_rate, now, f"top step {STAIRCASE[-1]}/s passed: escalation stops "
+                                      "(upper stability boundary not bracketed by L1)", False)
+                else:
+                    self._enter_c(self.last_pass_rate or PHASE_A_RATE, now, f"step {STAIRCASE[self.step]}/s failed", True)
+            elif self.sent["B"] >= PHASE_B_MAX_ORDERS:   # defensive: unreachable while quotas sum to the cap
                 # A step cut short by the cap is judged only if it ran long enough for its 30 s window; otherwise it is
                 # recorded as INCOMPLETE and never promoted to r*.
                 if now - self.step_start >= MIN_JUDGE_S:
@@ -182,17 +204,6 @@ class Governor:
                 if ok:
                     self.last_pass_rate = STAIRCASE[self.step]
                 self._enter_c(self.last_pass_rate or PHASE_A_RATE, now, "B order cap reached", ok is False)
-            elif now - self.step_start >= STEP_SECONDS:
-                ok = self._step_passes(now, s)
-                self.step_log.append({"step": self.step, "rate": STAIRCASE[self.step], "result": "PASS" if ok else "FAIL", "t": now})
-                if ok:
-                    self.last_pass_rate = STAIRCASE[self.step]
-                    if self.step + 1 < len(STAIRCASE):
-                        self._start_step(self.step + 1, now)
-                    else:
-                        self._enter_c(self.last_pass_rate, now, "top step passed (stability point not bracketed)", False)
-                else:
-                    self._enter_c(self.last_pass_rate or PHASE_A_RATE, now, f"step {STAIRCASE[self.step]}/s failed", True)
         elif self.phase == "C":
             if why and now - self.last_c_drop >= C_DROP_COOLDOWN_S:
                 lower = max(PHASE_A_RATE, (self.r_star or PHASE_A_RATE) - 0.5)
@@ -212,7 +223,7 @@ class Governor:
             self._go("E", now, "all planned orders sent")
 
     def _start_step(self, k, now):
-        self.step, self.step_start = k, now
+        self.step, self.step_start, self.step_base = k, now, self.sent["B"]
         if self.phase != "B":
             self._go("B", now, f"step {STAIRCASE[k]}/s")
         else:
