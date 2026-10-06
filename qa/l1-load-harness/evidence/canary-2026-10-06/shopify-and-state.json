@@ -1,0 +1,104 @@
+{
+ "draft": {
+  "id": "gid://shopify/DraftOrder/1614955151734",
+  "name": "#D36",
+  "status": "COMPLETED",
+  "tags": [
+   "qa-load",
+   "QAL-CANARY"
+  ]
+ },
+ "order": {
+  "id": "gid://shopify/Order/13599260639606",
+  "name": "#1029",
+  "createdAt": "2026-10-06T13:57:30Z",
+  "updatedAt": "2026-10-06T13:57:32Z",
+  "displayFinancialStatus": "PAID",
+  "displayFulfillmentStatus": "UNFULFILLED",
+  "test": false,
+  "cancelledAt": null,
+  "confirmed": true,
+  "requiresShipping": false,
+  "email": null,
+  "phone": null,
+  "customer": null,
+  "tags": [
+   "qa-load",
+   "QAL-CANARY"
+  ],
+  "paymentGatewayNames": [],
+  "total": "0.0 GBP",
+  "subtotal": "0.0",
+  "discounts": "1.0",
+  "tax": "0.0",
+  "taxLines": [],
+  "transactions": [],
+  "fulfillmentOrders": [
+   {
+    "status": "OPEN",
+    "requestStatus": "UNSUBMITTED"
+   }
+  ],
+  "lineItems": [
+   {
+    "quantity": 1,
+    "product": "gid://shopify/Product/15916653642102",
+    "discountedTotal": "1.0"
+   }
+  ],
+  "metafields": [],
+  "events": [
+   "13:57:30Z Stress Driver created this order from draft order #D36",
+   "13:57:30Z Confirmation generated",
+   "13:57:30Z Stress Driver added a note",
+   "13:57:32Z tax_finalization_capture_started (Shopify)",
+   "13:57:32Z Received new order #1029 (Shopify)"
+  ],
+  "third_party_app_events": 0
+ },
+ "product": {
+  "id": "gid://shopify/Product/15916653642102",
+  "title": "QA CANARY L1-C (QA ONLY — NOT FOR SALE)",
+  "handle": "qa-canary-l1-c",
+  "status": "ACTIVE",
+  "publishedAt": null,
+  "resourcePublicationsCount": 0,
+  "metafields": [],
+  "variant": "gid://shopify/ProductVariant/58904384012662",
+  "price": "1.00",
+  "tracked": false,
+  "requiresShipping": false
+ },
+ "store": {
+  "ordersCount_before": 28,
+  "ordersCount_after": 29,
+  "latest_before": "#1028"
+ },
+ "tag_search_findings": {
+  "draftOrders tag:QAL": [
+   "#D36 (QAL-CANARY)"
+  ],
+  "orders tag:qa-load": [
+   "#1029"
+  ],
+  "orders tag:QAL": []
+ },
+ "d1_after": {
+  "competitions": 7,
+  "allocations": 19,
+  "events": 47,
+  "entries": 137,
+  "qal_or_canary_competitions": 0,
+  "canary_allocations": 0,
+  "canary_events": 0
+ },
+ "klaviyo": {
+  "placed_order_1_to_7_oct_before": 0,
+  "placed_order_after": 0,
+  "ordered_product_before": 0,
+  "ordered_product_after": 0,
+  "flows": [
+   "Welcome Email (Added to List, live)"
+  ]
+ }
+}

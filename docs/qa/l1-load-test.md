@@ -57,6 +57,17 @@ order; no progress for 10 min → restore.
 3. Fixture: L1 product (connector), D1 registration (`register.sh`), 750 drafts (`stage.py`).
 4. The one live run.
 
+## Stage 2 canary — 6 Oct 2026
+
+Order #1029 on the unregistered canary product: PAID, £0.00, £0 tax, no transaction; orders/create and orders/paid each delivered
+once (HTTP 200, dry run); the allocator's sweep read it and left it out of scope; D1 unchanged; Klaviyo 0 events; no app activity on
+the order. Evidence: `/qa/l1-load-harness/evidence/canary-2026-10-06/`.
+
+Found by the canary (harness fix needed before Stage 3, not made): Shopify tag search is not exact. `draftOrders(query: "tag:QAL")`
+matches the canary draft #D36 (tag QAL-CANARY), so `stage.py` would refuse to stage; `orders(query: "tag:qa-load")` returns the
+canary order #1029, so the post-run export and reconciliation would count it as a non-plan order and fail L1. The canary order and
+draft must be excluded explicitly (by id) in those checks.
+
 ## Open design points before Stage 4
 
 - Resolved (amendment of 6 Oct 2026): the staircase previously reached only 3.0/s (40 s steps, 500-order cap). It now judges every
