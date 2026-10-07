@@ -1,0 +1,10 @@
+00-competition.sql 542 bytes
+01-pool.sql 90000 bytes
+02-pool.sql 14184 bytes
+99-open.sql 185 bytes
+== apply 00-competition.sql (543 bytes)
+== apply 01-pool.sql (90001 bytes)
+== apply 02-pool.sql (14185 bytes)
+== apply 99-open.sql (186 bytes)
+verify: [[{"s": "OPEN", "cap": 2000, "n": 2000, "av": 2000, "asq": 0, "lo": 1001, "hi": 3000, "e1": "QAL1001", "e2": "QAL3000"}]]
+REGISTERED: 15918227030390 QAL1001..QAL3000 (2000 AVAILABLE) at 2026-10-07T11:11:57.685Z

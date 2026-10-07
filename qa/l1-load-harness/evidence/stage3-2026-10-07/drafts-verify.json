@@ -1,0 +1,44 @@
+{
+ "ts": 1791372326.7743897,
+ "checked": 750,
+ "problems": [],
+ "open": 750,
+ "quantity_mix": [
+  [
+   1,
+   300
+  ],
+  [
+   2,
+   225
+  ],
+  [
+   3,
+   150
+  ],
+  [
+   5,
+   60
+  ],
+  [
+   10,
+   15
+  ]
+ ],
+ "units": 1650,
+ "names": [
+  "#D37",
+  "#D786"
+ ],
+ "currency": [
+  "GBP"
+ ],
+ "subtotals": [
+  "0.0"
+ ],
+ "query_cost_per_batch": [
+  9,
+  9
+ ],
+ "reader": "QA Stress Driver (read_draft_orders), nodes(ids) by exact id"
+}

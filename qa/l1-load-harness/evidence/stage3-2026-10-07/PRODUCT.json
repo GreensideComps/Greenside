@@ -1,0 +1,30 @@
+{
+ "id": "gid://shopify/Product/15918227030390",
+ "title": "QA — Allocator LOAD Test L1 (QA ONLY — NOT FOR SALE)",
+ "handle": "qa-allocator-load-test-l1",
+ "status": "ACTIVE",
+ "publishedAt": null,
+ "onlineStoreUrl": null,
+ "tags": [
+  "qa-load",
+  "qa-only",
+  "QAL"
+ ],
+ "publications": 0,
+ "metafields": {
+  "entry_prefix": "QAL",
+  "entry_start_number": "1001",
+  "entries_total": "2000",
+  "skill_mode": "none"
+ },
+ "variants": [
+  {
+   "id": "gid://shopify/ProductVariant/58912245252470",
+   "price": "1.00",
+   "inventoryPolicy": "DENY",
+   "inventoryQuantity": 1650,
+   "tracked": true,
+   "requiresShipping": false
+  }
+ ]
+}

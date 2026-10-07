@@ -1,0 +1,5 @@
+{"query": "draftOrders(query: \"tag:QAL\", sortKey: ID) { status customer { id } order { id } lineItems { variant } }, 6 pages via the Shopify connector (read-only)",
+ "page_end_plan_positions": [99, 199, 349, 499, 649, 750],
+ "draftOrdersCount_tag_QAL": 751, "draftOrdersCount_tag_QAL_open": 750, "draftOrdersCount_all_open": 759,
+ "result": "750 plan drafts + the known canary #D36: every plan draft OPEN, customer null, order null, variant 58912245252470",
+ "latest_order": "#1029 (2026-10-06T13:57:30Z): no order created by Stage 3"}

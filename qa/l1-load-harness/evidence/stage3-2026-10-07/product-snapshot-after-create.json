@@ -1,0 +1,64 @@
+{
+ "id": "gid://shopify/Product/15918227030390",
+ "title": "QA — Allocator LOAD Test L1 (QA ONLY — NOT FOR SALE)",
+ "handle": "qa-allocator-load-test-l1",
+ "status": "ACTIVE",
+ "publishedAt": null,
+ "onlineStoreUrl": null,
+ "tags": [
+  "qa-load",
+  "qa-only",
+  "QAL"
+ ],
+ "createdAt": "2026-10-07T11:11:12Z",
+ "resourcePublicationsCount": {
+  "count": 0
+ },
+ "resourcePublications": {
+  "nodes": []
+ },
+ "metafields": {
+  "nodes": [
+   {
+    "namespace": "custom",
+    "key": "entry_prefix",
+    "type": "single_line_text_field",
+    "value": "QAL"
+   },
+   {
+    "namespace": "custom",
+    "key": "entry_start_number",
+    "type": "number_integer",
+    "value": "1001"
+   },
+   {
+    "namespace": "custom",
+    "key": "entries_total",
+    "type": "number_integer",
+    "value": "2000"
+   },
+   {
+    "namespace": "custom",
+    "key": "skill_mode",
+    "type": "single_line_text_field",
+    "value": "none"
+   }
+  ]
+ },
+ "variants": {
+  "nodes": [
+   {
+    "id": "gid://shopify/ProductVariant/58912245252470",
+    "price": "1.00",
+    "inventoryPolicy": "DENY",
+    "inventoryQuantity": 1650,
+    "taxable": true,
+    "inventoryItem": {
+     "id": "gid://shopify/InventoryItem/57388074664310",
+     "tracked": true,
+     "requiresShipping": false
+    }
+   }
+  ]
+ }
+}

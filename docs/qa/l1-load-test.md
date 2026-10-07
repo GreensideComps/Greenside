@@ -1,8 +1,10 @@
 # L1 allocator load test (design v2, approved 6 Oct 2026; staircase amended 6 Oct 2026)
 
 Status: Stage 1 done (offline). Stage 2 done (canary #1029, 6 Oct 2026; side-effect checks confirmed by the owner on 7 Oct 2026).
-Stage 4 wiring done offline (7 Oct 2026, below). **Stage 3 (fixture) and Stage 4 (live run) have not run**; no L1 product, draft,
-D1 row or Worker change exists. Harness: `/qa/l1-load-harness/` (README there lists every file and command).
+Stage 4 wiring done offline (7 Oct 2026, below). **Stage 3 fixture done 7 Oct 2026**: product 15918227030390 (variant
+58912245252470), QA D1 competition 15918227030390 QAL1001-QAL3000 AVAILABLE, 750 OPEN £0 drafts #D37-#D786, bound plan sha256
+6fa7442b…; evidence `/qa/l1-load-harness/evidence/stage3-2026-10-07/`. **Stage 4 (live run) has NOT run** and needs its own approval.
+Harness: `/qa/l1-load-harness/` (README there lists every file and command).
 
 ## Question
 
