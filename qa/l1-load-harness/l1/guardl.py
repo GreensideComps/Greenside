@@ -5,9 +5,11 @@ Decision core (pure, offline-tested): Guard.tick(now, inputs) -> {safety, load, 
 SAFETY (-> restore to DRY_RUN=true at once, retried until verified):
   failwatch SAFETY_STOP | webhook subscriptions changed or missing | D1 allow-list deviation (any change outside L1, any L1
   allocation not explained by a completed plan draft, any release, integrity counter) | production Worker present | DRY_RUN
-  changed unexpectedly | manual-stop | load.py SAFETY (safety-stop file)
+  changed unexpectedly or missing | QA Worker off the gate-passed version | QA Worker unverified for > 30 s (missing, failed or
+  stale reading) | manual-stop | load.py SAFETY (safety-stop file)
 LOAD STOP (driver stops sending; window stays live; drain continues):
-  failwatch LOAD_STOP | subscription check stale (> 90 s) | D1 count or allow-list overdue
+  failwatch LOAD_STOP (a failed delivery seen by a tail OR by Workers Logs; an incomplete Workers Logs window) | Workers Logs
+  coverage missing, gapped or stale (> 150 s) | subscription check stale (> 90 s) | D1 count or allow-list overdue
 DRAIN (after the driver stops): complete when D1 holds exactly the units of every completed draft -> planned restore;
   30 min after the last order -> deadline restore; no allocation progress for 10 min -> no-progress restore.
 Schedules: D1 COUNT every 30 s; full allow-list every 5 min; subscriptions via the sampler every 30 s.
@@ -24,6 +26,12 @@ from failwatch import FailWatch  # noqa: E402
 SUBS_STALE_S = 3 * SUBSCRIPTION_EVERY_S
 D1_OVERDUE_S = 3 * D1_COUNT_EVERY_S
 ALLOWLIST_OVERDUE_S = 2 * ALLOWLIST_EVERY_S
+# Stage 4 wiring (new checks; no existing threshold changed). livewin.py polls; the guard judges freshness and content.
+WORKER_POLL_S = 10          # livewin.py poll-worker: one QA Worker reading (3 read-only GETs) every 10 s
+WORKER_STALE_S = 30         # while live, no fresh good reading for > 30 s (3 polls) -> SAFETY (the Worker is unverified)
+WL_POLL_S = 30              # livewin.py poll-wl: one Workers Logs window every 30 s ...
+WL_LAG_S = 60               # ... ending 60 s in the past (measured ingestion delay 8.5-28.4 s; evidence.py waits 60 s)
+WL_STALE_S = 150            # while live, Workers Logs coverage ending > 150 s ago (lag + poll + headroom) -> LOAD STOP
 INTEGRITY_ZERO = ("dup_events", "audit_gaps", "ledger_drift", "orphans", "entry_order_mismatch", "dup_issue", "multi_held",
                   "dup_release", "dup_return", "freeze_audit", "bad_events")
 
@@ -171,6 +179,7 @@ class Guard:
         self.safety, self.load = [], []
         self.drained = False
         self.verdict = None
+        self.t0, self.last_worker, self.wl_hi_ms = None, None, None
 
     def _safety(self, why):
         if why not in self.safety:
@@ -185,7 +194,14 @@ class Guard:
     def tick(self, now, inp):
         """inp: events [webhook events], throttled [ts], wl {events, complete}|None, sampler {ts, subs_ts, subs_ok}|None,
         d1_count {ts, allocated}|None, allowlist {ts, deviations}|None, worker {dry_run, production_present, restored_verified},
-        manual_stop, load_safety_file, driver {started, done, last_sent_ts, completed_units}."""
+        manual_stop, load_safety_file, driver {started, done, last_sent_ts, completed_units}.
+        Stage 4 wiring: worker is the newest livewin.py reading {ts, read_ok, production_present, dry_run, versions,
+        expected_version}; wl is a list (or one) of livewin.py Workers Logs windows {from_ms, to_ms, complete, events}; wl_from_ms
+        is where Workers Logs coverage must start. The guard is LIVE from its first tick until a restore is requested: the window
+        opens at the gate (DRY_RUN=false), before the driver starts."""
+        if self.t0 is None:
+            self.t0 = now
+        live_from_gate = self.restore_reason is None
         for ev in inp.get("events") or []:
             self.fw.observe(ev, "tail")
             if ev.get("wall_ms") is not None:
@@ -193,8 +209,26 @@ class Guard:
             if ev.get("processed") and ev.get("order") and ev["order"] not in self.done_orders:
                 self.done_orders[ev["order"]] = ev["ts"]
         self.throttled += list(inp.get("throttled") or [])
-        if inp.get("wl"):
-            self.fw.confirm_wl(inp["wl"].get("events") or [], bool(inp["wl"].get("complete")))
+        wins = inp.get("wl") or []
+        if self.wl_hi_ms is None and isinstance(inp.get("wl_from_ms"), int):
+            self.wl_hi_ms = inp["wl_from_ms"] - 1
+        for win in (wins if isinstance(wins, list) else [wins]):
+            # every window goes through the existing failwatch: failures count, an incomplete window is a LOAD STOP
+            self.fw.confirm_wl(win.get("events") or [], bool(win.get("complete")))
+            if not win.get("complete"):
+                continue
+            lo, hi = win.get("from_ms"), win.get("to_ms")
+            if not (isinstance(lo, int) and isinstance(hi, int) and lo <= hi):
+                self._load("Workers Logs window malformed (no valid from_ms/to_ms)")
+            elif self.wl_hi_ms is None or lo > self.wl_hi_ms + 1:
+                self._load(f"Workers Logs coverage gap before {lo} (covered to {self.wl_hi_ms})")
+            else:
+                self.wl_hi_ms = max(self.wl_hi_ms, hi)
+        if live_from_gate:
+            if self.wl_hi_ms is None:
+                self._load("Workers Logs coverage start unknown (wl_from_ms missing)")
+            elif now * 1000 - self.wl_hi_ms > WL_STALE_S * 1000:
+                self._load(f"Workers Logs missing or stale: coverage ends {now - self.wl_hi_ms / 1000:.0f}s ago (> {WL_STALE_S}s)")
         drv = inp.get("driver") or {}
         if drv.get("done") and drv.get("last_sent_ts") is not None:
             self.fw.note_load_stop(drv["last_sent_ts"])
@@ -226,10 +260,23 @@ class Guard:
         if window and now - (self.last_allow or started) > ALLOWLIST_OVERDUE_S:
             self._load("D1 allow-list overdue")
         w = inp.get("worker") or {}
-        if w.get("production_present"):
+        if w.get("production_present") is True:
             self._safety("production Worker present")
-        if window and w.get("dry_run") not in (None, "false"):
-            self._safety(f"QA Worker DRY_RUN changed unexpectedly to {w.get('dry_run')!r}")
+        if live_from_gate:
+            ts = w.get("ts")
+            if w.get("read_ok") is True and isinstance(ts, (int, float)) and now - ts <= WORKER_STALE_S:
+                self.last_worker = max(self.last_worker or ts, ts)
+                if w.get("production_present") is not False:
+                    self._safety("production Worker presence not verified absent")
+                if w.get("dry_run") is None:
+                    self._safety("QA Worker DRY_RUN missing")
+                elif w.get("dry_run") != "false":
+                    self._safety(f"QA Worker DRY_RUN changed unexpectedly to {w.get('dry_run')!r}")
+                exp = w.get("expected_version")
+                if not exp or w.get("versions") != [[exp, 100]]:
+                    self._safety(f"QA Worker not on the single 100% gate-passed version ({w.get('versions')} vs {exp})")
+            if now - (self.last_worker if self.last_worker is not None else self.t0) > WORKER_STALE_S:
+                self._safety(f"QA Worker state not verified for > {WORKER_STALE_S}s (Worker input missing, failed or stale)")
         if inp.get("manual_stop"):
             self._safety("manual-stop")
         if inp.get("load_safety_file"):
@@ -280,9 +327,11 @@ def tick_cli(d):
     return 10 if out["actions"] else 0
 
 
-def collect(d, now=None, cf=None, d1_query=None, wl_fetch=None):
+def collect(d, now=None, d1_query=None):
     """Build DIR/guardl-input.json from the live sources. Read-only everywhere: tails (local files), sampler.jsonl (local), QA D1
-    via tools/gs read-only SQL, Cloudflare Worker settings (GET), Workers Logs (query API). Never a Shopify read."""
+    via tools/gs read-only SQL, and the livewin.py poller files: worker-poll.jsonl (QA Worker settings/deployments and the
+    production Worker, read-only GETs) and wl-poll.jsonl (Workers Logs windows). Never a Shopify read. A missing poller file
+    is passed on as missing input; the guard turns missing or stale input into a stop, never into a pass."""
     now = time.time() if now is None else now
     cfg = read_json(os.path.join(d, "guardl-config.json"))
     cid = str(cfg["competition_id"])
@@ -322,12 +371,8 @@ def collect(d, now=None, cf=None, d1_query=None, wl_fetch=None):
     succ = [r for r in ev if r.get("kind") == "request" and r.get("outcome") == "SUCCESS"]
     if due.get("allowlist"):
         snap_sql = open(os.path.join(cfg["repo"], "qa", "b3-stress-harness", "b3stress", "snap.sql")).read()
-        r = d1_query(snap_sql)
-        if r is not None:
-            snap = r[0]
-            for k in ("competitions", "entries", "allocations", "events", "put_summary", "integrity"):
-                if isinstance(snap.get(k), str):
-                    snap[k] = json.loads(snap[k])
+        snap = d1_snapshot(d1_query, snap_sql)
+        if snap is not None:
             ref = read_json(os.path.join(d, "d1-ref.json"))
             inp["allowlist"] = {"ts": now, "deviations": allowlist(ref, snap, cid, [x["qty"] for x in succ], cfg["pre_max_order_number"])}
     started = os.path.exists(os.path.join(d, f"load-{cid}.done"))
@@ -336,12 +381,63 @@ def collect(d, now=None, cf=None, d1_query=None, wl_fetch=None):
                      "done": os.path.exists(os.path.join(d, "load-summary.json")),
                      "last_sent_ts": max((r["t_send"] for r in sent), default=None),
                      "completed_units": sum(x["qty"] for x in succ)}
-    if cf is not None:
-        inp["worker"] = cf()
-    if wl_fetch is not None and now - prev.get("wl_ts", 0) >= 60:
-        inp["wl"] = wl_fetch(now)
+    w = last_jsonl(os.path.join(d, "worker-poll.jsonl"))
+    if w is not None:
+        inp["worker"] = w
+    inp["wl"], offs["wl-poll.jsonl"] = new_jsonl(os.path.join(d, "wl-poll.jsonl"), offs.get("wl-poll.jsonl", 0))
+    write_json(offp, offs)
+    inp["wl_from_ms"] = cfg.get("wl_from_ms")
     write_json(os.path.join(d, "guardl-input.json"), inp)
     return inp
+
+
+SNAP_JSON_FIELDS = ("competitions", "entries", "allocations", "events", "put_summary", "integrity", "webhook_deliveries", "sqlite_seq")
+
+
+def d1_snapshot(d1_query, snap_sql):
+    """One read-only snap.sql row in parsed form (the form allowlist() and d1-ref.json use), or None if the read failed."""
+    r = d1_query(snap_sql)
+    if not r or not isinstance(r[0], dict) or r[0].get("marker") != "SW4C_SNAP":
+        return None
+    snap = dict(r[0])
+    for k in SNAP_JSON_FIELDS:
+        if isinstance(snap.get(k), str):
+            snap[k] = json.loads(snap[k])
+    return snap
+
+
+def last_jsonl(path):
+    """The newest complete JSON line of a poller file, or None (missing file, no complete line, unparseable)."""
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, 2)
+            f.seek(max(0, f.tell() - 65536))
+            lines = f.read().split(b"\n")[:-1]          # the last element is an incomplete line (or empty)
+        return json.loads(lines[-1]) if lines else None
+    except (OSError, ValueError):
+        return None
+
+
+def new_jsonl(path, offset):
+    """Complete JSON lines appended since offset -> (objects, new offset). A partial last line is left for the next tick; a line
+    that does not parse becomes an INCOMPLETE window, so a corrupt poller record can never pass silently."""
+    try:
+        with open(path, "rb") as f:
+            f.seek(offset)
+            data = f.read()
+    except OSError:
+        return [], offset
+    end = data.rfind(b"\n") + 1
+    out = []
+    for line in data[:end].split(b"\n"):
+        if not line.strip():
+            continue
+        try:
+            o = json.loads(line)
+            out.append(o if isinstance(o, dict) else {"complete": False, "events": [], "problems": ["non-object line"]})
+        except ValueError:
+            out.append({"complete": False, "events": [], "problems": ["unparseable wl-poll line"]})
+    return out, offset + end
 
 
 def _driver_records(d):

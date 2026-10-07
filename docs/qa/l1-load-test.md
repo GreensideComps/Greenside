@@ -1,7 +1,8 @@
 # L1 allocator load test (design v2, approved 6 Oct 2026; staircase amended 6 Oct 2026)
 
-Status: **Stage 1 (offline build + tests) only.** Nothing has run live. No product, draft, D1 row, order, webhook or Worker
-change exists for L1. Harness: `/qa/l1-load-harness/` (README there lists every file and command).
+Status: Stage 1 done (offline). Stage 2 done (canary #1029, 6 Oct 2026; side-effect checks confirmed by the owner on 7 Oct 2026).
+Stage 4 wiring done offline (7 Oct 2026, below). **Stage 3 (fixture) and Stage 4 (live run) have not run**; no L1 product, draft,
+D1 row or Worker change exists. Harness: `/qa/l1-load-harness/` (README there lists every file and command).
 
 ## Question
 
@@ -73,8 +74,29 @@ and qa-load and refuses on any of them except that exact draft; `shopsnapl.py` a
 the L1 population (reported as `excluded_known_canary`), fail on any other non-plan order or draft, and fail if the canary ever
 holds an allocation. `canary.py` now refuses to create a second canary. Nothing is excluded by tag.
 
-Stage 3 remains blocked until the owner confirms the side-effect checks for #1029 (staff email, UpPromote, Meta Events,
-Flow / automations / accounting).
+Side-effect checks for #1029, confirmed by the owner on 7 Oct 2026: staff email clean (but the info@ mailbox has received no
+staff order email since #1004: MUST FIX BEFORE LAUNCH, not an L1 blocker); Shopify app push SIDE EFFECT, ACCEPTED, including up
+to 750 pushes in the live run; Klaviyo clean (0 events); UpPromote clean; Meta clean (channel not connected); accounting: none
+configured; Shopify Flow installed with no active workflows; analytics and the weekly summary include QA orders: ACCEPTED.
+
+## Stage 4 wiring (offline, 7 Oct 2026)
+
+Found before any live step: the committed guard never received the QA Worker or Workers Logs inputs (`guardl.py collect` was called
+without them), so "production Worker present", "DRY_RUN changed" and Workers Logs failure confirmation were inactive during a run,
+and nothing produced the state files `load.py live` and the guard read. Added, offline only, with no change to the governor, the
+thresholds, the staircase, the failwatch rules, `load.py`, `sampler.py` or any B3 script (pinned by sha256 in the tests):
+
+- `livewin.py` (read-only): a QA Worker poller (the same GETs and production-Worker rule as `fire.py check_live_gates`) and a
+  Workers Logs poller (`b3obs/obsq.py` windows, contiguous, 60 s behind now); writers and checks for every state file.
+- `guardl.py`: reads both poller files. While live (from the gate until a restore is requested): no fresh good Worker reading for
+  30 s, a production Worker, a missing or unexpected `DRY_RUN`, or a version other than the gate-passed one is a SAFETY STOP; every
+  Workers Logs window goes through the existing failwatch (failures count; an incomplete window is a LOAD STOP); a coverage gap, a
+  malformed window, an unknown start or coverage older than 150 s is a LOAD STOP.
+- `window.sh`: the Stage 4 runbook over the unchanged B3 `gate.sh` / strict gate / `restore.sh` / `postcheck.sh`.
+
+New checks, new numbers (none of the existing thresholds changed): Worker poll 10 s, Worker stale 30 s; Workers Logs poll 30 s,
+lag 60 s, stale 150 s. Known limitation: under the strict Workers Logs rule an incomplete window (for example an invocation group
+missing its record) is a LOAD STOP, which ends the staircase early; it never passes silently.
 
 ## Open design points before Stage 4
 

@@ -1380,16 +1380,34 @@ class RegisterTests(unittest.TestCase):
 
 
 # =================================================================================================================================
+GATE_VER = "0f1e2d3c-4b5a-6978-8a9b-0c1d2e3f4a5b"
+
+
+def good_worker(now, **kw):
+    """A fresh, good livewin.py QA Worker reading during the live window."""
+    w = {"ts": now, "read_ok": True, "production_present": False, "dry_run": "false", "versions": [[GATE_VER, 100]],
+         "expected_version": GATE_VER, "http": {"production": 404, "settings": 200, "deployments": 200}, "problems": []}
+    w.update(kw)
+    return w
+
+
+def wl_win(lo_ms, hi_ms, events=(), complete=True, **kw):
+    w = {"ts": hi_ms / 1000 + 60, "from_ms": lo_ms, "to_ms": hi_ms, "complete": complete, "events": list(events), "problems": []}
+    w.update(kw)
+    return w
+
+
 class GuardTests(unittest.TestCase):
     def base(self, now, **kw):
         d = {"sampler": {"ts": now, "subs_ts": now, "subs_ok": True}, "d1_count": {"ts": now, "allocated": kw.pop("allocated", 0)},
-             "worker": {"dry_run": "false"}, "driver": {"started": 0.0, "done": False, "last_sent_ts": None, "completed_units": 0}}
+             "worker": good_worker(now), "wl": [], "wl_from_ms": int(now * 1000),
+             "driver": {"started": 0.0, "done": False, "last_sent_ts": None, "completed_units": 0}}
         d.update(kw)
         return d
 
     def test_safety_sources(self):
         cases = [dict(sampler={"ts": 1, "subs_ts": 1, "subs_ok": False}), dict(manual_stop=True), dict(load_safety_file=True),
-                 dict(worker={"dry_run": "false", "production_present": True}), dict(worker={"dry_run": "true"}),
+                 dict(worker=good_worker(10.0, production_present=True)), dict(worker=good_worker(10.0, dry_run="true")),
                  dict(allowlist={"ts": 1, "deviations": ["new allocation on competition 15897614614902 (not L1)"]}),
                  dict(events=[ev(1, status=500), ev(2, status=500)])]
         for c in cases:
@@ -1671,6 +1689,804 @@ class ManifestRehearsalTests(unittest.TestCase):
             self.assertEqual(load.main(["plan-template", "--out", os.path.join(d, "p.json")]), 0)
         self.assertEqual(json.load(open(os.path.join(d, "p.json"))), json.loads(common.canonical(plan_template())))
         shutil.rmtree(d)
+
+
+
+# =================================================================================================================================
+# Stage 4 wiring (offline). QA Worker and Workers Logs inputs fail closed; livewin.py writes the state files load.py / guardl /
+# fire.py read; window.sh sequences the existing B3 gate/restore mechanisms. No network: every transport is a fake.
+import livewin  # noqa: E402
+
+B3D = os.path.join(REPO, "qa", "b3-stress-harness", "b3stress")
+FIRE = shop.load_fire()
+
+
+class FakeCF:
+    """Fake Cloudflare transport for the REAL fire.cf_json: records every (method, path); answers by path suffix."""
+
+    def __init__(self, prod=(404, {"success": False, "errors": [{"code": 10007}]}), dry=("false",), versions=((GATE_VER, 100),),
+                 settings_status=200, deployments_status=200, fail=None):
+        self.prod, self.dry, self.versions = prod, dry, versions
+        self.settings_status, self.deployments_status, self.fail, self.calls = settings_status, deployments_status, fail, []
+
+    def open(self):
+        return FakeConn(self)
+
+    def handle(self, method, path, body, headers):
+        self.calls.append((method, path))
+        if self.fail and self.fail in path:
+            raise ConnectionError("simulated transport failure")
+        if path.endswith(f"/{FIRE.PROD_WORKER}/settings"):
+            st, b = self.prod
+        elif path.endswith(f"/{FIRE.QA_WORKER}/settings"):
+            st, b = self.settings_status, {"success": True, "result": {"bindings": [{"name": "DRY_RUN", "type": "plain_text", "text": t}
+                                                                                    for t in self.dry] + [{"name": "SHOPIFY_STORE", "type": "plain_text", "text": "x"}]}}
+        elif path.endswith(f"/{FIRE.QA_WORKER}/deployments"):
+            st, b = self.deployments_status, {"success": True, "result": {"deployments": [
+                {"versions": [{"version_id": v, "percentage": pc} for v, pc in self.versions]}]}}
+        else:
+            st, b = 500, {}
+        return st, {}, json.dumps(b).encode()
+
+
+CF_ENV = {"CLOUDFLARE_ACCOUNT_ID": "acct-test", "CLOUDFLARE_API_TOKEN": "cftok-SECRET-eeeeee"}
+
+
+def read_worker(cf, exp=GATE_VER, now=100.0, env=CF_ENV):
+    return livewin.worker_reading(cf, env, now, exp, FIRE)
+
+
+class StageFourWorkerTests(unittest.TestCase):
+    """The QA Worker input: missing, failed, stale or wrong -> SAFETY (restore), never a silent pass."""
+
+    def tick(self, g, now, **kw):
+        return g.tick(now, GuardTests.base(None, now, **kw))
+
+    def test_W01_missing_worker_input_is_safety(self):
+        g = guardl.Guard()
+        for t in range(100, 131, 5):
+            inp = GuardTests.base(None, float(t)); inp.pop("worker")
+            out = g.tick(float(t), inp)
+            self.assertEqual(out["safety"], [], f"tolerated up to {guardl.WORKER_STALE_S}s (t={t})")
+        inp = GuardTests.base(None, 131.0); inp.pop("worker")
+        out = g.tick(131.0, inp)
+        self.assertTrue(any("not verified" in x for x in out["safety"]), out)
+        self.assertEqual(out["actions"], ["RESTORE_DRY_RUN"])
+
+    def test_W02_production_worker_present_is_safety(self):
+        for w in (good_worker(10.0, production_present=True), {"production_present": True}, good_worker(10.0, production_present=None)):
+            out = guardl.Guard().tick(10.0, GuardTests.base(None, 10.0, worker=w))
+            self.assertTrue(any("production Worker" in x for x in out["safety"]), w)
+            self.assertEqual(out["actions"], ["RESTORE_DRY_RUN"])
+        self.assertTrue(read_worker(FakeCF(prod=(200, {"success": True, "result": {}})))["production_present"])
+        self.assertIsNone(read_worker(FakeCF(prod=(500, {})))["production_present"])
+
+    def test_W03_missing_dry_run_is_safety(self):
+        out = guardl.Guard().tick(10.0, GuardTests.base(None, 10.0, worker=good_worker(10.0, dry_run=None)))
+        self.assertIn("QA Worker DRY_RUN missing", out["safety"])
+        r = read_worker(FakeCF(dry=()))
+        self.assertTrue(r["read_ok"])
+        self.assertIsNone(r["dry_run"])
+        out = guardl.Guard().tick(100.0, GuardTests.base(None, 100.0, worker=r))
+        self.assertIn("QA Worker DRY_RUN missing", out["safety"])
+
+    def test_W04_unexpected_dry_run_values_are_safety(self):
+        for v in ("true", "False", "FALSE", "", "0", "<multiple>"):
+            out = guardl.Guard().tick(10.0, GuardTests.base(None, 10.0, worker=good_worker(10.0, dry_run=v)))
+            self.assertTrue(any("DRY_RUN" in x for x in out["safety"]), v)
+        self.assertEqual(read_worker(FakeCF(dry=("false", "true")))["dry_run"], "<multiple>")
+
+    def test_W04b_dry_run_false_outside_the_window_is_refused(self):
+        # before the gate: worker-before refuses a Worker already live
+        self.assertTrue(livewin.worker_before_problems(read_worker(FakeCF(dry=("false",)), exp=None)))
+        self.assertEqual(livewin.worker_before_problems(read_worker(FakeCF(dry=("true",)), exp=None)), [])
+        # after the restore: verify-restore is false while DRY_RUN is still "false", so guardl.sh keeps retrying the restore
+        d = tmpdir()
+        with open(os.path.join(d, "restorever.txt"), "w") as f:
+            f.write(GATE_VER + "\n")
+        with open(os.path.join(d, "restoregate.txt"), "w") as f:
+            f.write("PASSED\n")
+        self.assertFalse(livewin.restore_verified(FakeCF(dry=("false",)), CF_ENV, d, 1.0, FIRE))
+        self.assertTrue(livewin.restore_verified(FakeCF(dry=("true",)), CF_ENV, d, 1.0, FIRE))
+        with open(os.path.join(d, "restoregate.txt"), "w") as f:
+            f.write("FAILED\n")
+        self.assertFalse(livewin.restore_verified(FakeCF(dry=("true",)), CF_ENV, d, 1.0, FIRE), "the restore gate must have PASSED")
+        shutil.rmtree(d)
+
+    def test_W05_stale_or_failed_readings_are_safety(self):
+        g = guardl.Guard()
+        out = None
+        for t in range(100, 140, 5):
+            out = g.tick(float(t), GuardTests.base(None, float(t), worker=good_worker(60.0)))      # a reading 40+ s old
+        self.assertTrue(any("not verified" in x for x in out["safety"]))
+        g = guardl.Guard()
+        for t in range(100, 140, 5):
+            out = g.tick(float(t), GuardTests.base(None, float(t), worker=good_worker(float(t), read_ok=False, dry_run=None)))
+        self.assertTrue(any("not verified" in x for x in out["safety"]))
+        self.assertNotIn("QA Worker DRY_RUN missing", out["safety"], "a failed read is judged by freshness, not by its fields")
+        # one failed read between good ones is tolerated
+        g = guardl.Guard()
+        for t in range(100, 200, 10):
+            w = good_worker(float(t), read_ok=False) if t == 150 else good_worker(float(t))
+            out = g.tick(float(t), GuardTests.base(None, float(t), worker=w))
+        self.assertEqual(out["safety"], [])
+        # real readings: an unusable GET or a transport failure is never read_ok
+        for cf in (FakeCF(settings_status=500), FakeCF(deployments_status=403), FakeCF(prod=(502, {})), FakeCF(fail="/deployments")):
+            self.assertFalse(read_worker(cf)["read_ok"])
+        self.assertFalse(read_worker(FakeCF(), env={})["read_ok"])
+
+    def test_W06_wrong_version_is_safety(self):
+        for kw in (dict(versions=[["other", 100]]), dict(versions=[[GATE_VER, 50], ["other", 50]]), dict(expected_version=None),
+                   dict(versions=None)):
+            out = guardl.Guard().tick(10.0, GuardTests.base(None, 10.0, worker=good_worker(10.0, **kw)))
+            self.assertTrue(any("gate-passed version" in x for x in out["safety"]), kw)
+
+    def test_W07_good_inputs_stay_clear_for_the_whole_window(self):
+        g = guardl.Guard()
+        lo = 100_000 - 1
+        for t in range(100, 700, 10):
+            hi = (t - 60) * 1000
+            wins = [wl_win(lo + 1, hi)] if hi > lo and t % 30 == 10 else []
+            if wins:
+                lo = hi
+            out = g.tick(float(t), GuardTests.base(None, float(t), worker=good_worker(float(t)), wl=wins, wl_from_ms=100_000,
+                                                   driver={"started": 100.0, "done": False, "last_sent_ts": None, "completed_units": 0}))
+            self.assertEqual((out["safety"], out["load"], out["actions"]), ([], [], []), t)
+
+    def test_W08_worker_not_judged_after_restore_requested(self):
+        g = guardl.Guard()
+        g.tick(10.0, GuardTests.base(None, 10.0, manual_stop=True))
+        out = g.tick(20.0, GuardTests.base(None, 20.0, worker=good_worker(20.0, dry_run="true", versions=[["restored", 100]])))
+        self.assertEqual(out["safety"], ["manual-stop"])
+        out = g.tick(200.0, {"worker": {"restored_verified": True}})
+        self.assertEqual(out["actions"], [])
+
+    def test_W09_reading_uses_only_read_only_gets(self):
+        cf = FakeCF()
+        r = read_worker(cf)
+        self.assertTrue(r["read_ok"])
+        self.assertEqual({m for m, _ in cf.calls}, {"GET"})
+        self.assertEqual(sorted(p.rsplit("/scripts/", 1)[1] for _, p in cf.calls),
+                         ["greenside-entry-allocator-qa/deployments", "greenside-entry-allocator-qa/settings", "greenside-entry-allocator/settings"])
+        self.assertNotIn("cftok-SECRET", json.dumps(r))
+
+
+class StageFourWorkersLogsTests(unittest.TestCase):
+    """Workers Logs input: failures it reports feed the existing failwatch; missing, gapped, incomplete or stale -> LOAD STOP."""
+
+    def test_L01_missing_workers_logs_is_load_stop(self):
+        g = guardl.Guard()
+        for t in range(100, 241, 10):
+            out = g.tick(float(t), GuardTests.base(None, float(t), wl_from_ms=100_000))
+            self.assertEqual(out["load"], [], t)
+        out = g.tick(251.0, GuardTests.base(None, 251.0, wl_from_ms=100_000))
+        self.assertTrue(any("Workers Logs missing or stale" in x for x in out["load"]), out)
+        inp = GuardTests.base(None, 10.0); inp.pop("wl_from_ms")
+        self.assertTrue(any("coverage start unknown" in x for x in guardl.Guard().tick(10.0, inp)["load"]))
+
+    def test_L02_failure_seen_only_by_workers_logs_stops(self):
+        g = guardl.Guard()
+        out = g.tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000, wl=[wl_win(100_000, 140_000, [ev(120, status=500)])]))
+        self.assertEqual(out["failwatch"], "LOAD_STOP")
+        self.assertTrue(any("failed delivery" in x for x in out["load"]))
+        self.assertEqual(out["actions"], [])
+        out = g.tick(210.0, GuardTests.base(None, 210.0, wl=[wl_win(140_001, 150_000, [ev(141, status=503)])]))
+        self.assertEqual(out["failwatch"], "SAFETY_STOP")
+        self.assertEqual(out["actions"], ["RESTORE_DRY_RUN"])
+        # a timeout (wall > 5 s) counts as a failed delivery too; tail + Workers Logs copies of one invocation count once
+        g = guardl.Guard()
+        e = ev(120, status=200, wall=5200, rid="rayX")
+        g.tick(200.0, GuardTests.base(None, 200.0, events=[e], wl_from_ms=100_000))
+        out = g.tick(201.0, GuardTests.base(None, 201.0, wl=[wl_win(100_000, 140_000, [e])]))
+        self.assertEqual((out["failwatch"], g.fw.state()["total"]), ("LOAD_STOP", {"orders/paid": 1}))
+
+    def test_L03_incomplete_window_is_load_stop(self):
+        out = guardl.Guard().tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000,
+                                                         wl=[wl_win(100_000, 140_000, complete=False, problems=["records 10 != series total 11"])]))
+        self.assertTrue(any("not complete" in x for x in out["load"]))
+
+    def test_L04_coverage_gap_is_load_stop(self):
+        g = guardl.Guard()
+        g.tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000, wl=[wl_win(100_000, 140_000)]))
+        out = g.tick(210.0, GuardTests.base(None, 210.0, wl=[wl_win(145_000, 150_000)]))
+        self.assertTrue(any("coverage gap" in x for x in out["load"]))
+        out = guardl.Guard().tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000, wl=[wl_win(120_000, 140_000)]))
+        self.assertTrue(any("coverage gap" in x for x in out["load"]), "coverage must start at wl_from_ms")
+
+    def test_L05_malformed_window_is_load_stop(self):
+        for w in ({"complete": True, "events": []}, wl_win(140_000, 100_000), dict(wl_win(1, 2), from_ms="a", to_ms="b")):
+            out = guardl.Guard().tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000, wl=[w]))
+            self.assertTrue(any("malformed" in x for x in out["load"]), w)
+
+    def test_L06_workers_logs_going_stale_is_load_stop(self):
+        g = guardl.Guard()
+        g.tick(200.0, GuardTests.base(None, 200.0, wl_from_ms=100_000, wl=[wl_win(100_000, 140_000)]))
+        self.assertEqual(g.tick(290.0, GuardTests.base(None, 290.0))["load"], [])
+        out = g.tick(291.0, GuardTests.base(None, 291.0))
+        self.assertTrue(any("missing or stale" in x for x in out["load"]))
+
+    def test_L07_collect_reads_the_poller_files(self):
+        d = tmpdir()
+        common.write_json(os.path.join(d, "guardl-config.json"), {"competition_id": L1_CID, "pre_max_order_number": 1029, "repo": REPO,
+                                                                  "restore_cmd": "x", "verify_cmd": "y", "wl_from_ms": 100_000})
+        with open(os.path.join(d, "worker-poll.jsonl"), "w") as f:
+            f.write(json.dumps(good_worker(1.0, dry_run="true")) + "\n" + json.dumps(good_worker(2.0)) + "\n")
+        with open(os.path.join(d, "wl-poll.jsonl"), "w") as f:
+            f.write(json.dumps(wl_win(100_000, 140_000)) + "\n" + "{not json\n" + json.dumps(wl_win(140_001, 150_000))[:20])
+        inp = guardl.collect(d, now=300.0, d1_query=lambda sql: None)
+        self.assertEqual(inp["worker"]["ts"], 2.0, "the newest complete reading")
+        self.assertEqual(inp["wl_from_ms"], 100_000)
+        self.assertEqual([w.get("complete") for w in inp["wl"]], [True, False], "a corrupt line becomes an INCOMPLETE window")
+        with open(os.path.join(d, "wl-poll.jsonl"), "a") as f:
+            f.write(json.dumps(wl_win(140_001, 150_000))[20:] + "\n")
+        inp2 = guardl.collect(d, now=301.0, d1_query=lambda sql: None)
+        self.assertEqual([(w["from_ms"], w["to_ms"]) for w in inp2["wl"]], [(140_001, 150_000)], "partial line read once, when complete")
+        out = guardl.Guard().tick(300.0, dict(inp, sampler={"ts": 300.0, "subs_ts": 300.0, "subs_ok": True}))
+        self.assertTrue(any("not complete" in x for x in out["load"]))
+        os.remove(os.path.join(d, "worker-poll.jsonl"))
+        self.assertNotIn("worker", guardl.collect(d, now=302.0, d1_query=lambda sql: None))
+        shutil.rmtree(d)
+
+    def test_L08_wl_poller_contiguous_and_fail_closed(self):
+        calls, d = [], tmpdir()
+        res = {"r": {"complete": True, "problems": [], "invocations": [], "records": 0, "pages": 1}}
+
+        def fetch(lo, hi):
+            calls.append((lo, hi))
+            if res["r"] is None:
+                raise TimeoutError("curl")
+            return res["r"]
+        out = os.path.join(d, "wl-poll.jsonl")
+        p = livewin.WLPoller(100_000, fetch, out)
+        self.assertIsNone(p.once(150.0), "nothing before the lag has passed")
+        w1 = p.once(200.0)
+        self.assertEqual((w1["from_ms"], w1["to_ms"], w1["complete"]), (100_000, 140_000, True))
+        res["r"] = {"complete": False, "problems": ["records 3 != series total 4"], "invocations": []}
+        w2 = p.once(230.0)
+        self.assertEqual((w2["from_ms"], w2["complete"]), (140_001, False))
+        res["r"] = None
+        w3 = p.once(260.0)
+        self.assertEqual((w3["from_ms"], w3["complete"]), (140_001, False))
+        self.assertTrue(any("query error" in x for x in w3["problems"]))
+        res["r"] = {"complete": True, "problems": [], "invocations": []}
+        w4 = p.once(290.0)
+        self.assertEqual((w4["from_ms"], w4["to_ms"]), (140_001, 230_000), "an incomplete window is re-queried from the same point")
+        for w in (w1, w2, w3, w4):
+            livewin._append(out, w)
+        self.assertEqual(livewin.WLPoller(100_000, fetch, out).next, 230_001, "a restarted poller resumes after the last complete window")
+        shutil.rmtree(d)
+
+    def test_L09_end_to_end_obsq_failure_reaches_the_guard(self):
+        sys.path.insert(0, os.path.join(REPO, "qa", "b3-stress-harness", "b3obs"))
+        import importlib
+        obsq = importlib.import_module("obsq")
+        t0, recs = 1_800_000_000_000, []
+        for i, status in enumerate((200, 500, 502, 200)):
+            ts = t0 + i * 1000
+            recs.append({"timestamp": ts + 900, "$metadata": {"id": f"i{i}", "service": obsq.SERVICE, "type": "cf-worker-event", "requestId": f"q{i}"},
+                         "$workers": {"wallTimeMs": 900, "cpuTimeMs": 5, "outcome": "ok", "scriptName": obsq.SERVICE, "scriptVersion": {"id": "v"},
+                                      "eventType": "fetch", "event": {"request": {"url": "https://x.dev/webhooks/orders/paid", "headers": {
+                                          "x-shopify-topic": "orders/paid", "x-shopify-webhook-id": f"W{i}", "cf-ray": f"ray{i}"}},
+                                          "response": {"status": status}}}})
+        d = tmpdir()
+        fake = os.path.join(d, "fake.json")
+        json.dump({"records": recs}, open(fake, "w"))
+        os.environ["OBSQ_FAKE"] = fake
+        try:
+            obsq._fake_calls[0] = 0
+            p = livewin.WLPoller(t0, obsq.fetch_window)
+            w = p.once(t0 / 1000 + 2.5 + guardl.WL_LAG_S)
+            w2 = p.once(t0 / 1000 + 10 + guardl.WL_LAG_S)
+        finally:
+            del os.environ["OBSQ_FAKE"]
+        self.assertTrue(w["complete"] and w2["complete"])
+        g = guardl.Guard()
+        out = g.tick(t0 / 1000 + 70, GuardTests.base(None, t0 / 1000 + 70, wl_from_ms=t0, wl=[w]))
+        self.assertEqual(out["failwatch"], "LOAD_STOP")
+        out = g.tick(t0 / 1000 + 71, GuardTests.base(None, t0 / 1000 + 71, wl=[w2]))
+        self.assertEqual(out["failwatch"], "SAFETY_STOP", "2 consecutive failures on orders/paid across two windows")
+        self.assertEqual(out["actions"], ["RESTORE_DRY_RUN"])
+        shutil.rmtree(d)
+
+
+def subs_nodes(prefix="https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev"):
+    topics = ["ORDERS_CANCELLED", "ORDERS_CREATE", "ORDERS_EDITED", "ORDERS_PAID", "REFUNDS_CREATE"]
+    return [{"id": f"gid://shopify/WebhookSubscription/{i}", "topic": t,
+             "endpoint": {"__typename": "WebhookHttpEndpoint", "callbackUrl": f"{prefix}/webhooks/{t.lower()}"}} for i, t in enumerate(topics)]
+
+
+def shop_handler(plan, subs=None, draft_status=None, throttle=False, orders=("#1029", "#1028")):
+    tags = {r["draft_id"]: r["tag"] for r in plan["rows"]}
+
+    def h(body):
+        q = body["query"]
+        if "webhookSubscriptions" in q:
+            return 200, {}, {"data": {"shop": {"id": "s"}, "webhookSubscriptions": {"nodes": subs if subs is not None else subs_nodes()}}}
+        if "L1PreMaxOrder" in q:
+            return 200, {}, {"data": {"orders": {"nodes": [{"id": "o", "name": n} for n in orders]}}}
+        if "L1DraftsOpen" in q:
+            if throttle:
+                return 200, {}, {"errors": [{"message": "Throttled", "extensions": {"code": "THROTTLED"}}]}
+            return 200, {}, {"data": {"nodes": [{"__typename": "DraftOrder", "id": i, "name": "#D", "status": (draft_status or {}).get(i, "OPEN"),
+                                                  "tags": ["qa-load", "QAL", tags[i]]} for i in body["variables"]["ids"]]}}
+        return 400, {}, {"errors": [{"message": "unexpected document"}]}
+    return h
+
+
+def l1_d1_db(path=":memory:"):
+    """QA D1 (allocator migrations) with an unrelated QAE competition and the fresh L1 registration (regsql)."""
+    w = World750(n_orders=0)
+    if path == ":memory:":
+        return w.conn
+    disk = sqlite3.connect(path)
+    w.conn.backup(disk)
+    return disk
+
+
+def sqlite_query(conn):
+    def q(sql):
+        cur = conn.execute(sql)
+        cols = [c[0] for c in cur.description]
+        return [dict(zip(cols, r)) for r in cur.fetchall()]
+    return q
+
+
+class StageFourStateFileTests(unittest.TestCase):
+    """The state files the live run needs are produced by livewin.py and accepted by their real consumers."""
+
+    def setUp(self):
+        self.d = tmpdir()
+        self.plan = bound_plan()
+        self.sha = plan_hash(self.plan)
+
+    def tearDown(self):
+        shutil.rmtree(self.d)
+
+    def client(self, app, docs, handler):
+        tx = FakeTx(handler, scope="write_draft_orders" if app == "stress_driver" else "read_orders,read_products")
+        return shop.Client(app, docs, env=ENV, transport=tx), tx
+
+    def prep(self, now):
+        from sampler import SUBS_DOC
+        al, _ = self.client("allocator", {SUBS_DOC, livewin.PRE_MAX_DOC}, shop_handler(self.plan))
+        sd, tx = self.client("stress_driver", {livewin.DRAFTS_DOC}, shop_handler(self.plan))
+        P = lambda n: os.path.join(self.d, n)
+        common.write_json(P("expected-subs.json"), livewin.expected_subs(al, json.load(open(livewin.POLICY))))
+        pm = livewin.pre_max_order(al)
+        common.write_json(P("pre-max-order.json"), {"pre_max_order_number": pm, "ts": now})
+        common.write_json(P("d1-ref.json"), livewin.d1_reference(sqlite_query(l1_d1_db()), L1_CID, pm))
+        common.write_json(P("drafts-open.json"), livewin.drafts_open(sd, self.plan, self.sha, now, sleep=lambda s: None))
+        for t in ("pre.jsonl", "pre2.jsonl"):
+            with open(P(t), "w") as f:
+                f.write('{"eventTimestamp": 1}\n')
+        return tx
+
+    def arm(self, now):
+        P = lambda n: os.path.join(self.d, n)
+        wlf = int((now - 100) * 1000)
+        for name, text in (("newver.txt", GATE_VER), ("gate.txt", "PASSED"), ("qag-start", str(int(now * 1000))),
+                           ("guard.pid", str(os.getpid()))):
+            with open(P(name), "w") as f:
+                f.write(text + "\n")
+        common.write_json(P("guardl-config.json"), livewin.guardl_config(self.plan, self.sha, 1029, wlf, "bash r", "python3 v"))
+        common.write_json(P("guardl.json"), {"ts": now, "safety": [], "load": [], "actions": []})
+        livewin._append(P("worker-poll.jsonl"), good_worker(now))
+        livewin._append(P("wl-poll.jsonl"), wl_win(wlf, int((now - 60) * 1000)))
+        livewin._append(P("sampler.jsonl"), {"ts": now, "available": 2000})
+
+    def test_S01_prep_files_and_read_only_documents(self):
+        import time as _t
+        tx = self.prep(_t.time())
+        subs = json.load(open(os.path.join(self.d, "expected-subs.json")))
+        self.assertEqual(len(subs), 5)
+        self.assertEqual(json.load(open(os.path.join(self.d, "pre-max-order.json")))["pre_max_order_number"], 1029)
+        dr = json.load(open(os.path.join(self.d, "drafts-open.json")))
+        self.assertEqual((dr["open"], dr["expected"], dr["checked"], dr["plan_sha256"]), (750, 750, 750, self.sha))
+        self.assertEqual(len(tx.sent), 15, "750 drafts read back by exact id in batches of 50")
+        self.assertTrue(all(b["query"] == livewin.DRAFTS_DOC for b in tx.sent))
+        from gs import read_only_graphql
+        for doc in (livewin.DRAFTS_DOC, livewin.PRE_MAX_DOC):
+            self.assertTrue(read_only_graphql(doc)[0], doc)
+        ref = json.load(open(os.path.join(self.d, "d1-ref.json")))
+        self.assertEqual(ref["marker"], "SW4C_SNAP")
+        self.assertIsInstance(ref["entries"], list, "d1-ref.json is stored parsed, the form allowlist() compares")
+        self.assertEqual(guardl.allowlist(ref, ref, L1_CID, [], 1029), [])
+
+    def test_S02_prep_refusals(self):
+        from sampler import SUBS_DOC
+        pol = json.load(open(livewin.POLICY))
+        for subs in (subs_nodes()[:4], subs_nodes(prefix="https://evil.example"), subs_nodes()[:4] + [subs_nodes()[0]]):
+            al, _ = self.client("allocator", {SUBS_DOC}, shop_handler(self.plan, subs=subs))
+            with self.assertRaises(Refused):
+                livewin.expected_subs(al, pol)
+        al, _ = self.client("allocator", {livewin.PRE_MAX_DOC}, shop_handler(self.plan, orders=()))
+        with self.assertRaises(Refused):
+            livewin.pre_max_order(al)
+        rid = self.plan["rows"][7]["draft_id"]
+        sd, _ = self.client("stress_driver", {livewin.DRAFTS_DOC}, shop_handler(self.plan, draft_status={rid: "COMPLETED"}))
+        dr = livewin.drafts_open(sd, self.plan, self.sha, 1.0, sleep=lambda s: None)
+        self.assertEqual((dr["open"], dr["problem_count"]), (749, 1))
+        sd, _ = self.client("stress_driver", {livewin.DRAFTS_DOC}, shop_handler(self.plan, throttle=True))
+        with self.assertRaises(Refused):
+            livewin.drafts_open(sd, self.plan, self.sha, 1.0, sleep=lambda s: None)
+        conn = l1_d1_db()
+        w = World750.__new__(World750); w.conn = conn
+        w._alloc(L1_CID, oid(1), "#1030", lid(1), 1, "QAL", [1001], "2026-10-06T11:00:00.000Z")
+        with self.assertRaises(Refused):
+            livewin.d1_reference(sqlite_query(conn), L1_CID, 1029)
+        with self.assertRaises(Refused):
+            livewin.d1_reference(lambda sql: None, L1_CID, 1029)
+        with self.assertRaises(Refused):
+            livewin.d1_reference(sqlite_query(l1_d1_db()), "424242", 1029)
+
+    def test_S03_check_state_phases(self):
+        import time as _t
+        now = _t.time()
+        self.prep(now)
+        self.assertEqual(livewin.check_state(self.d, self.plan, self.sha, "prelive", now)[0], [])
+        self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0], "armed needs the gate and guard files")
+        self.arm(now)
+        probs, files = livewin.check_state(self.d, self.plan, self.sha, "armed", now)
+        self.assertEqual(probs, [])
+        for f in ("guardl-config.json", "d1-ref.json", "drafts-open.json", "pre.jsonl", "pre2.jsonl", "newver.txt", "gate.txt", "qag-start"):
+            self.assertIn(f, files)
+        P = lambda n: os.path.join(self.d, n)
+        bad = [("qag-start", str(int((now - 1300) * 1000))), ("gate.txt", "GATE_FAILED"), ("newver.txt", "")]
+        for name, text in bad:
+            keep = open(P(name)).read()
+            with open(P(name), "w") as f:
+                f.write(text + "\n")
+            self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0], name)
+            with open(P(name), "w") as f:
+                f.write(keep)
+        for name in ("expected-subs.json", "d1-ref.json", "drafts-open.json", "guardl-config.json", "pre.jsonl", "guardl.json",
+                     "worker-poll.jsonl", "wl-poll.jsonl", "sampler.jsonl", "guard.pid"):
+            os.rename(P(name), P(name + ".x"))
+            self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0], f"{name} missing must fail")
+            os.rename(P(name + ".x"), P(name))
+        self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now + 1900)[0], "drafts-open older than 30 min")
+        dr = json.load(open(P("drafts-open.json")))
+        common.write_json(P("drafts-open.json"), dict(dr, ts=now - 1900))
+        self.assertEqual(livewin.check_state(self.d, self.plan, self.sha, "prelive", now)[0], ["drafts-open.json older than 30 min"])
+        common.write_json(P("drafts-open.json"), dr)
+        common.write_json(P("guardl.json"), {"ts": now, "safety": [], "load": ["Workers Logs missing or stale"], "actions": []})
+        self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0])
+        common.write_json(P("guardl.json"), {"ts": now, "safety": [], "load": [], "actions": []})
+        livewin._append(P("worker-poll.jsonl"), good_worker(now, dry_run="true"))
+        self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0])
+        livewin._append(P("worker-poll.jsonl"), good_worker(now))
+        open(P(f"load-{L1_CID}.done"), "w").close()
+        self.assertTrue(livewin.check_state(self.d, self.plan, self.sha, "armed", now)[0], "one-shot marker")
+
+    def test_S04_files_accepted_by_their_real_consumers(self):
+        import time as _t
+        now = _t.time()
+        self.prep(now)
+        self.arm(now)
+        # fire.py check_live_gates (what load.py live runs): the gate/arming/guard files plus a Worker live on newver.txt
+        self.assertEqual(FIRE.check_live_gates(FakeCF(dry=("false",)), CF_ENV, self.d, now), [])
+        self.assertTrue(FIRE.check_live_gates(FakeCF(dry=("true",)), CF_ENV, self.d, now))
+        # load.py live's drafts-open precheck (same expression)
+        pre = json.load(open(os.path.join(self.d, "drafts-open.json")))
+        self.assertTrue(pre.get("plan_sha256") == self.sha and now - pre.get("ts", 0) <= load.PRECHECK_MAX_AGE_S and pre.get("open") == len(self.plan["rows"]))
+        # sampler.py's expected subscriptions compare equal to a live snapshot of the same subscriptions
+        from sampler import subs_match, subs_of
+        self.assertTrue(subs_match(subs_of({"data": {"webhookSubscriptions": {"nodes": subs_nodes()}}}),
+                                   json.load(open(os.path.join(self.d, "expected-subs.json")))))
+        # guardl collect + tick on these files: clear, with the D1 count and allow-list read from the reference database
+        conn = l1_d1_db()
+        inp = guardl.collect(self.d, now=now, d1_query=sqlite_query(conn))
+        self.assertEqual(inp["allowlist"]["deviations"], [])
+        g = guardl.Guard()
+        out = g.tick(now, inp)
+        self.assertEqual((out["safety"], out["load"], out["actions"]), ([], [], []))
+        # the guard config carries the restore/verify commands guardl.sh runs and the Workers Logs start
+        cfg = json.load(open(os.path.join(self.d, "guardl-config.json")))
+        self.assertEqual(set(cfg), {"competition_id", "pre_max_order_number", "repo", "restore_cmd", "verify_cmd", "wl_from_ms", "plan_sha256"})
+        with self.assertRaises(Refused):
+            livewin.guardl_config(self.plan, self.sha, 1029, None, "r", "v")
+
+    def test_S05_final_failwatch_and_coverage(self):
+        P = lambda n: os.path.join(self.d, n)
+        common.write_json(P("guardl-config.json"), {"wl_from_ms": 100_000})
+        o = {"eventTimestamp": 120000, "wallTime": 900, "outcome": "ok", "event": {"request": {"url": "https://x.dev/webhooks/orders/paid",
+             "headers": {"x-shopify-topic": "orders/paid", "x-shopify-webhook-id": "W1", "cf-ray": "R1"}}, "response": {"status": 500}}, "logs": []}
+        with open(P("pre.jsonl"), "w") as f:
+            f.write(json.dumps(o) + "\n")
+        for w in (wl_win(100_000, 140_000), wl_win(140_001, 150_000, complete=False), wl_win(160_000, 170_000)):
+            livewin._append(P("wl-poll.jsonl"), w)
+        out = livewin.final(self.d)
+        self.assertEqual(out["failwatch"]["level"], "LOAD_STOP")
+        self.assertEqual(out["wl_coverage"]["gaps"], [[140_001, 159_999]])
+        self.assertEqual(out["wl_coverage"]["incomplete_windows"], 1)
+        self.assertTrue(os.path.exists(P("failwatch-final.json")))
+
+    def test_S06_governor_thresholds_and_b3_mechanisms_unchanged(self):
+        """The wiring changes no governor, threshold, failwatch rule, driver or B3 live-control script (sha256 at ef98661)."""
+        pinned = {
+            "qa/l1-load-harness/l1/governor.py": "eb86ffb442089c1dab49ba6ae9be303d49e9dfd862794d808eee896c4663f7f9",
+            "qa/l1-load-harness/l1/common.py": "9248e02bb11f7ef4d5ddac11557982c5ab361e0f63a50238816df5e6e8741853",
+            "qa/l1-load-harness/l1/failwatch.py": "23f9b2c115b78beb78208ca42655edc3f4039d2bd2d58b28709600b4ad5c26bd",
+            "qa/l1-load-harness/l1/load.py": "d7e81f31452cb08006be6384963d2fef76d8a333866756caeee201897fd4998e",
+            "qa/l1-load-harness/l1/sampler.py": "9a41c6c126835a4027d0e92da8d92e9065da762b6bfe63f63e7b0bd44aa3f55a",
+            "qa/b3-stress-harness/b3stress/gate.sh": "93a1d7f3603ab734da25b5c620c655aefd23f59f1f3ac24406982f780e0998e1",
+            "qa/b3-stress-harness/b3stress/restore.sh": "73926f0fb951d8ca232816188502be8e6afc44ae81074d4b562eafc9badc54e5",
+            "qa/b3-stress-harness/b3stress/strictgate.sh": "6d0a3ecbf7c260ac64faa8542d84987b2f121bbbf71d54a4cfa2084fce0c6f76",
+            "qa/b3-stress-harness/b3stress/fire.py": "a68efef2cd0e7fed87402d6df917461205db987a68fee42a91ba5469942c4ca7",
+            "qa/b3-stress-harness/b3obs/obsq.py": "98a56e2ec29b6a4ba9995c310c0dc86f6e3744d8b5026ca88a15fba87c82525b",
+        }
+        for rel, sha in pinned.items():
+            self.assertEqual(common.sha256_file(os.path.join(REPO, rel)), sha, rel)
+
+
+# ---- window.sh, run end to end in a sandbox: real window.sh and real livewin.py, stubbed network and stubbed B3 scripts ----------
+STUB_LIVEWIN = r"""
+import json, os, sqlite3, sys, types
+sys.path.insert(0, os.environ["L1_REAL"])
+import livewin, shop
+F, D = os.environ["L1_FAKE"], os.environ["L1_SANDBOX_D"]
+with open(os.path.join(F, "calls.log"), "a") as fh:
+    fh.write("livewin " + " ".join(a for a in sys.argv[1:] if not a.startswith("/")) + "\n")
+
+def rd(p):
+    try:
+        return open(p).read().strip()
+    except OSError:
+        return None
+
+class FakeFire:
+    PROD_WORKER, QA_WORKER = "greenside-entry-allocator", "greenside-entry-allocator-qa"
+    class CloudflareTransport:
+        pass
+    def cf_json(self, cf, path, tok):
+        dry = rd(os.path.join(F, "dry")) or "true"
+        if path.endswith("/greenside-entry-allocator/settings"):
+            return 404, {"success": False}
+        if path.endswith("/settings"):
+            return 200, {"success": True, "result": {"bindings": [{"name": "DRY_RUN", "text": dry}]}}
+        ver = rd(os.path.join(D, "restorever.txt")) if os.path.exists(os.path.join(F, "restored")) else (rd(os.path.join(D, "newver.txt")) if dry == "false" else "dddddddd-0000-0000-0000-000000000000")
+        return 200, {"success": True, "result": {"deployments": [{"versions": [{"version_id": ver, "percentage": 100}]}]}}
+
+class FakeClient:
+    def __init__(self, app, docs, env=None, transport=None):
+        self.app, self.secrets = app, []
+    def scopes(self):
+        return {"write_draft_orders"} if self.app == "stress_driver" else {"read_orders", "read_products"}
+    def post(self, doc, variables=None):
+        plan = json.load(open(os.environ["L1_PLAN"]))
+        tags = {r["draft_id"]: r["tag"] for r in plan["rows"]}
+        if "webhookSubscriptions" in doc:
+            p = "https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev/webhooks/"
+            return 200, {}, {"data": {"webhookSubscriptions": {"nodes": [{"id": str(i), "topic": t, "endpoint": {"callbackUrl": p + t}} for i, t in enumerate(
+                ["ORDERS_CANCELLED", "ORDERS_CREATE", "ORDERS_EDITED", "ORDERS_PAID", "REFUNDS_CREATE"])]}}}
+        if "L1PreMaxOrder" in doc:
+            return 200, {}, {"data": {"orders": {"nodes": [{"id": "o", "name": "#1029"}]}}}
+        return 200, {}, {"data": {"nodes": [{"__typename": "DraftOrder", "id": i, "status": "OPEN", "tags": ["qa-load", "QAL", tags[i]]}
+                                            for i in variables["ids"]]}}
+
+def d1(sql):
+    conn = sqlite3.connect(os.path.join(F, "qa.db"))
+    cur = conn.execute(sql)
+    cols = [c[0] for c in cur.description]
+    return [dict(zip(cols, r)) for r in cur.fetchall()]
+
+livewin._fire = lambda: FakeFire()
+shop.Client = FakeClient
+livewin._gs_d1 = d1
+livewin.in_slot = lambda now: True
+livewin.install_problems = lambda s, run=None: []
+livewin.prelive_sweeps = lambda d, since, ver, run=None, clock=None: (True, {"stub": "B3 prestrict + evidence"})
+livewin.webhooks_since = lambda d, since, run=None: 0
+livewin._obsq = lambda: types.SimpleNamespace(fetch_window=lambda lo, hi: {"complete": True, "problems": [], "invocations": [], "records": 0, "pages": 1})
+livewin.WL_LAG_S = 1; livewin.WL_POLL_S = 1; livewin.WORKER_POLL_S = 1
+livewin.DRAFTS_BATCH = 250
+sys.exit(livewin.main(sys.argv[1:]))
+"""
+
+STUBS_B3 = {
+    "gate.sh": 'echo gate.sh >> "$F/calls.log"; date -u +%s%3N > "$D/t0.txt"; touch "$D/conf-wanted"\n'
+               'if [ -f "$F/gate-fail" ]; then echo GATE_FAILED > "$D/gate.txt"; bash "$D/restore.sh"; exit 0; fi\n'
+               'echo 11111111-2222-3333-4444-555555555555 > "$D/newver.txt"; echo false > "$F/dry"; echo PASSED > "$D/gate.txt"\n',
+    "restore.sh": 'echo restore.sh >> "$F/calls.log"; sleep 1; echo 99999999-8888-7777-6666-555555555555 > "$D/restorever.txt"\n'
+                  'echo true > "$F/dry"; touch "$F/restored"; echo PASSED > "$D/restoregate.txt"\n',
+    "postcheck.sh": 'echo postcheck.sh >> "$F/calls.log"; echo PASSED > "$D/postcheck.txt"; touch "$D/stop"\n',
+    "dsnap.sh": 'echo "dsnap.sh $(basename $1)" >> "$F/calls.log"; echo "{}" > "$1"\n',
+    "supervisor.sh": 'while [ ! -f "$D/stop" ]; do echo \'{"eventTimestamp": 1}\' >> "$D/pre.jsonl"; echo \'{"eventTimestamp": 1}\' >> "$D/pre2.jsonl"; sleep 1; done\n',
+    "heartbeat.sh": 'while [ ! -f "$D/stop" ]; do sleep 1; done\n',
+}
+
+STUBS_L1 = {
+    "guardl.sh": 'D="$1"; echo $$ > "$D/guard.pid"; echo guardl.sh >> "$F/calls.log"; [ -f "$F/guard-die" ] && exit 1\n'
+                 'R=$(python3 -c "import json;print(json.load(open(\'$D/guardl-config.json\'))[\'restore_cmd\'])")\n'
+                 'V=$(python3 -c "import json;print(json.load(open(\'$D/guardl-config.json\'))[\'verify_cmd\'])")\n'
+                 'while :; do python3 -c "import json,time;json.dump({\'ts\':time.time(),\'safety\':[],\'load\':[],\'actions\':[]},open(\'$D/guardl.json\',\'w\'))"\n'
+                 '  if [ -f "$D/load-summary.json" ] || [ -f "$D/manual-stop" ]; then echo "guard restore" >> "$F/calls.log"; bash -c "$R"\n'
+                 '    [ "$(bash -c "$V")" = true ] && { echo "guard verified" >> "$F/calls.log"; exit 0; }; fi\n'
+                 '  sleep 1; done\n',
+    "sampler.py": 'import json, os, sys, time\nF, D = os.environ["L1_FAKE"], os.environ["L1_SANDBOX_D"]\n'
+                  'open(os.path.join(F, "calls.log"), "a").write("sampler.py\\n")\n'
+                  'while not os.path.exists(os.path.join(D, "stop")):\n'
+                  '    open(os.path.join(D, "sampler.jsonl"), "a").write(json.dumps({"ts": time.time(), "available": 2000}) + "\\n"); time.sleep(1)\n',
+    "load.py": 'import json, os, sys, time\nF, D = os.environ["L1_FAKE"], os.environ["L1_SANDBOX_D"]\n'
+               'ok = os.path.exists(os.path.join(D, "qag-start")) and os.path.exists(os.path.join(D, "guard.pid"))\n'
+               'open(os.path.join(F, "calls.log"), "a").write(f"load.py {sys.argv[1]} armed={ok} confirm={sys.argv[sys.argv.index(\'--confirm\') + 1]}\\n")\n'
+               'if os.path.exists(os.path.join(F, "load-refuse")): sys.exit(2)\n'
+               'json.dump({"dispatched": 750}, open(os.path.join(D, "load-summary.json"), "w")); sys.exit(0)\n',
+}
+
+
+class StageFourRunbookTests(unittest.TestCase):
+    """window.sh sequencing with the real window.sh and livewin.py; network and B3 live scripts stubbed; no network possible
+    (the proxy points at a closed port)."""
+
+    def setUp(self):
+        self.root = tempfile.mkdtemp(prefix="l1win-")
+        self.S, self.F = os.path.join(self.root, "S"), os.path.join(self.root, "fake")
+        self.D, self.H = os.path.join(self.S, "b3stress"), os.path.join(self.root, "l1")
+        for x in (self.D, self.F, self.H):
+            os.makedirs(x)
+        for name, body in STUBS_B3.items():
+            with open(os.path.join(self.D, name), "w") as f:
+                f.write(f'#!/usr/bin/env bash\nD="{self.D}"; F="{self.F}"\n' + body)
+            os.chmod(os.path.join(self.D, name), 0o755)
+        shutil.copy(os.path.join(L1, "window.sh"), os.path.join(self.H, "window.sh"))
+        with open(os.path.join(self.H, "livewin.py"), "w") as f:
+            f.write(STUB_LIVEWIN)
+        for name, body in STUBS_L1.items():
+            with open(os.path.join(self.H, name), "w") as f:
+                f.write((f'#!/usr/bin/env bash\nF="{self.F}"\n' if name.endswith(".sh") else "") + body)
+        self.plan = bound_plan()
+        self.sha = plan_hash(self.plan)
+        self.planf = os.path.join(self.root, "plan-bound.json")
+        common.write_json(self.planf, self.plan)
+        l1_d1_db(os.path.join(self.F, "qa.db")).close()
+        with open(os.path.join(self.F, "dry"), "w") as f:
+            f.write("true\n")
+        self.env = {k: v for k, v in os.environ.items() if not any(t in k for t in ("TOKEN", "SECRET", "CLIENT_ID", "ACCOUNT"))}
+        self.env.update(CF_ENV, HTTPS_PROXY="http://127.0.0.1:9", HTTP_PROXY="http://127.0.0.1:9", https_proxy="http://127.0.0.1:9",
+                        L1_REAL=L1, L1_FAKE=self.F, L1_SANDBOX_D=self.D, L1_PLAN=self.planf, PYTHONDONTWRITEBYTECODE="1")
+        # monitors already running (as after an earlier prelive), so window.sh does not wait 12 s for them
+        import time as _t
+        with open(os.path.join(self.D, "mon-start-ms.txt"), "w") as f:
+            f.write(str(int(_t.time() * 1000)) + "\n")
+        self.sup = subprocess.Popen(["bash", os.path.join(self.D, "supervisor.sh")], start_new_session=True)
+
+    def tearDown(self):
+        import time as _t
+        open(os.path.join(self.D, "stop"), "a").close()
+        _t.sleep(2.5)
+        for pidf in ("poll-wl.pid", "poll-worker.pid", "sampler.pid", "guard.pid"):
+            try:
+                os.kill(int(open(os.path.join(self.D, pidf)).read()), 9)
+            except (OSError, ValueError):
+                pass
+        self.sup.kill()
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def window(self, *args, timeout=180):
+        return subprocess.run(["bash", os.path.join(self.H, "window.sh"), *args], env=self.env, capture_output=True, text=True,
+                              timeout=timeout)
+
+    def calls(self):
+        try:
+            return open(os.path.join(self.F, "calls.log")).read().splitlines()
+        except OSError:
+            return []
+
+    def first(self, calls, prefix):
+        return next(i for i, c in enumerate(calls) if c.startswith(prefix))
+
+    def test_R01_live_refused_without_phrase(self):
+        for extra in ([], ["LOAD-QAL-750-ORDERS"], ["load-qal-750-orders-1650-entries"]):
+            r = self.window("live", self.S, self.planf, self.sha, *extra)
+            self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertEqual(self.calls(), [], "nothing at all runs without the phrase")
+
+    def test_R02_prelive_deploys_nothing(self):
+        r = self.window("prelive", self.S, self.planf, self.sha)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        c = self.calls()
+        self.assertFalse([x for x in c if x.startswith(("gate.sh", "restore.sh", "load.py", "guardl.sh", "livewin config"))], c)
+        order = ["livewin install-check", "livewin worker-before", "livewin prep", "livewin slot", "livewin prelive-sweeps",
+                 "livewin no-webhooks", "livewin d1-same", "livewin drafts-open", "livewin check-state"]
+        self.assertEqual([self.first(c, o) for o in order], sorted(self.first(c, o) for o in order), c)
+        st = json.load(open(os.path.join(self.D, "window-state-prelive.json")))
+        self.assertTrue(st["ok"], st)
+        for f in ("expected-subs.json", "pre-max-order.json", "d1-ref.json", "drafts-open.json", "worker-before.json", "dry-version.txt"):
+            self.assertTrue(os.path.exists(os.path.join(self.D, f)), f)
+
+    def test_R03_live_sequence_and_state_files(self):
+        r = self.window("live", self.S, self.planf, self.sha, CONFIRM_LIVE)
+        self.assertEqual(r.returncode, 0, r.stdout[-3000:] + r.stderr[-2000:])
+        c = self.calls()
+        order = ["livewin check-state", "gate.sh", "livewin config", "load.py live armed=True", "guard restore", "restore.sh",
+                 "guard verified", "dsnap.sh d1-final.json", "postcheck.sh", "livewin final"]
+        idx = [self.first(c, o) for o in order]
+        self.assertEqual(idx, sorted(idx), c)
+        for bg in ("livewin poll-worker", "sampler.py", "guardl.sh"):        # started after the config, all running before GO
+            self.assertTrue(self.first(c, "livewin config") < self.first(c, bg) < self.first(c, "load.py"), bg)
+        self.assertLess(self.first(c, "livewin poll-wl"), self.first(c, "livewin config"))
+        self.assertEqual(sum(1 for x in c if x == "restore.sh"), 1, "exactly one restore deploy")
+        self.assertEqual(sum(1 for x in c if x == "gate.sh"), 1)
+        self.assertIn(f"confirm={CONFIRM_LIVE}", next(x for x in c if x.startswith("load.py")))
+        P = lambda n: os.path.join(self.D, n)
+        for f in ("guardl-config.json", "d1-ref.json", "drafts-open.json", "pre.jsonl", "pre2.jsonl", "newver.txt", "gate.txt", "qag-start",
+                  "expected-subs.json", "worker-poll.jsonl", "wl-poll.jsonl", "failwatch-final.json", "d1-final.json"):
+            self.assertTrue(os.path.exists(P(f)), f)
+        self.assertTrue(json.load(open(P("window-state-armed.json")))["ok"])
+        self.assertTrue(json.load(open(P("window-state-guarded.json")))["ok"])
+        cfg = json.load(open(P("guardl-config.json")))
+        self.assertEqual(cfg["competition_id"], L1_CID)
+        self.assertEqual(cfg["wl_from_ms"], int(open(P("wl-from-ms.txt")).read()))
+        self.assertLessEqual(cfg["wl_from_ms"], int(open(P("t0.txt")).read()), "Workers Logs coverage starts before the deploy")
+        self.assertEqual(cfg["restore_cmd"], f"bash {self.H}/window.sh restore {self.S}")
+        self.assertTrue(cfg["verify_cmd"].endswith(f"livewin.py verify-restore --state-dir {self.D}"))
+        w = guardl.last_jsonl(P("worker-poll.jsonl"))
+        self.assertEqual(w["dry_run"], "true", "the poller saw the restore")
+        lines = [json.loads(x) for x in open(P("worker-poll.jsonl")).read().splitlines()]
+        self.assertTrue(any(x["dry_run"] == "false" and x["versions"] == [[open(P("newver.txt")).read().strip(), 100]] for x in lines))
+        self.assertGreaterEqual(int(open(P("qag-start")).read()), int(open(P("t0.txt")).read()), "armed only after the gate")
+
+    def test_R04_gate_failure_arms_nothing(self):
+        open(os.path.join(self.F, "gate-fail"), "w").close()
+        r = self.window("live", self.S, self.planf, self.sha, CONFIRM_LIVE)
+        self.assertEqual(r.returncode, 2, r.stdout[-2000:])
+        c = self.calls()
+        self.assertGreater(self.first(c, "restore.sh"), self.first(c, "gate.sh"), "gate.sh restores by itself, as before")
+        self.assertEqual(c.count("restore.sh"), 1)
+        self.assertFalse([x for x in c if x.startswith(("livewin config", "guardl.sh", "load.py", "livewin poll-worker"))], c)
+        self.assertFalse(os.path.exists(os.path.join(self.D, "qag-start")))
+        import time as _t
+        _t.sleep(1)
+        with self.assertRaises(OSError, msg="a failed gate stops the Workers Logs poller"):
+            os.kill(int(open(os.path.join(self.D, "poll-wl.pid")).read()), 0)
+
+    def test_R05_failure_before_gate_deploys_nothing(self):
+        with open(os.path.join(self.F, "dry"), "w") as f:
+            f.write("false\n")                 # the QA Worker is already live: worker-before refuses
+        r = self.window("live", self.S, self.planf, self.sha, CONFIRM_LIVE)
+        self.assertEqual(r.returncode, 2)
+        self.assertFalse([x for x in self.calls() if x.startswith(("gate.sh", "restore.sh", "load.py"))], self.calls())
+
+    def test_R06_restore_wrapper_serialised_and_idempotent(self):
+        P = lambda n: os.path.join(self.D, n)
+        r = self.window("restore", self.S)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.calls().count("restore.sh"), 1)
+        r = self.window("restore", self.S)
+        self.assertIn("already verified", r.stdout)
+        self.assertEqual(self.calls().count("restore.sh"), 1, "a verified restore is not deployed again")
+        for f in ("restorever.txt", "restoregate.txt"):
+            os.remove(P(f))
+        os.remove(os.path.join(self.F, "restored"))
+        with open(os.path.join(self.F, "dry"), "w") as f:
+            f.write("false\n")
+        ps = [subprocess.Popen(["bash", os.path.join(self.H, "window.sh"), "restore", self.S], env=self.env, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, text=True) for _ in range(2)]
+        outs = [p.communicate(timeout=60)[0] for p in ps]
+        self.assertEqual(self.calls().count("restore.sh"), 2, f"two concurrent callers deploy once between them: {outs}")
+        self.assertEqual(sum("already verified" in o for o in outs), 1)
+
+    def test_R08_failure_after_gate_without_a_guard_restores_directly(self):
+        open(os.path.join(self.F, "guard-die"), "w").close()
+        r = self.window("live", self.S, self.planf, self.sha, CONFIRM_LIVE)
+        self.assertEqual(r.returncode, 3, r.stdout[-2000:])
+        c = self.calls()
+        self.assertFalse([x for x in c if x.startswith("load.py")], "nothing is sent")
+        self.assertFalse(os.path.exists(os.path.join(self.D, "qag-start")), "nothing is armed")
+        idx = [self.first(c, o) for o in ("gate.sh", "guardl.sh", "restore.sh", "dsnap.sh d1-final.json", "postcheck.sh", "livewin final")]
+        self.assertEqual(idx, sorted(idx), c)
+        self.assertEqual(c.count("restore.sh"), 1)
+        self.assertIn("restore VERIFIED", open(os.path.join(self.D, "window.log")).read())
+
+    def test_R07_driver_refusal_restores_through_the_guard(self):
+        open(os.path.join(self.F, "load-refuse"), "w").close()
+        r = self.window("live", self.S, self.planf, self.sha, CONFIRM_LIVE)
+        self.assertEqual(r.returncode, 3, r.stdout[-2000:])
+        c = self.calls()
+        self.assertTrue(os.path.exists(os.path.join(self.D, "manual-stop")))
+        idx = [self.first(c, o) for o in ("load.py", "guard restore", "restore.sh", "guard verified", "postcheck.sh")]
+        self.assertEqual(idx, sorted(idx), c)
 
 
 if __name__ == "__main__":

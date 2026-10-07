@@ -12,6 +12,8 @@ G, F, LD, CM, CL, SH, ST, CA, RS, GU, GS, SS, RC, RQ, MF, LM = (
     "l1/governor.py", "l1/failwatch.py", "l1/load.py", "l1/common.py", "l1/clamp.py", "l1/shop.py", "l1/stage.py", "l1/canary.py",
     "l1/regsql.py", "l1/guardl.py", "l1/guardl.sh", "l1/shopsnapl.py", "l1/loadrecon.py", "l1/recon.sql", "l1/manifest.py",
     "l1/loadmetrics.py")
+LW, WS = "l1/livewin.py", "l1/window.sh"
+SFW, SFL, SFS, SFR = "StageFourWorkerTests", "StageFourWorkersLogsTests", "StageFourStateFileTests", "StageFourRunbookTests"
 GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
     "GovernorTests", "FailWatchTests", "DriverGateTests", "ClampTests", "SamplerTests", "StageCanaryTests", "ReconTests",
     "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests",
@@ -19,6 +21,42 @@ GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
 
 # (description, file, old, new, test classes)
 MUTANTS = [
+    # Stage 4 wiring: QA Worker input fails closed (guardl)
+    ("wiring: missing Worker input not a stop", GU, "if now - (self.last_worker if self.last_worker is not None else self.t0) > WORKER_STALE_S:", "if False:", [SFW]),
+    ("wiring: unverified production presence accepted", GU, 'if w.get("production_present") is not False:', 'if w.get("production_present") is True:', [SFW]),
+    ("wiring: missing DRY_RUN accepted", GU, 'if w.get("dry_run") is None:\n                    self._safety("QA Worker DRY_RUN missing")', 'if False:\n                    self._safety("QA Worker DRY_RUN missing")', [SFW]),
+    ("wiring: unexpected DRY_RUN value accepted", GU, 'elif w.get("dry_run") != "false":', 'elif w.get("dry_run") not in ("false", "true", "False", "FALSE", "", "0", "<multiple>"):', [SFW]),
+    ("wiring: gate-passed version not checked", GU, 'if not exp or w.get("versions") != [[exp, 100]]:', "if not exp:", [SFW]),
+    ("wiring: failed reading judged as good", GU, 'if w.get("read_ok") is True and isinstance(ts, (int, float)) and now - ts <= WORKER_STALE_S:', "if isinstance(ts, (int, float)):", [SFW]),
+    # Stage 4 wiring: Workers Logs input fails closed (guardl)
+    ("wiring: Workers Logs staleness removed", GU, "elif now * 1000 - self.wl_hi_ms > WL_STALE_S * 1000:", "elif False:", [SFL]),
+    ("wiring: Workers Logs gap accepted", GU, "elif self.wl_hi_ms is None or lo > self.wl_hi_ms + 1:", "elif self.wl_hi_ms is None:", [SFL]),
+    ("wiring: Workers Logs windows not fed to failwatch", GU, 'self.fw.confirm_wl(win.get("events") or [], bool(win.get("complete")))', "pass", [SFL]),
+    ("wiring: unknown coverage start accepted", GU, 'self._load("Workers Logs coverage start unknown (wl_from_ms missing)")', "pass", [SFL]),
+    ("wiring: malformed window accepted", GU, 'self._load("Workers Logs window malformed (no valid from_ms/to_ms)")', "pass", [SFL]),
+    ("wiring: corrupt poller line dropped", GU, 'out.append({"complete": False, "events": [], "problems": ["unparseable wl-poll line"]})', "pass", [SFL]),
+    ("wiring: collect ignores the Worker poller", GU, 'inp["worker"] = w', "pass", [SFL]),
+    # Stage 4 wiring: livewin.py readings and state files
+    ("livewin: production rule loosened", LW, 'if st == 404 or (st == 200 and d.get("success") is False):', 'if st != 200 or d.get("success") is False:', [SFW]),
+    ("livewin: unusable GET read as ok", LW, 'r["read_ok"] = r["production_present"] is not None and settings_ok and r["versions"] is not None', 'r["read_ok"] = True', [SFW]),
+    ("livewin: transport error read as ok", LW, 'r["problems"].append(f"transport error: {type(e).__name__}")\n        r["read_ok"] = False', 'r["problems"].append(f"transport error: {type(e).__name__}")\n        r["read_ok"] = True', [SFW]),
+    ("livewin: several DRY_RUN bindings read as the first", LW, 'r["dry_run"] = dry[0] if len(dry) == 1 else (None if not dry else "<multiple>")', 'r["dry_run"] = dry[0] if dry else None', [SFW]),
+    ("livewin: incomplete Workers Logs window advances coverage", LW, 'if w["complete"]:\n            self.next = hi + 1\n        return w', "self.next = hi + 1\n        return w", [SFL]),
+    ("livewin: non-OPEN draft counted as open", LW, 'elif n.get("status") != "OPEN":', "elif False:", [SFS]),
+    ("livewin: D1 reference not checked", LW, "p = registration_problems(snap, cid) + allowlist(snap, snap, cid, [], pre_max)", "p = []", [SFS]),
+    ("livewin: stale drafts-open accepted", LW, 'if not 0 <= now - float(dr.get("ts", 0)) <= PRECHECK_MAX_AGE_S:', "if False:", [SFS]),
+    ("livewin: guard reasons ignored at arming", LW, 'if g.get("safety") or g.get("load") or g.get("actions"):', "if False:", [SFS]),
+    ("livewin: restore verified without the restore gate", LW, 'if _txt(_p(d, "restoregate.txt")) != "PASSED" or not rv:', "if not rv:", [SFW]),
+    # Stage 4 wiring: window.sh sequencing
+    ("window.sh: live without the phrase", WS, 'if [ "$CMD" = live ] && [ "${5:-}" != "$PHRASE_LIVE" ]; then', "if false; then", [SFR]),
+    ("window.sh: restore not serialised", WS, "flock -w 1800 9 ||", "true ||", [SFR]),
+    ("window.sh: verified restore deployed again", WS, 'if [ "$($LW verify-restore --state-dir "$D")" = true ]; then echo "restore already verified (no second deploy)"; exit 0; fi', ":", [SFR]),
+    ("window.sh: gate failure not stopping", WS, '[ "$(cat "$D/gate.txt" 2>/dev/null)" = PASSED ] || abort gate', "true || abort gate", [SFR]),
+    ("window.sh: armed state check skipped", WS, '$LW check-state --state-dir "$D" --plan "$PLAN" --plan-sha "$SHA" --phase armed || stop_after_gate armed "armed state check"', "true", [SFR]),
+    ("window.sh: driver refusal not restoring", WS, '[ "$LRC" = 2 ] && { log "load.py refused before any mutation -> manual-stop"; touch "$D/manual-stop"; }', "true", [SFR]),
+    ("window.sh: no restore when the guard is gone", WS, 'log "no running guard: strict restore directly"; bash "$H/window.sh" restore "$S"', ":", [SFR]),
+    ("window.sh: Workers Logs poller left running after a failed gate", WS, 'kill "$(cat "$D/poll-wl.pid")" 2>/dev/null; abort gate', "abort gate", [SFR]),
+    ("window.sh: pre-live checks skipped before the gate", WS, 'prelive\nif [ "$CMD" = prelive ]', 'if [ "$CMD" = prelive ]', [SFR]),
     # known-canary exclusion (Stage 2 follow-up)
     ("canex: canary excluded by tag instead of exact id", CM, [('pop = [o for o in orders if not is_known_canary_order(o.get("id"))]', 'pop = [o for o in orders if "QAL-CANARY" not in (o.get("tags") or [])]'), ('return pop, [o for o in orders if is_known_canary_order(o.get("id"))]', 'return pop, [o for o in orders if "QAL-CANARY" in (o.get("tags") or [])]')], None, [CEX]),
     ("canex: canary order exclusion removed", CM, 'pop = [o for o in orders if not is_known_canary_order(o.get("id"))]', "pop = list(orders)", [CEX]),
@@ -164,7 +202,7 @@ def run_one(desc, path, old, new, classes, base):
 def main(argv):
     sel = argv[argv.index("-k") + 1] if "-k" in argv else ""
     ms = [m for m in MUTANTS if sel in m[0]]
-    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX]
+    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX, SFW, SFL, SFS, SFR]
     _, st, _ = run_one("baseline", "l1/common.py", 'PREFIX = "QAL"', 'PREFIX = "QAL"', every, None)
     if st != "SURVIVED":
         print("BASELINE FAILED: the unmutated copy does not pass its own tests; kills would be meaningless")
