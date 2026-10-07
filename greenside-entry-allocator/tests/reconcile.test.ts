@@ -434,22 +434,20 @@ describe('idempotency', () => {
     expect(integrity()).toEqual({ gaps: 0, drift: 0 });
   });
 
-  test('when a sweep and a webhook both reach an empty ledger first, one batch rolls back whole and nothing doubles', async () => {
+  test('when a sweep and a webhook both reach an empty ledger first, the loser recognises the race and nothing doubles', async () => {
     shop.orders = [paidOrder('2204', 2)];
     shop.productBarrier = 2;
 
     const [swept, hooked] = await Promise.allSettled([sweep(), webhook('2204')]);
 
-    // Exactly one side loses the insert on the allocation's primary key: the
-    // sweep counts it as an error and carries on; a webhook would return 500
-    // and be retried by Shopify.
-    const sweepErrors = swept.status === 'fulfilled' ? swept.value.errors : 1;
-    const webhookFailures = hooked.status === 'rejected' ? 1 : 0;
-    expect(sweepErrors + webhookFailures).toBe(1);
-    const failure = swept.status === 'fulfilled' && swept.value.errors === 1
-      ? String(logged('reconcile_order_failed')[0]?.['error'])
-      : String((hooked as PromiseRejectedResult).reason?.message);
-    expect(failure).toMatch(/UNIQUE|PRIMARY KEY|constraint/i);
+    // Both read an empty ledger and both send the ledger INSERT; one batch
+    // loses on the allocation's identity and rolls back whole. The loser now
+    // recognises the committed row as its own work and converges to no change:
+    // no sweep error, no webhook failure (no 500, no Shopify retry needed).
+    expect(swept.status).toBe('fulfilled');
+    expect(hooked.status).toBe('fulfilled');
+    expect(swept.status === 'fulfilled' ? swept.value.errors : -1).toBe(0);
+    expect(logged('allocation_race_resolved')).toHaveLength(1);
 
     expect(held('2204')).toEqual(['PUT1001', 'PUT1002']);
     expect(events("event_type = 'ALLOCATED'")).toHaveLength(2);

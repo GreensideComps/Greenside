@@ -360,15 +360,17 @@ describe('concurrent convergence of the same allocation', () => {
 });
 
 describe('concurrent first delivery of the same order', () => {
-  test('one ledger row, one set of numbers, one set of events; the losers fail cleanly and a retry is a no-op', async () => {
+  test('one ledger row, one set of numbers, one set of events; every racer succeeds and a retry is a no-op', async () => {
     const db = new TestD1();
     seedCompetition(db, { capacity: 20 });
     await buildPool(db, '900001', { prefix: 'PUT', startNumber: 1001, capacity: 20, padWidth: 4 });
     const step = { quantity: 3, currentQuantity: 3, answer: 'Rough' };
 
+    // Previously the losers of the ledger INSERT failed (a 500 for a webhook)
+    // and relied on a retry. They now recognise the committed row as the same
+    // work and converge to no change.
     const results = await Promise.allSettled(Array.from({ length: 5 }, (_, i) => processOrder(deps(db, step, `c${i}`), ORDER, 'ORDER_EDIT')));
-    expect(results.filter((r) => r.status === 'fulfilled').length).toBeGreaterThanOrEqual(1);
-    for (const r of results) if (r.status === 'rejected') expect(String(r.reason)).toMatch(/UNIQUE constraint failed: allocation/);
+    expect(results.map((r) => r.status)).toEqual(['fulfilled', 'fulfilled', 'fulfilled', 'fulfilled', 'fulfilled']);
 
     const check = () => {
       expect(db.query(`SELECT * FROM allocation`)).toHaveLength(1);

@@ -10,7 +10,7 @@
 
 import { countHeld } from './allocate';
 import { buildCompetitionConfig, entriesPerUnit, numericId, type CompetitionConfig } from './config';
-import { converge } from './converge';
+import { converge, type ConvergeOutcome } from './converge';
 import {
   INSERT_ALLOCATION,
   INSERT_EVENT,
@@ -143,11 +143,61 @@ export async function processOrder(deps: ProcessDeps, orderGid: string, reason: 
   return outcomes;
 }
 
+/**
+ * The concurrent first-delivery race, and only that race.
+ *
+ * Shopify sends orders/create and orders/paid for the same order within
+ * milliseconds. Both deliveries can read "no ledger row" before either
+ * commits, so both send the ledger INSERT at the head of their convergence
+ * batch. D1 commits one batch; the other fails on the allocation table's own
+ * keys and is rolled back whole. Seen live in L1 Stage 4 (7 Oct 2026, order
+ * #1034, orders/create lost to orders/paid).
+ *
+ * The loser is not a failure: the work it was about to do has just been done
+ * under the SAME deterministic allocation_id. It is recognised as that race
+ * only when ALL of these hold, and is then re-run once as an ordinary later
+ * delivery (ledger row present, no INSERT, converge from the pool):
+ *
+ *   - this run sent the ledger INSERT (it believed it was first);
+ *   - the error is a UNIQUE violation on the allocation table's identity
+ *     (its primary key, or the (order_id, line_item_id) index);
+ *   - the ledger row now exists with THIS allocation_id, for this shop, order,
+ *     line and competition.
+ *
+ * Anything else -- another table's UNIQUE (entry numbers, events), a row for
+ * the same order line under a different allocation_id, any error on the
+ * re-run -- is not this race and is rethrown, so the webhook still fails with
+ * 500 and nothing is silently accepted.
+ */
+const LEDGER_IDENTITY_CONFLICT =
+  /UNIQUE constraint failed: (allocation\.allocation_id|allocation\.order_id, allocation\.line_item_id)(?=$|:)/;
+
+export function isLedgerIdentityConflict(err: unknown): boolean {
+  const message = String((err as Error)?.message ?? err);
+  return LEDGER_IDENTITY_CONFLICT.test(message);
+}
+
+async function sameLedgerRowCommitted(
+  deps: ProcessDeps,
+  allocId: string,
+  ids: { competitionId: string; orderId: string; lineItemId: string },
+): Promise<boolean> {
+  const row = await deps.db.prepare(SELECT_ALLOCATION).bind(allocId).first<Record<string, unknown>>();
+  return (
+    row !== null &&
+    String(row['shop_domain']) === deps.shopDomain &&
+    String(row['competition_id']) === ids.competitionId &&
+    String(row['order_id']) === ids.orderId &&
+    String(row['line_item_id']) === ids.lineItemId
+  );
+}
+
 async function processLine(
   deps: ProcessDeps,
   order: OrderNode,
   line: OrderLineItemNode,
   reason: ReleaseReason,
+  raceRerun = false,
 ): Promise<LineOutcome> {
   const now = deps.now();
   const orderId = numericId(order.id);
@@ -220,25 +270,44 @@ async function processLine(
     prelude = created;
   }
 
-  const outcome = await converge({
-    db: deps.db,
-    competitionId,
-    competitionStatus: competition.status,
-    allocationId: allocId,
-    currentQuantity: quantity,
-    entriesPerUnit: perUnit,
-    now,
-    reason,
-    orderId,
-    lineItemId,
-    // The order is read without its customer (see ORDER_QUERY), so no customer
-    // reference is recorded; the entrant is identified by orderId.
-    customerRef: null,
-    actor: deps.actor,
-    runId: deps.runId,
-    webhookId: deps.webhookId,
-    prelude,
-  });
+  let outcome: ConvergeOutcome;
+  try {
+    outcome = await converge({
+      db: deps.db,
+      competitionId,
+      competitionStatus: competition.status,
+      allocationId: allocId,
+      currentQuantity: quantity,
+      entriesPerUnit: perUnit,
+      now,
+      reason,
+      orderId,
+      lineItemId,
+      // The order is read without its customer (see ORDER_QUERY), so no customer
+      // reference is recorded; the entrant is identified by orderId.
+      customerRef: null,
+      actor: deps.actor,
+      runId: deps.runId,
+      webhookId: deps.webhookId,
+      prelude,
+    });
+  } catch (err) {
+    if (
+      !raceRerun &&
+      prelude.length > 0 &&
+      isLedgerIdentityConflict(err) &&
+      (await sameLedgerRowCommitted(deps, allocId, { competitionId, orderId, lineItemId }))
+    ) {
+      deps.logger.info('allocation_race_resolved', {
+        order_gid: order.id,
+        line_item_id: lineItemId,
+        allocation_id: allocId,
+        webhook_id: deps.webhookId ?? null,
+      });
+      return processLine(deps, order, line, reason, true);
+    }
+    throw err;
+  }
 
   // Recorded outside the batch: a refusal changes no state, so a retry
   // recomputes it. It is written once per condition, not once per delivery.
