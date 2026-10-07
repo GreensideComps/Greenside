@@ -1,0 +1,12 @@
+    gate-1-18196 12:01:42: dry_run=false served_by=55b7889e streak=0 (tail-confirmed 55b7889e; tail saw 2 old-version request(s) during streak: reset)
+    gate-2-32530 12:01:46: dry_run=true served_by=d5710fab streak=0 (served by d5710fab (not target): reset)
+    gate-3-31024 12:01:51: dry_run=false served_by=55b7889e streak=0 (tail-confirmed 55b7889e; tail saw 1 old-version request(s) during streak: reset)
+    gate-4-2588 12:01:55: dry_run=false served_by=55b7889e streak=1 (tail-confirmed 55b7889e)
+    gate-5-15131 12:01:59: dry_run=false served_by=55b7889e streak=2 (tail-confirmed 55b7889e)
+    gate-6-29894 12:02:04: dry_run=false served_by=55b7889e streak=3 (tail-confirmed 55b7889e)
+    gate-7-12085 12:02:08: dry_run=false served_by=55b7889e streak=4 (tail-confirmed 55b7889e)
+    gate-8-16652 12:02:12: dry_run=false served_by=55b7889e streak=5 (tail-confirmed 55b7889e)
+    gate-9-19375 12:02:17: dry_run=false served_by=55b7889e streak=6 (tail-confirmed 55b7889e)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 12:01:52
+PASSED

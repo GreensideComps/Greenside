@@ -3,7 +3,11 @@
 Status: Stage 1 done (offline). Stage 2 done (canary #1029, 6 Oct 2026; side-effect checks confirmed by the owner on 7 Oct 2026).
 Stage 4 wiring done offline (7 Oct 2026, below). **Stage 3 fixture done 7 Oct 2026**: product 15918227030390 (variant
 58912245252470), QA D1 competition 15918227030390 QAL1001-QAL3000 AVAILABLE, 750 OPEN £0 drafts #D37-#D786, bound plan sha256
-6fa7442b…; evidence `/qa/l1-load-harness/evidence/stage3-2026-10-07/`. **Stage 4 (live run) has NOT run** and needs its own approval.
+6fa7442b…; evidence `/qa/l1-load-harness/evidence/stage3-2026-10-07/`. **Stage 4 ran once on 7 Oct 2026 (13:01-13:16 BST): LOAD STOP after 8 of 750 orders in
+baseline phase A, L1 FAIL** — an orders/create delivery returned HTTP 500 on `UNIQUE(allocation.order_id, line_item_id)` because the
+concurrent orders/paid delivery for the same order had allocated first (Shopify's retry then returned 200). Drained (13 entries,
+QAL1001-QAL1013, exact), restored (004e753f, DRY_RUN=true), post-check PASSED. Throughput not measured (staircase never entered).
+Evidence `/qa/l1-load-harness/evidence/stage4-2026-10-07/`.
 Harness: `/qa/l1-load-harness/` (README there lists every file and command).
 
 ## Question

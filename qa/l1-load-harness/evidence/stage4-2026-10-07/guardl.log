@@ -1,0 +1,4 @@
+12:02:25 guardl start (pid 6541)
+12:02:58 RESTORE requested: PLANNED: drained
+12:03:47 restore VERIFIED (DRY_RUN=true)
+12:03:47 guardl done: DRAINED PLANNED: drained

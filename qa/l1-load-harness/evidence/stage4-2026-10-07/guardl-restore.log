@@ -1,0 +1,15 @@
+=== restore: deploy --env qa (12:02:59) ===
+    exit=0
+      - DRY_RUN: "true"
+    restored version: 004e753f-faed-4460-8316-ff83cdbdfe5f
+    restore-1-17945 12:03:06: dry_run=false served_by=55b7889e streak=0 (served by 55b7889e (not target): reset)
+    restore-2-3280 12:03:10: dry_run=false served_by=55b7889e streak=0 (served by 55b7889e (not target): reset)
+    restore-3-27643 12:03:14: dry_run=true served_by=004e753f streak=1 (tail-confirmed 004e753f)
+    restore-4-31448 12:03:19: dry_run=true served_by=004e753f streak=2 (tail-confirmed 004e753f)
+    restore-5-21090 12:03:23: dry_run=true served_by=004e753f streak=3 (tail-confirmed 004e753f)
+    restore-6-11633 12:03:28: dry_run=true served_by=004e753f streak=4 (tail-confirmed 004e753f)
+    restore-7-32509 12:03:33: dry_run=true served_by=004e753f streak=5 (tail-confirmed 004e753f)
+    restore-8-340 12:03:37: dry_run=true served_by=004e753f streak=6 (tail-confirmed 004e753f)
+    5 consecutive over 22s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 12:03:11
+RESTORE GATE PASSED (12:03:45)

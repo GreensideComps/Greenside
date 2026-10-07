@@ -1,0 +1,51 @@
+11:42:48 === pre-live (live) ===
+{"ok":true,"problems":[]}
+{"dry_run":"true","ok":true,"problems":[],"versions":[["d5710fab-e3b6-4f3d-a40f-fb8cc1156b02",100]]}
+11:43:02 monitors started (tails pre, pre2; heartbeat)
+{"expected":750,"open":750,"problem_count":0}
+in slot
+{"evidence_rc":0,"ok":true}
+in slot
+webhooks since 1791373370419: 0
+d1 identical to reference: True
+{"expected":750,"open":750,"problem_count":0}
+{"ok":true,"phase":"prelive","problems":[]}
+12:01:24 PRE-LIVE CHECKS PASSED
+12:01:24 === live window ===
+=== [1] deploy --env qa --var DRY_RUN:false (12:01:24) ===
+    exit=0
+      - DRY_RUN: "(hidden)"
+    new version: 55b7889e-8b36-458f-bcc3-aad0dfa00f0a
+=== [2] fresh confirmation tail; must capture a request (12:01:30) ===
+    conf pid=5885  pre alive=yes
+    confirmation tail captured warm-24059 (served by d5710fab) at 12:01:41
+=== [3] STRICT gate: 5 x dry_run=false over >=20s, tail-confirmed on 55b7889e, zero other-version requests seen by any tail (budget 180s from deploy) ===
+    gate-1-18196 12:01:42: dry_run=false served_by=55b7889e streak=0 (tail-confirmed 55b7889e; tail saw 2 old-version request(s) during streak: reset)
+    gate-2-32530 12:01:46: dry_run=true served_by=d5710fab streak=0 (served by d5710fab (not target): reset)
+    gate-3-31024 12:01:51: dry_run=false served_by=55b7889e streak=0 (tail-confirmed 55b7889e; tail saw 1 old-version request(s) during streak: reset)
+    gate-4-2588 12:01:55: dry_run=false served_by=55b7889e streak=1 (tail-confirmed 55b7889e)
+    gate-5-15131 12:01:59: dry_run=false served_by=55b7889e streak=2 (tail-confirmed 55b7889e)
+    gate-6-29894 12:02:04: dry_run=false served_by=55b7889e streak=3 (tail-confirmed 55b7889e)
+    gate-7-12085 12:02:08: dry_run=false served_by=55b7889e streak=4 (tail-confirmed 55b7889e)
+    gate-8-16652 12:02:12: dry_run=false served_by=55b7889e streak=5 (tail-confirmed 55b7889e)
+    gate-9-19375 12:02:17: dry_run=false served_by=55b7889e streak=6 (tail-confirmed 55b7889e)
+    5 consecutive over 21s; 8s tail flush, then all-request re-check...
+    CLEAN: no request on any other version seen by either tail since 12:01:52
+    GATE PASSED (12:02:25, 55s after deploy). Worker LIVE; tails + watchdog + heartbeat stay on. Waiting for the next automatic sweep.
+12:02:25 gate PASSED: QA Worker live on 55b7889e-8b36-458f-bcc3-aad0dfa00f0a
+guardl-config.json written
+webhooks since 1791373370419: 0
+d1 identical to reference: True
+{"ok":true,"phase":"armed","problems":[]}
+12:02:31 ARMED at 12:02:31 UTC: load.py live
+12:02:52 load.py exit 3
+12:03:47 guard finished: 12:03:47 guardl done: DRAINED PLANNED: drained
+12:03:49 restore VERIFIED (DRY_RUN=true)
+=== postcheck: waiting for a dry-run sweep on 004e753f (12:03:52) ===
+{"result": "PASS", "cron": "*/15 * * * *", "run_id": "d0f4a77e-827e-4fdd-88b6-a4f13cc57e68", "mode": "trailing", "in_scope": 8, "bad": {}}
+
+    D1 identical to last live snapshot: True | integrity {'dup_events': 0, 'audit_gaps': 0, 'ledger_drift': 0, 'orphans': 0, 'events_total': 60, 'allocations_total': 27, 'entry_order_mismatch': 0, 'dup_issue': 0, 'multi_held': 0, 'dup_release': 0, 'dup_return': 0, 'freeze_audit': 0, 'bad_events': 0}
+POSTCHECK PASSED (12:16:16)
+{"failwatch":"LOAD_STOP","wl_coverage":{"from_ms":1791374484444,"gaps":[],"incomplete_windows":0,"to_ms":1791375294551,"windows":28}}
+{"ok":true,"phase":"final","problems":[]}
+12:16:16 WINDOW DONE: load.py 3, postcheck PASSED. Offline next: shopsnapl.py, loadrecon.py, loadmetrics.py, manifest.py

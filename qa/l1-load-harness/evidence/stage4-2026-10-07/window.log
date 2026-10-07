@@ -1,0 +1,10 @@
+11:42:48 === pre-live (live) ===
+11:43:02 monitors started (tails pre, pre2; heartbeat)
+12:01:24 PRE-LIVE CHECKS PASSED
+12:01:24 === live window ===
+12:02:25 gate PASSED: QA Worker live on 55b7889e-8b36-458f-bcc3-aad0dfa00f0a
+12:02:31 ARMED at 12:02:31 UTC: load.py live
+12:02:52 load.py exit 3
+12:03:47 guard finished: 12:03:47 guardl done: DRAINED PLANNED: drained
+12:03:49 restore VERIFIED (DRY_RUN=true)
+12:16:16 WINDOW DONE: load.py 3, postcheck PASSED. Offline next: shopsnapl.py, loadrecon.py, loadmetrics.py, manifest.py

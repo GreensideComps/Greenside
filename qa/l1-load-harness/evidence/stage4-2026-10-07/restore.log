@@ -1,0 +1,29 @@
+Proxy environment variables detected. We'll use your proxy for fetch requests.
+
+ ⛅️ wrangler 3.114.17 (update available 4.148.0)
+------------------------------------------------
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mThe version of Wrangler you are using is now out-of-date.[0m
+
+  Please update to the latest version to prevent critical errors.
+  Run `npm install --save-dev wrangler@4` to update to the latest version.
+  After installation, run Wrangler with `npx wrangler`.
+
+
+Total Upload: 59.38 KiB / gzip: 15.73 KiB
+Worker Startup Time: 2 ms
+Your worker has access to the following bindings:
+- D1 Databases:
+  - DB: greenside_entries_qa (5c7ecce9-5b2f-45eb-b5a6-ab78f14698be)
+- Vars:
+  - DRY_RUN: "true"
+  - SHOPIFY_API_VERSION: "2026-07"
+  - SHOPIFY_STORE: "7r5csb-1j.myshopify.com"
+  - ALLOWED_SHOP_DOMAIN: "7r5csb-1j.myshopify.com"
+  - RECONCILE_DEEP_CRON: "20,50 * * * *"
+Uploaded greenside-entry-allocator-qa (2.36 sec)
+Deployed greenside-entry-allocator-qa triggers (0.56 sec)
+  https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev
+  schedule: */15 * * * *
+  schedule: 20,50 * * * *
+Current Version ID: 004e753f-faed-4460-8316-ff83cdbdfe5f
