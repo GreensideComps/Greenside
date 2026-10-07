@@ -29,6 +29,7 @@ MUTANTS = [
     ("A1 plan: run-2 source plan not pinned", CM, 'if plan.get("derived_from") != RUN1_PLAN_SHA:', "if False:", [RTT]),
     ("A1 plan: run-2 competition not pinned", CM, 'if str(plan.get("competition_id")) != L1_COMPETITION_ID:', "if False:", [RTT]),
     ("A1 plan: run-2 header not checked", CM, 'if plan.get("orders") != RUN2_N_ORDERS or plan.get("units") != RUN2_UNITS:', "if False:", [RTT]),
+    ("A1 plan: run-2 header not pinned", CM, "if {k: plan.get(k) for k in RUN2_HEADER} != RUN2_HEADER:", "if False:", [RTT]),
     ("A1 plan: unbound run-2 plan accepted", CM, 'if not bound:\n            p.append("a run-2 plan is always bound")', 'if False:\n            p.append("a run-2 plan is always bound")', [RTT]),
     ("A1 plan: run-1 plan may carry a baseline", CM, 'if run == 1 and "baseline" in plan:', "if False:", [RTT]),
     ("A1 plan: run 2 takes the run-1 phrase", CM, '"confirm": CONFIRM_LIVE_RUN2}', '"confirm": CONFIRM_LIVE}', [RTT]),

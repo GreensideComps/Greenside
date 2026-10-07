@@ -21,7 +21,7 @@ from sim import FakeClock, SimClient, World  # noqa: E402
 
 ALLOC_COMMIT = "610e189"   # A1: the race-fix commit; its migrations are identical to e917bb5's
 L1_CID = "999000111"
-A1_COMMON_SHA = "09974da37791ff9118ec1446783abb6153426705fb2c007e30925e1b6ea185fb"     # amendment A1: re-pinned after review (test_S06)
+A1_COMMON_SHA = "75c0f200cd020ab2c104e9edb0ea29692f8a70a84e33eac6961c7e1e03ecfbbb"     # amendment A1: re-pinned after review (test_S06)
 A1_LOAD_SHA = "8a726d6bc20906a571c5a71d60354eb396169ef91c279eefd2c57c30bcd2ce4e"
 PINNED_PLAN_SHA = "a0f6f0117e756db0540eb76d07ba626be7ec2adde786c7b628e4727fb0c34b04"   # sha256 of the canonical 750-row template; any change to the plan is a reviewed change
 
@@ -2694,8 +2694,13 @@ class RunTwoTests(unittest.TestCase):
             common.derive_run2_plan(bad)                       # not the approved run-1 plan
         with self.assertRaises(Refused):
             common.derive_run2_plan(run2_plan())               # a run-2 plan is not a run-1 source
-        swapped = json.loads(json.dumps(r1))
-        swapped["rows"][2]["draft_id"], swapped["rows"][20]["draft_id"] = swapped["rows"][20]["draft_id"], swapped["rows"][2]["draft_id"]
+        renamed = json.loads(json.dumps(r1))
+        renamed["rows"][0]["draft_name"] = "#D9999"            # rows 9..750 and every pinned field unchanged: only the sha differs
+        with self.assertRaises(Refused):
+            common.derive_run2_plan(renamed)
+        swapped = json.loads(json.dumps(r1))                   # two Stage 4 drafts swapped; rows 9..750 untouched
+        swapped["rows"][0]["draft_id"], swapped["rows"][1]["draft_id"] = swapped["rows"][1]["draft_id"], swapped["rows"][0]["draft_id"]
+        self.assertEqual(validate_plan(swapped, bound=True), [])
         with mock.patch.object(common, "RUN1_PLAN_SHA", plan_hash(swapped)):
             with self.assertRaises(Refused):
                 common.derive_run2_plan(swapped)               # rows 1..8 are not the pinned Stage 4 drafts
@@ -2714,7 +2719,14 @@ class RunTwoTests(unittest.TestCase):
             "baseline qty changed": lambda p: p["baseline"]["rows"][2].update(qty=4),
             "baseline order GID changed": lambda p: p["baseline"]["rows"][0].update(order_gid="gid://shopify/Order/1"),
             "baseline units changed": lambda p: p["baseline"].update(units=0),
-            "row draft swapped": lambda p: p["rows"][5].update(draft_id=p["rows"][6]["draft_id"]),
+            "row draft duplicated": lambda p: p["rows"][5].update(draft_id=p["rows"][6]["draft_id"]),
+            "two rows' drafts swapped": lambda p: (p["rows"][5].update(draft_id=p["rows"][6]["draft_id"]),
+                                                   p["rows"][6].update(draft_id=good["rows"][5]["draft_id"])),
+            "row draft replaced by a foreign draft": lambda p: p["rows"][9].update(draft_id="gid://shopify/DraftOrder/42"),
+            "another product": lambda p: p.update(product_gid="gid://shopify/Product/1"),
+            "another variant": lambda p: p.update(variant_gid="gid://shopify/ProductVariant/1"),
+            "another seed": lambda p: p.update(seed="x"),
+            "another kind": lambda p: p.update(kind="L1-plan-bound"),
             "row dropped": lambda p: p["rows"].pop(),
             "baseline row re-added": lambda p: p["rows"].insert(0, dict(run1_plan()["rows"][7])),
             "derived from another plan": lambda p: p.update(derived_from="0" * 64),
@@ -2802,6 +2814,16 @@ class RunTwoTests(unittest.TestCase):
         w8.conn.execute(f"UPDATE entry_number SET allocation_id=(SELECT allocation_id FROM allocation WHERE order_name='#1030') "
                         f"WHERE competition_id='{CID2}' AND seq=1003")
         cases.append(("number held by the wrong baseline allocation", w8))
+        w9 = World742(n_orders=0)                       # an extra L1 allocation row holding no number
+        w9.conn.execute("INSERT INTO allocation SELECT 'x' || allocation_id, shop_domain, competition_id, '13609999999998', '#1099', "
+                        "order_created_at, '39999999999998', variant_id, customer_ref, entry_route, ordered_quantity, entries_per_unit, 0, 0, "
+                        "skill_question, skill_answer, skill_answer_correct_snapshot, skill_verdict, skill_judged_at, skill_rule_version, "
+                        "unit_price_minor, line_total_minor, decision_basis, 'RELEASED', source, mirror_state, mirror_attempts, created_at, "
+                        f"updated_at FROM allocation WHERE competition_id='{CID2}' AND order_name='#1031'")
+        cases.append(("extra empty allocation", w9))
+        w10 = World742(n_orders=0)                      # a baseline number issued twice
+        w10.conn.execute(f"UPDATE entry_number SET allocation_seq=2 WHERE competition_id='{CID2}' AND seq=1005")
+        cases.append(("baseline number issued twice", w10))
         for name, ww in cases:
             self.assertTrue(livewin.registration_problems(snapshot(ww.conn), CID2, r2), name)
 

@@ -63,6 +63,8 @@ def split_known_canary_orders(orders):
 # found unchanged, and are never re-sent; like the canary they are excluded by exact ID only, never by tag.
 RUN1_PLAN_SHA = "6fa7442b9089ea384fbf3eb478b50c49f37abaabfa4787f5552a068a496cc1f5"   # evidence/stage3-2026-10-07/plan-bound.json
 L1_COMPETITION_ID = "15918227030390"
+RUN2_HEADER = {"kind": "L1-plan-run2", "prefix": PREFIX, "start_number": START_NUMBER, "capacity": CAPACITY, "seed": PLAN_SEED,
+               "product_gid": "gid://shopify/Product/15918227030390", "variant_gid": "gid://shopify/ProductVariant/58912245252470"}
 RUN2_FIRST_INDEX = 9
 RUN2_ROWS_SHA = "11e9dce30abaf44c48c73794aaf4891e7f0051b8972fb0f56d3280ba24980d02"   # sha256(canonical(run-1 rows 9..750))
 RUN2_QUANTITY_MIX = ((1, 294), (2, 224), (3, 150), (5, 59), (10, 15))
@@ -301,6 +303,8 @@ def validate_plan(plan, bound=False):
             p.append("run-2 rows are not exactly run-1 rows 9..750")
         if plan.get("orders") != RUN2_N_ORDERS or plan.get("units") != RUN2_UNITS:
             p.append(f"run-2 header {plan.get('orders')} orders / {plan.get('units')} units")
+        if {k: plan.get(k) for k in RUN2_HEADER} != RUN2_HEADER:
+            p.append("run-2 header (kind, prefix, numbering, seed, product, variant) is not the QAL fixture's")
     if plan.get("prefix") != PREFIX:
         p.append(f"prefix {plan.get('prefix')!r} is not {PREFIX}")
     if plan.get("prefix") in RETIRED_PREFIXES:
