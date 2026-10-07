@@ -472,6 +472,10 @@ def install_problems(s, run=subprocess.run):
             p.append(f"b3stress/{f} not installed (placeholder left)")
     if os.path.exists(os.path.join(d, "stop")):
         p.append("b3stress/stop exists (a spent directory: install into a fresh scratchpad)")
+    spent = [f for f in ("qag-start", "guardl-config.json") if os.path.exists(os.path.join(d, f))]
+    spent += [f for f in (os.listdir(d) if os.path.isdir(d) else []) if f.startswith("load-") and f.endswith(".done")]
+    if spent:
+        p.append(f"b3stress holds L1 run state {sorted(spent)} (a used directory: install into a fresh scratchpad)")
     head = run(["git", "-C", a, "rev-parse", "HEAD"], capture_output=True, text=True)
     dirty = run(["git", "-C", a, "status", "--porcelain", "--untracked-files=all"], capture_output=True, text=True)
     if head.returncode != 0 or head.stdout.strip() != ALLOCATOR_COMMIT or dirty.returncode != 0 or dirty.stdout.strip():

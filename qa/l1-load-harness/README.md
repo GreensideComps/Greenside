@@ -28,9 +28,11 @@ Stage 3 (fixture) and Stage 4 (the live run) have NOT run. Every live command re
 
 ## Stage 4 runbook (`l1/window.sh`; needs its own approval)
 
-One state directory: `$S/b3stress`, the B3 harness installed by `qa/b3-stress-harness/install.sh "$S"` with the allocator worktree
-at e917bb5 in `$S/b3qa` (B3 README). The B3 scripts are used unchanged, so the tails, `gate.sh` and `restore.sh` write straight into it.
+One state directory: `$S/b3stress`, the B3 harness installed by `window.sh install S` (the unchanged B3 `install.sh`, which
+replaces `__SCRATCHPAD__` with S; refused over a used L1 state directory) with the allocator worktree at e917bb5 in `$S/b3qa`. The B3 scripts are used unchanged, so the tails, `gate.sh` and `restore.sh` write straight into it.
 
+    l1/window.sh install S                                                # offline: B3 install.sh (resolves __SCRATCHPAD__ to S)
+    git worktree add --detach S/b3qa e917bb504a07bf19543555cd037281e1b9e47683 && (cd S/b3qa/greenside-entry-allocator && npm ci)
     l1/window.sh prelive S PLAN-BOUND.json PLAN_SHA                       # read-only; nothing deployed
     l1/window.sh live    S PLAN-BOUND.json PLAN_SHA LOAD-QAL-750-ORDERS-1650-ENTRIES
 

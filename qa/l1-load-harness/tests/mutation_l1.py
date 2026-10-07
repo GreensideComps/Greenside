@@ -13,7 +13,8 @@ G, F, LD, CM, CL, SH, ST, CA, RS, GU, GS, SS, RC, RQ, MF, LM = (
     "l1/regsql.py", "l1/guardl.py", "l1/guardl.sh", "l1/shopsnapl.py", "l1/loadrecon.py", "l1/recon.sql", "l1/manifest.py",
     "l1/loadmetrics.py")
 LW, WS = "l1/livewin.py", "l1/window.sh"
-SFW, SFL, SFS, SFR = "StageFourWorkerTests", "StageFourWorkersLogsTests", "StageFourStateFileTests", "StageFourRunbookTests"
+SFW, SFL, SFS, SFR, SFI = ("StageFourWorkerTests", "StageFourWorkersLogsTests", "StageFourStateFileTests", "StageFourRunbookTests",
+                           "StageFourInstallTests")
 GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
     "GovernorTests", "FailWatchTests", "DriverGateTests", "ClampTests", "SamplerTests", "StageCanaryTests", "ReconTests",
     "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests",
@@ -56,6 +57,8 @@ MUTANTS = [
     ("window.sh: driver refusal not restoring", WS, '[ "$LRC" = 2 ] && { log "load.py refused before any mutation -> manual-stop"; touch "$D/manual-stop"; }', "true", [SFR]),
     ("window.sh: no restore when the guard is gone", WS, 'log "no running guard: strict restore directly"; bash "$H/window.sh" restore "$S"', ":", [SFR]),
     ("window.sh: Workers Logs poller left running after a failed gate", WS, 'kill "$(cat "$D/poll-wl.pid")" 2>/dev/null; abort gate', "abort gate", [SFR]),
+    ("window.sh: install over a used L1 state directory", WS, '[ -e "$m" ] && { echo "REFUSED: $D is a used L1 state directory', 'false && { echo "REFUSED: $D is a used L1 state directory', [SFI]),
+    ("livewin: used state directory passes the install check", LW, "    if spent:\n", "    if False:\n", [SFI]),
     ("window.sh: pre-live checks skipped before the gate", WS, 'prelive\nif [ "$CMD" = prelive ]', 'if [ "$CMD" = prelive ]', [SFR]),
     # known-canary exclusion (Stage 2 follow-up)
     ("canex: canary excluded by tag instead of exact id", CM, [('pop = [o for o in orders if not is_known_canary_order(o.get("id"))]', 'pop = [o for o in orders if "QAL-CANARY" not in (o.get("tags") or [])]'), ('return pop, [o for o in orders if is_known_canary_order(o.get("id"))]', 'return pop, [o for o in orders if "QAL-CANARY" in (o.get("tags") or [])]')], None, [CEX]),
@@ -202,7 +205,7 @@ def run_one(desc, path, old, new, classes, base):
 def main(argv):
     sel = argv[argv.index("-k") + 1] if "-k" in argv else ""
     ms = [m for m in MUTANTS if sel in m[0]]
-    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX, SFW, SFL, SFS, SFR]
+    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX, SFW, SFL, SFS, SFR, SFI]
     _, st, _ = run_one("baseline", "l1/common.py", 'PREFIX = "QAL"', 'PREFIX = "QAL"', every, None)
     if st != "SURVIVED":
         print("BASELINE FAILED: the unmutated copy does not pass its own tests; kills would be meaningless")

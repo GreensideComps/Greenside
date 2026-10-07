@@ -6,6 +6,9 @@
 # guardl.sh and load.py. ONE state directory: D=$S/b3stress (the installed B3 directory), so gate.sh / restore.sh / the tails
 # write newver.txt, gate.txt, t0.txt, restorever.txt, pre.jsonl, pre2.jsonl, conf.jsonl exactly where load.py and guardl read them.
 #
+#   window.sh install S                        offline: the EXISTING qa/b3-stress-harness/install.sh into S (it resolves __SCRATCHPAD__
+#                                              to S in every B3 script), refused over a spent L1 state directory; then the
+#                                              install check. The allocator worktree at e917bb5 + npm ci stay the B3 README steps.
 #   window.sh prelive S PLAN PLAN_SHA          read-only: install, Worker (DRY_RUN true), monitors, state files, slot, sweeps,
 #                                              continuity, no webhooks, D1 = reference, drafts OPEN. Nothing is deployed.
 #   window.sh live S PLAN PLAN_SHA PHRASE      PHRASE = LOAD-QAL-750-ORDERS-1650-ENTRIES. prelive again, then: Workers Logs
@@ -43,6 +46,16 @@ finish() {   # after the gate, on every path: the verified restore, then the B3 
 stop_after_gate() {
   log "ABORT after the gate ($1): $2 -> manual-stop (the guard restores DRY_RUN=true)"; touch "$D/manual-stop"; finish; exit 3
 }
+
+if [ "$CMD" = install ]; then
+  for m in "$D"/load-*.done "$D"/qag-start "$D"/guardl-config.json; do
+    [ -e "$m" ] && { echo "REFUSED: $D is a used L1 state directory ($(basename "$m")); install into a fresh scratchpad"; exit 2; }
+  done
+  bash "$H/../../b3-stress-harness/install.sh" "$S" || exit 2
+  $LW install-check --scratchpad "$S" && exit 0
+  echo "installed; remaining before prelive: the problems listed above (B3 README: git worktree add --detach $S/b3qa e917bb5; npm ci)"
+  exit 2
+fi
 
 if [ "$CMD" = restore ]; then
   exec 9>>"$D/restore.lock"; flock -w 1800 9 || { echo "restore lock not acquired"; exit 1; }

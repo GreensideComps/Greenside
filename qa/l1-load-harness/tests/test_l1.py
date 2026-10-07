@@ -2405,7 +2405,7 @@ class StageFourRunbookTests(unittest.TestCase):
         self.assertEqual(idx, sorted(idx), c)
         for bg in ("livewin poll-worker", "sampler.py", "guardl.sh"):        # started after the config, all running before GO
             self.assertTrue(self.first(c, "livewin config") < self.first(c, bg) < self.first(c, "load.py"), bg)
-        self.assertLess(self.first(c, "livewin poll-wl"), self.first(c, "livewin config"))
+        self.assertIn("livewin poll-wl", " ".join(c))     # started before gate.sh; its order is proven by wl-from-ms <= t0 below
         self.assertEqual(sum(1 for x in c if x == "restore.sh"), 1, "exactly one restore deploy")
         self.assertEqual(sum(1 for x in c if x == "gate.sh"), 1)
         self.assertIn(f"confirm={CONFIRM_LIVE}", next(x for x in c if x.startswith("load.py")))
@@ -2487,6 +2487,55 @@ class StageFourRunbookTests(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.D, "manual-stop")))
         idx = [self.first(c, o) for o in ("load.py", "guard restore", "restore.sh", "guard verified", "postcheck.sh")]
         self.assertEqual(idx, sorted(idx), c)
+
+
+
+class StageFourInstallTests(unittest.TestCase):
+    """__SCRATCHPAD__ is resolved by the EXISTING B3 install.sh, run by window.sh install; a used L1 state directory is refused."""
+
+    def setUp(self):
+        self.S = tempfile.mkdtemp(prefix="l1inst-")
+        self.env = {k: v for k, v in os.environ.items() if not any(t in k for t in ("TOKEN", "SECRET", "CLIENT_ID", "ACCOUNT"))}
+        self.env.update(HTTPS_PROXY="http://127.0.0.1:9", https_proxy="http://127.0.0.1:9", PYTHONDONTWRITEBYTECODE="1")
+
+    def tearDown(self):
+        shutil.rmtree(self.S, ignore_errors=True)
+
+    def install(self):
+        return subprocess.run(["bash", os.path.join(L1, "window.sh"), "install", self.S], env=self.env, capture_output=True, text=True,
+                              timeout=120)
+
+    def test_I01_install_resolves_the_placeholder(self):
+        r = self.install()
+        self.assertEqual(r.returncode, 2, "the allocator worktree is still to be added, so the install check reports it")
+        self.assertIn("installed into", r.stdout)
+        D = os.path.join(self.S, "b3stress")
+        for f in ("gate.sh", "restore.sh", "strictgate.sh", "postcheck.sh", "dsnap.sh", "evidence.py"):
+            t = open(os.path.join(D, f)).read()
+            self.assertNotIn("__SCRATCHPAD__", t, f)
+            self.assertIn(self.S, t, f)
+        probs = json.loads(r.stdout.strip().splitlines()[-2])["problems"]
+        self.assertTrue(probs and all("allocator worktree" in p for p in probs), probs)
+        os.makedirs(os.path.join(self.S, "b3qa", "greenside-entry-allocator", "node_modules"))
+        fake_git = lambda cmd, **kw: subprocess.CompletedProcess(cmd, 0, livewin.ALLOCATOR_COMMIT + "\n" if "rev-parse" in cmd else "", "")
+        self.assertEqual(livewin.install_problems(self.S, run=fake_git), [])
+        dirty = lambda cmd, **kw: subprocess.CompletedProcess(cmd, 0, livewin.ALLOCATOR_COMMIT + "\n" if "rev-parse" in cmd else " M src/x.ts\n", "")
+        self.assertTrue(livewin.install_problems(self.S, run=dirty), "a dirty worktree is refused")
+        with open(os.path.join(D, "gate.sh"), "a") as f:
+            f.write("# __SCRATCHPAD__\n")
+        self.assertTrue(any("placeholder" in p for p in livewin.install_problems(self.S, run=fake_git)))
+
+    def test_I02_used_state_directory_is_never_reinstalled(self):
+        self.install()
+        D = os.path.join(self.S, "b3stress")
+        for used in (f"load-{L1_CID}.done", "qag-start", "guardl-config.json"):
+            open(os.path.join(D, used), "w").close()
+            r = self.install()
+            self.assertEqual(r.returncode, 2)
+            self.assertIn("REFUSED", r.stdout)
+            self.assertTrue(os.path.exists(os.path.join(D, used)), "install.sh never ran over the used directory")
+            self.assertTrue(any("L1 run state" in p for p in livewin.install_problems(self.S)), used)
+            os.remove(os.path.join(D, used))
 
 
 if __name__ == "__main__":
