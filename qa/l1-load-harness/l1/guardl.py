@@ -194,7 +194,9 @@ class Guard:
     def tick(self, now, inp):
         """inp: events [webhook events], throttled [ts], wl {events, complete}|None, sampler {ts, subs_ts, subs_ok}|None,
         d1_count {ts, allocated}|None, allowlist {ts, deviations}|None, worker {dry_run, production_present, restored_verified},
-        manual_stop, load_safety_file, driver {started, done, last_sent_ts, completed_units}.
+        manual_stop, load_safety_file, driver {started, done, last_sent_ts, completed_units, baseline_units}. Drained means the
+        L1 pool holds exactly baseline_units (the plan's baseline: 0 in run 1, 13 in run 2) + completed_units; a missing
+        baseline_units never drains (the deadline then restores).
         Stage 4 wiring: worker is the newest livewin.py reading {ts, read_ok, production_present, dry_run, versions,
         expected_version}; wl is a list (or one) of livewin.py Workers Logs windows {from_ms, to_ms, complete, events}; wl_from_ms
         is where Workers Logs coverage must start. The guard is LIVE from its first tick until a restore is requested: the window
@@ -284,7 +286,8 @@ class Guard:
         # drain
         if drv.get("done") and self.restore_reason is None:
             units = drv.get("completed_units")
-            if self.allocated is not None and units is not None and self.allocated == units:
+            base = drv.get("baseline_units")
+            if self.allocated is not None and units is not None and isinstance(base, int) and self.allocated == base + units:
                 self.drained, self.verdict = True, "DRAINED"
                 self.restore_reason = "PLANNED: drained"
             elif drv.get("last_sent_ts") is not None and now - drv["last_sent_ts"] > DRAIN_DEADLINE_S:
@@ -380,7 +383,7 @@ def collect(d, now=None, d1_query=None):
     inp["driver"] = {"started": (min(r["t_send"] for r in sent) if sent else (now if started else None)),
                      "done": os.path.exists(os.path.join(d, "load-summary.json")),
                      "last_sent_ts": max((r["t_send"] for r in sent), default=None),
-                     "completed_units": sum(x["qty"] for x in succ)}
+                     "completed_units": sum(x["qty"] for x in succ), "baseline_units": cfg.get("baseline_units")}
     w = last_jsonl(os.path.join(d, "worker-poll.jsonl"))
     if w is not None:
         inp["worker"] = w

@@ -6,7 +6,7 @@ a Worker or sends a Shopify mutation. window.sh sequences it; the QA Worker is c
 The L1 state directory is the installed B3 directory ($S/b3stress), so the existing tails (pre.jsonl, pre2.jsonl, conf.jsonl),
 heartbeat, gate.sh outputs (newver.txt, gate.txt, t0.txt) and restore.sh outputs land in it unchanged.
 
-  install-check  --scratchpad S                      B3 harness installed in S/b3stress; allocator worktree clean at e917bb5
+  install-check  --scratchpad S                      B3 harness installed in S/b3stress; allocator worktree clean at 610e189
   worker-read    --state-dir D [--expect FILE]       one QA Worker reading (JSON) using fire.py's read-only GETs
   worker-before  --state-dir D                       pre-gate: production absent, DRY_RUN "true", one version at 100% ->
                                                      worker-before.json + dry-version.txt
@@ -22,6 +22,7 @@ heartbeat, gate.sh outputs (newver.txt, gate.txt, t0.txt) and restore.sh outputs
   prelive-sweeps --state-dir D --since-ms MS --dry-version V   B3 prestrict.py + evidence.py continuity, unchanged rules
                                                      (exit 3 = the required sweeps are not captured yet: wait for a later slot)
   no-webhooks    --state-dir D --since-ms MS         exit 0 iff no tail saw a /webhooks/ request since MS (B3 hooks.py)
+  phrase         --plan P --plan-sha S               prints the exact live confirmation phrase of a valid plan (run 1 or run 2)
   check-state    --state-dir D --plan P --plan-sha S --phase prelive|guarded|armed|final
                                                      every required state file -> window-state-PHASE.json
   verify-restore --state-dir D                       prints exactly "true" iff restored: restoregate.txt PASSED, DRY_RUN "true"
@@ -34,8 +35,8 @@ import argparse, json, os, re, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, HERE)
-from common import (CAPACITY, N_ORDERS, ORDER_TAG, PREFIX, START_NUMBER, Refused, canonical, plan_hash, read_json,  # noqa: E402
-                    scrub, sha256_file, validate_plan, write_json)
+from common import (CAPACITY, ORDER_TAG, PREFIX, START_NUMBER, Refused, canonical, confirm_live, expected_orders, plan_baseline,  # noqa: E402
+                    plan_hash, read_json, scrub, sha256_file, validate_plan, write_json)
 import guardl  # noqa: E402
 from guardl import WL_LAG_S, WL_POLL_S, WORKER_POLL_S, WORKER_STALE_S, allowlist, d1_snapshot, tail_events, tail_objects  # noqa: E402
 from failwatch import FailWatch  # noqa: E402
@@ -51,7 +52,7 @@ ARMING_MAX_AGE_S = 1200                # fire.py check_live_gates: arming 0..120
 GUARD_FRESH_S = 10.0                   # load.py FileSignals: guardl.json older than 10 s is a SAFETY reason
 TAIL_FRESH_S = 30                      # a tail file not written for 30 s while the 4 s heartbeat runs is not live
 EVIDENCE_PENDING_BUDGET_S = 170        # goliveb.sh: PENDING (tail gap awaiting Workers Logs) waited for at most ~170 s
-ALLOCATOR_COMMIT = "e917bb504a07bf19543555cd037281e1b9e47683"   # gate.sh / restore.sh refuse any other allocator checkout
+ALLOCATOR_COMMIT = "610e1899f352c09848c3bbc79630a0a9289d5658"   # gate.sh / restore.sh refuse any other allocator checkout (A1: race fix)
 VERSION_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 
@@ -237,29 +238,66 @@ def drafts_open(client, plan, plan_sha, now, sleep=time.sleep):
             "problem_count": len(probs)}
 
 
-def registration_problems(snap, cid):
-    """The QA D1 reference must hold exactly the fresh L1 registration and pass the guard's own allow-list against itself."""
+def _num(gid):
+    return str(gid).rsplit("/", 1)[-1]
+
+
+def registration_problems(snap, cid, plan=None):
+    """The QA D1 reference must hold exactly the L1 registration as the run expects it, and pass the guard's own allow-list
+    against itself. Run 1: the fresh pool (every number AVAILABLE, never issued, no allocation). Run 2 (a plan with a baseline):
+    exactly the baseline orders' allocations holding the lowest baseline-units numbers once each, with one ALLOCATED event per
+    held number, and every other number AVAILABLE and never issued."""
     p = []
+    base = plan_baseline(plan or {})
     comp = [c for c in snap.get("competitions") or [] if str(c.get("competition_id")) == cid]
     if len(comp) != 1:
         return [f"{len(comp)} competition rows for {cid}"]
     c = comp[0]
     if (c.get("status"), c.get("prefix"), c.get("capacity"), c.get("start_number")) != ("OPEN", PREFIX, CAPACITY, START_NUMBER):
         p.append(f"competition {cid} is {c.get('status')}/{c.get('prefix')}/{c.get('capacity')}/{c.get('start_number')}")
+    allocs = [a for a in snap.get("allocations") or [] if str(a[2]) == cid]
     ents = [e for e in snap.get("entries") or [] if str(e[0]) == cid]
-    exp = [[cid, START_NUMBER + k, f"{PREFIX}{START_NUMBER + k}", "AVAILABLE", None, 0] for k in range(CAPACITY)]
-    if [[str(e[0]), e[1], e[2], e[3], e[4], e[8]] for e in ents] != exp:
-        p.append(f"L1 pool is not exactly {PREFIX}{START_NUMBER}..{PREFIX}{START_NUMBER + CAPACITY - 1} AVAILABLE, never issued")
-    if [a for a in snap.get("allocations") or [] if str(a[2]) == cid]:
-        p.append("L1 competition already has allocations")
+    if not base["rows"]:
+        exp = [[cid, START_NUMBER + k, f"{PREFIX}{START_NUMBER + k}", "AVAILABLE", None, 0] for k in range(CAPACITY)]
+        if [[str(e[0]), e[1], e[2], e[3], e[4], e[8]] for e in ents] != exp:
+            p.append(f"L1 pool is not exactly {PREFIX}{START_NUMBER}..{PREFIX}{START_NUMBER + CAPACITY - 1} AVAILABLE, never issued")
+        if allocs:
+            p.append("L1 competition already has allocations")
+        return p
+    want = {(_num(r["order_gid"]), _num(r["line_item_gid"])): r for r in base["rows"]}
+    got = {(str(a[3]), str(a[6])): a for a in allocs}
+    if set(got) != set(want) or len(allocs) != len(want):
+        p.append(f"L1 allocations are not exactly the {len(want)} baseline orders ({len(allocs)} found)")
+    for k, a in got.items():
+        r = want.get(k)
+        if r and (a[4] != r["order_name"] or a[10] != r["qty"] or a[12] != r["qty"] * a[11] or a[13] != a[12] or a[23] != "ALLOCATED"):
+            p.append(f"baseline allocation {a[4]} is not {r['order_name']} ALLOCATED holding {r['qty']}")
+    aids = {a[0] for a in allocs}
+    last = START_NUMBER + base["units"] - 1
+    exp = [[cid, START_NUMBER + k, f"{PREFIX}{START_NUMBER + k}"] for k in range(CAPACITY)]
+    if [[str(e[0]), e[1], e[2]] for e in ents] != exp:
+        p.append(f"L1 pool is not exactly {PREFIX}{START_NUMBER}..{PREFIX}{START_NUMBER + CAPACITY - 1}")
+    held = [e for e in ents if e[1] <= last]
+    if any(e[3] != "ALLOCATED" or e[4] not in aids or e[8] != 1 for e in held) or len(held) != base["units"]:
+        p.append(f"baseline numbers {PREFIX}{START_NUMBER}..{PREFIX}{last} are not each held once by a baseline allocation")
+    if any(e[3] != "AVAILABLE" or e[4] is not None or e[8] != 0 for e in ents if e[1] > last):
+        p.append(f"L1 pool above {PREFIX}{last} is not AVAILABLE and never issued")
+    by_aid = {}
+    for e in held:
+        by_aid[e[4]] = by_aid.get(e[4], 0) + 1
+    if any(by_aid.get(a[0], 0) != a[13] for a in allocs):
+        p.append("a baseline allocation's held_count differs from the numbers it holds")
+    evs = [e for e in snap.get("events") or [] if str(e[2]) == cid]
+    if len(evs) != base["units"] or any(e[7] != "ALLOCATED" or e[5] not in aids for e in evs):
+        p.append(f"L1 events are not exactly {base['units']} ALLOCATED events of the baseline allocations")
     return p
 
 
-def d1_reference(d1_query, cid, pre_max):
+def d1_reference(d1_query, cid, pre_max, plan=None):
     snap = d1_snapshot(d1_query, open(SNAP_SQL).read())
     if snap is None:
         raise Refused("QA D1 snapshot read failed")
-    p = registration_problems(snap, cid) + allowlist(snap, snap, cid, [], pre_max)
+    p = registration_problems(snap, cid, plan) + allowlist(snap, snap, cid, [], pre_max)
     if p:
         raise Refused("QA D1 reference not the expected registered state: " + "; ".join(p[:5]))
     return snap
@@ -279,7 +317,8 @@ def guardl_config(plan, plan_sha, pre_max, wl_from_ms, restore_cmd, verify_cmd, 
     if not isinstance(pre_max, int) or not isinstance(wl_from_ms, int) or not restore_cmd or not verify_cmd:
         raise Refused("guardl config incomplete")
     return {"competition_id": str(plan["competition_id"]), "pre_max_order_number": pre_max, "repo": repo,
-            "restore_cmd": restore_cmd, "verify_cmd": verify_cmd, "wl_from_ms": wl_from_ms, "plan_sha256": plan_sha}
+            "restore_cmd": restore_cmd, "verify_cmd": verify_cmd, "wl_from_ms": wl_from_ms, "plan_sha256": plan_sha,
+            "baseline_units": plan_baseline(plan)["units"]}
 
 
 # ---- state check -----------------------------------------------------------------------------------------------------------------
@@ -313,10 +352,10 @@ def check_state(d, plan, plan_sha, phase, now):
         if ref.get("marker") != "SW4C_SNAP":
             p.append("d1-ref.json is not a snap.sql snapshot")
         else:
-            p += ["d1-ref.json: " + x for x in registration_problems(ref, cid)]
+            p += ["d1-ref.json: " + x for x in registration_problems(ref, cid, plan)]
     dr = j("drafts-open.json")
     if dr is not None and phase != "final":
-        if dr.get("plan_sha256") != plan_sha or dr.get("open") != len(plan["rows"]) or dr.get("open") != N_ORDERS:
+        if dr.get("plan_sha256") != plan_sha or dr.get("open") != len(plan["rows"]) or dr.get("open") != expected_orders(plan):
             p.append(f"drafts-open.json: {dr.get('open')} of {len(plan['rows'])} OPEN, or for another plan")
         if not 0 <= now - float(dr.get("ts", 0)) <= PRECHECK_MAX_AGE_S:
             p.append("drafts-open.json older than 30 min")
@@ -341,6 +380,8 @@ def check_state(d, plan, plan_sha, phase, now):
                 p.append("guardl-config.json pre_max_order_number differs from pre-max-order.json")
             if not isinstance(cfg.get("wl_from_ms"), int) or not cfg.get("restore_cmd") or not cfg.get("verify_cmd"):
                 p.append("guardl-config.json incomplete (wl_from_ms / restore_cmd / verify_cmd)")
+            if cfg.get("baseline_units") != plan_baseline(plan)["units"]:
+                p.append("guardl-config.json baseline_units differs from the plan's baseline")
     if phase == "armed":
         try:
             age = now - int(_txt(_p(d, "qag-start"))) / 1000
@@ -479,7 +520,7 @@ def install_problems(s, run=subprocess.run):
     head = run(["git", "-C", a, "rev-parse", "HEAD"], capture_output=True, text=True)
     dirty = run(["git", "-C", a, "status", "--porcelain", "--untracked-files=all"], capture_output=True, text=True)
     if head.returncode != 0 or head.stdout.strip() != ALLOCATOR_COMMIT or dirty.returncode != 0 or dirty.stdout.strip():
-        p.append("allocator worktree missing, not at e917bb5, or not clean")
+        p.append("allocator worktree missing, not at 610e189, or not clean")
     if not os.path.isdir(os.path.join(a, "node_modules")):
         p.append("allocator worktree has no node_modules (npm ci)")
     return p
@@ -518,10 +559,11 @@ def main(argv=None):
     sub = p.add_subparsers(dest="cmd", required=True)
     ic = sub.add_parser("install-check"); ic.add_argument("--scratchpad", required=True)
     for name in ("worker-read", "worker-before", "poll-worker", "poll-wl", "prep", "drafts-open", "d1-same", "config", "prelive-sweeps", "no-webhooks",
-                 "check-state", "verify-restore", "final"):
+                 "check-state", "verify-restore", "final", "phrase"):
         s = sub.add_parser(name)
-        s.add_argument("--state-dir", required=True)
-        if name in ("prep", "drafts-open", "config", "check-state"):
+        if name != "phrase":
+            s.add_argument("--state-dir", required=True)
+        if name in ("prep", "drafts-open", "config", "check-state", "phrase"):
             s.add_argument("--plan", required=True); s.add_argument("--plan-sha", required=True)
         if name in ("poll-worker", "poll-wl"):
             s.add_argument("--until-file")
@@ -555,6 +597,9 @@ def main(argv=None):
             probs = install_problems(a.scratchpad)
             print(canonical({"ok": not probs, "problems": probs}))
             return 0 if not probs else 2
+        if a.cmd == "phrase":
+            print(confirm_live(load_plan(a.plan, a.plan_sha)))
+            return 0
         d = a.state_dir
         if a.cmd in ("worker-read", "worker-before", "poll-worker", "verify-restore"):
             fire = _fire()
@@ -634,11 +679,11 @@ def main(argv=None):
             write_json(_p(d, "expected-subs.json"), expected_subs(al, read_json(POLICY)))
             pm = pre_max_order(al)
             write_json(_p(d, "pre-max-order.json"), {"pre_max_order_number": pm, "ts": time.time()})
-            write_json(_p(d, "d1-ref.json"), d1_reference(_gs_d1, str(plan["competition_id"]), pm))
+            write_json(_p(d, "d1-ref.json"), d1_reference(_gs_d1, str(plan["competition_id"]), pm, plan))
         dr = drafts_open(sd, plan, a.plan_sha, time.time())
         write_json(_p(d, "drafts-open.json"), dr)
         print(canonical({k: dr[k] for k in ("open", "expected", "problem_count")}))
-        return 0 if dr["open"] == dr["expected"] == N_ORDERS else 2
+        return 0 if dr["open"] == dr["expected"] == expected_orders(plan) else 2
     except Refused as e:
         print(f"REFUSED: {e}")
         return 2

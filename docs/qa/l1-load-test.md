@@ -104,6 +104,28 @@ New checks, new numbers (none of the existing thresholds changed): Worker poll 1
 lag 60 s, stale 150 s. Known limitation: under the strict Workers Logs rule an incomplete window (for example an invocation group
 missing its record) is a LOAD STOP, which ends the staircase early; it never passes silently.
 
+## Amendment A1: run 2 on the residual fixture (offline, 7 Oct 2026; approved for offline work only)
+
+Stage 4 stopped after rows 1-8 (#1030-#1037, 13 entries QAL1001-QAL1013). The allocator race it found is fixed (610e189,
+QA-verified 7 Oct). Run 2 reuses the fixture as it stands; no restaging, no cleanup:
+
+- Plan: `load.py plan-run2` derives it offline from the approved run-1 plan (sha256 `6fa7442b…`): rows 9-750 unchanged (742
+  orders, 1,637 units, mix 294×1, 224×2, 150×3, 59×5, 15×10), `"run": 2`, plus a baseline block with the 8 Stage 4 orders.
+  `validate_plan` accepts it only if the rows hash, the baseline and the source sha equal the constants pinned in `common.py`.
+  Run-2 plan sha256 `c6438b909b3037ff6e685b194d273b437f32aa19fee37a7374eeeb72bf1791ea`; phrase `LOAD-QAL-742-ORDERS-1637-ENTRIES`.
+- D1 reference: instead of a fresh pool, exactly the 8 baseline allocations holding QAL1001-QAL1013 once each with 13 ALLOCATED
+  events, and QAL1014-QAL3000 AVAILABLE and never issued. The real Stage 4 `d1-final.json` passes this rule (tested).
+- Governor budget = the plan's rows: A 50, B up to 525, C 167 (was 175). Staircase, thresholds and failwatch unchanged.
+- Guard: drained when the L1 pool holds baseline (13) + completed units; a missing baseline never drains (the deadline restores).
+- Reconciliation (`loadrecon.py`, `recon.sql` parameters, `shopsnapl.py`): the baseline orders are excluded by exact GID only, must
+  be present, their drafts COMPLETED and their allocations unchanged; the run's numbers must be exactly QAL1014..QAL(1013 + units).
+  The post-run draft read (by exact ID, as in Stage 4) must therefore cover all 750 run-1 draft GIDs (the 742 plan rows and the 8
+  baseline drafts); a listing without the baseline drafts fails `shopify.baseline_drafts_completed`.
+- Allocator pin: 610e189 (the race fix) in `livewin.py`, B3 `gate.sh`, `restore.sh`, `goliveb.sh` and both READMEs. `gate.sh` and
+  `restore.sh` differ from ef98661 only by that pin (tested).
+- Known: `d1.zero_value_lines` / recon.sql `zero_value` will FAIL again in run 2, as in Stage 4 (the allocator records
+  `line_total_minor` before the 100% discount; open item). The check is unchanged; it is reported, not suppressed.
+
 ## Open design points before Stage 4
 
 - Resolved (amendment of 6 Oct 2026): the staircase previously reached only 3.0/s (40 s steps, 500-order cap). It now judges every

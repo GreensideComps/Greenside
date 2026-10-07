@@ -8,10 +8,12 @@
 #
 #   window.sh install S                        offline: the EXISTING qa/b3-stress-harness/install.sh into S (it resolves __SCRATCHPAD__
 #                                              to S in every B3 script), refused over a spent L1 state directory; then the
-#                                              install check. The allocator worktree at e917bb5 + npm ci stay the B3 README steps.
+#                                              install check. The allocator worktree at 610e189 + npm ci stay the B3 README steps.
 #   window.sh prelive S PLAN PLAN_SHA          read-only: install, Worker (DRY_RUN true), monitors, state files, slot, sweeps,
 #                                              continuity, no webhooks, D1 = reference, drafts OPEN. Nothing is deployed.
-#   window.sh live S PLAN PLAN_SHA PHRASE      PHRASE = LOAD-QAL-750-ORDERS-1650-ENTRIES. prelive again, then: Workers Logs
+#   window.sh live S PLAN PLAN_SHA PHRASE      PHRASE = the plan's run phrase (livewin.py phrase): run 1
+#                                              LOAD-QAL-750-ORDERS-1650-ENTRIES, run 2 LOAD-QAL-742-ORDERS-1637-ENTRIES.
+#                                              prelive again, then: Workers Logs
 #                                              poller, gate.sh, guardl-config.json, Worker poller, sampler, guardl.sh, guard
 #                                              clear, pre-GO check, arm (qag-start), state check, load.py live, wait for the
 #                                              guard's verified restore, dsnap.sh d1-final, postcheck.sh, final failwatch.
@@ -23,7 +25,7 @@
 # postcheck.sh and the final failwatch.
 set -u
 CMD="${1:?command}"; S="${2:?scratchpad}"; D="$S/b3stress"; A="$S/b3qa/greenside-entry-allocator"; H="$(cd "$(dirname "$0")" && pwd)"
-LW="python3 $H/livewin.py"; PHRASE_LIVE="LOAD-QAL-750-ORDERS-1650-ENTRIES"
+LW="python3 $H/livewin.py"
 ts() { date -u +%T; }; nowms() { date -u +%s%3N; }
 log() { echo "$(ts) $*" | tee -a "$D/window.log"; }
 abort() { log "ABORT ($1): $2"; exit "${3:-2}"; }
@@ -53,7 +55,7 @@ if [ "$CMD" = install ]; then
   done
   bash "$H/../../b3-stress-harness/install.sh" "$S" || exit 2
   $LW install-check --scratchpad "$S" && exit 0
-  echo "installed; remaining before prelive: the problems listed above (B3 README: git worktree add --detach $S/b3qa e917bb5; npm ci)"
+  echo "installed; remaining before prelive: the problems listed above (B3 README: git worktree add --detach $S/b3qa 610e189; npm ci)"
   exit 2
 fi
 
@@ -65,6 +67,11 @@ fi
 
 PLAN="${3:?bound plan}"; SHA="${4:?plan sha256}"
 [ "$CMD" = prelive ] || [ "$CMD" = live ] || { echo "unknown command $CMD"; exit 2; }
+# Nothing runs without a known phrase; the exact phrase for THIS plan's run is then required below.
+if [ "$CMD" = live ]; then
+  case "${5:-}" in LOAD-QAL-750-ORDERS-1650-ENTRIES|LOAD-QAL-742-ORDERS-1637-ENTRIES) ;; *) echo "REFUSED: confirmation phrase missing or wrong"; exit 2;; esac
+fi
+PHRASE_LIVE=$($LW phrase --plan "$PLAN" --plan-sha "$SHA") || { echo "REFUSED: plan invalid or not the approved sha256"; exit 2; }
 if [ "$CMD" = live ] && [ "${5:-}" != "$PHRASE_LIVE" ]; then echo "REFUSED: confirmation phrase missing or wrong"; exit 2; fi
 [ -d "$D" ] || { echo "REFUSED: $D missing (install the B3 harness first)"; exit 2; }
 

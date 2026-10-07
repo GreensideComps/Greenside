@@ -15,6 +15,7 @@ G, F, LD, CM, CL, SH, ST, CA, RS, GU, GS, SS, RC, RQ, MF, LM = (
 LW, WS = "l1/livewin.py", "l1/window.sh"
 SFW, SFL, SFS, SFR, SFI = ("StageFourWorkerTests", "StageFourWorkersLogsTests", "StageFourStateFileTests", "StageFourRunbookTests",
                            "StageFourInstallTests")
+RTT = "RunTwoTests"                    # amendment A1: run 2 on the residual fixture
 GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
     "GovernorTests", "FailWatchTests", "DriverGateTests", "ClampTests", "SamplerTests", "StageCanaryTests", "ReconTests",
     "RegisterTests", "GuardTests", "ShopsnapTests", "ObservabilityTests", "ManifestRehearsalTests", "PlanTests",
@@ -22,6 +23,51 @@ GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX = (
 
 # (description, file, old, new, test classes)
 MUTANTS = [
+    # amendment A1: run 2 plan (common.py)
+    ("A1 plan: run-2 rows not pinned", CM, "if sha256_text(canonical(rows)) != RUN2_ROWS_SHA:", "if False:", [RTT]),
+    ("A1 plan: run-2 baseline not pinned", CM, 'if plan.get("baseline") != run2_baseline():', "if False:", [RTT]),
+    ("A1 plan: run-2 source plan not pinned", CM, 'if plan.get("derived_from") != RUN1_PLAN_SHA:', "if False:", [RTT]),
+    ("A1 plan: run-2 competition not pinned", CM, 'if str(plan.get("competition_id")) != L1_COMPETITION_ID:', "if False:", [RTT]),
+    ("A1 plan: run-2 header not checked", CM, 'if plan.get("orders") != RUN2_N_ORDERS or plan.get("units") != RUN2_UNITS:', "if False:", [RTT]),
+    ("A1 plan: unbound run-2 plan accepted", CM, 'if not bound:\n            p.append("a run-2 plan is always bound")', 'if False:\n            p.append("a run-2 plan is always bound")', [RTT]),
+    ("A1 plan: run-1 plan may carry a baseline", CM, 'if run == 1 and "baseline" in plan:', "if False:", [RTT]),
+    ("A1 plan: run 2 takes the run-1 phrase", CM, '"confirm": CONFIRM_LIVE_RUN2}', '"confirm": CONFIRM_LIVE}', [RTT]),
+    ("A1 plan: derivation accepts another source plan", CM, "if plan_hash(run1) != RUN1_PLAN_SHA:", "if False:", [RTT]),
+    ("A1 plan: derivation ignores the Stage 4 rows", CM, "if head != [(i, q, d) for i, q, d, _, _, _ in RUN2_BASELINE_ROWS]:", "if False:", [RTT]),
+    ("A1 plan: baseline split by tag instead of exact id", CM, 'return [o for o in orders if o.get("id") not in gids], [o for o in orders if o.get("id") in gids]', 'return [o for o in orders if not any(t.startswith("QAL-000") for t in o.get("tags") or [])], [o for o in orders if any(t.startswith("QAL-000") for t in o.get("tags") or [])]', [RTT]),
+    # amendment A1: D1 reference and state (livewin.py)
+    ("A1 livewin: baseline allocation set not checked", LW, "if set(got) != set(want) or len(allocs) != len(want):", "if False:", [RTT]),
+    ("A1 livewin: baseline allocation detail not checked", LW, 'if r and (a[4] != r["order_name"]', 'if False and (a[4] != r["order_name"]', [RTT]),
+    ("A1 livewin: baseline numbers not checked", LW, 'if any(e[3] != "ALLOCATED" or e[4] not in aids or e[8] != 1 for e in held) or len(held) != base["units"]:', "if False:", [RTT]),
+    ("A1 livewin: pool above baseline not checked", LW, 'if any(e[3] != "AVAILABLE" or e[4] is not None or e[8] != 0 for e in ents if e[1] > last):', "if False:", [RTT]),
+    ("A1 livewin: per-allocation held numbers not checked", LW, "if any(by_aid.get(a[0], 0) != a[13] for a in allocs):", "if False:", [RTT]),
+    ("A1 livewin: baseline events not checked", LW, 'if len(evs) != base["units"] or any(e[7] != "ALLOCATED" or e[5] not in aids for e in evs):', "if False:", [RTT]),
+    ("A1 livewin: config baseline mismatch accepted", LW, 'if cfg.get("baseline_units") != plan_baseline(plan)["units"]:', "if False:", [RTT]),
+    ("A1 livewin: config carries no baseline", LW, '"baseline_units": plan_baseline(plan)["units"]}', '"baseline_units": 0}', [RTT]),
+    # amendment A1: guard drain (guardl.py)
+    ("A1 guard: drain ignores the baseline", GU, "self.allocated == base + units:", "self.allocated == units:", [RTT]),
+    ("A1 guard: missing baseline drains", GU, "isinstance(base, int) and self.allocated == base + units:", "self.allocated == (base or 0) + units:", [RTT]),
+    ("A1 guard: collect drops the baseline", GU, '"baseline_units": cfg.get("baseline_units")}', '"baseline_units": 0}', [RTT]),
+    # amendment A1: driver (load.py)
+    ("A1 load: governor budget not the plan", LD, 'return Governor(approve_t, approve_t2, n_orders=len(plan["rows"]))', "return Governor(approve_t, approve_t2)", [RTT]),
+    ("A1 load: live uses a default governor", LD, "gov = governor_for(plan, a.approve_t, a.approve_t2)", "gov = Governor(a.approve_t, a.approve_t2)", [RTT]),
+    # amendment A1: reconciliation (loadrecon.py, shopsnapl.py)
+    ("A1 recon: baseline orders not excluded", RC, "orders, base_orders = split_baseline_orders(orders, plan)", "base_orders = []", [RTT]),
+    ("A1 recon: baseline presence not checked", RC, 'ck("shopify.baseline_orders_present_by_id", sorted(', 'ck("shopify.baseline_orders_present_by_id", True or sorted(', [RTT]),
+    ("A1 recon: baseline drafts not checked", RC, 'ck("shopify.baseline_drafts_completed", all(', 'ck("shopify.baseline_drafts_completed", True or all(', [RTT]),
+    ("A1 recon: baseline allocations not checked", RC, 'ck("d1.baseline_allocations_unchanged", {', 'ck("d1.baseline_allocations_unchanged", True or {', [RTT]),
+    ("A1 recon: pool counts ignore the baseline", RC, "len(alloc_rows) == bu + units and len(avail_rows) == CAPACITY - bu - units", "len(alloc_rows) == units and len(avail_rows) == CAPACITY - units", [RTT]),
+    ("A1 recon: number range ignores the baseline", RC, "last = START_NUMBER + bu + units - 1", "last = START_NUMBER + units - 1", [RTT]),
+    ("A1 recon: baseline numbers matched to run events", RC, "for e in alloc_rows if e[E_AID] not in base_aids}", "for e in alloc_rows}", [RTT]),
+    ("A1 recon: stage count includes the baseline", RC, '"d1_units": len(alloc_rows) - bu', '"d1_units": len(alloc_rows)', [RTT]),
+    ("A1 recon: SQL parameters ignore the baseline", RC, "u, o = baseline_units + units, baseline_orders + orders", "u, o = units, orders", [RTT]),
+    ("A1 shopsnap: baseline not excluded", SS, "orders, base = split_baseline_orders(orders, plan)", "base = []", [RTT]),
+    ("A1 shopsnap: missing baseline not reported", SS, 'if missing:\n        probs.append(f"baseline order(s) missing', 'if False:\n        probs.append(f"baseline order(s) missing', [RTT]),
+    # amendment A1: runbook (window.sh)
+    ("A1 window.sh: unknown phrase reaches livewin", WS, 'LOAD-QAL-742-ORDERS-1637-ENTRIES) ;; *) echo "REFUSED: confirmation phrase missing or wrong"; exit 2;; esac', "LOAD-QAL-742-ORDERS-1637-ENTRIES) ;; *) ;; esac", [SFR]),
+    ("A1 window.sh: invalid plan not refused", WS, 'PHRASE_LIVE=$($LW phrase --plan "$PLAN" --plan-sha "$SHA") || { echo "REFUSED: plan invalid or not the approved sha256"; exit 2; }', 'PHRASE_LIVE=$($LW phrase --plan "$PLAN" --plan-sha "$SHA")', [SFR]),
+    # amendment A1: allocator pin
+    ("A1 pin: livewin back on the pre-fix allocator", LW, 'ALLOCATOR_COMMIT = "610e1899f352c09848c3bbc79630a0a9289d5658"', 'ALLOCATOR_COMMIT = "e917bb504a07bf19543555cd037281e1b9e47683"', [RTT]),
     # Stage 4 wiring: QA Worker input fails closed (guardl)
     ("wiring: missing Worker input not a stop", GU, "if now - (self.last_worker if self.last_worker is not None else self.t0) > WORKER_STALE_S:", "if False:", [SFW]),
     ("wiring: unverified production presence accepted", GU, 'if w.get("production_present") is not False:', 'if w.get("production_present") is True:', [SFW]),
@@ -44,7 +90,7 @@ MUTANTS = [
     ("livewin: several DRY_RUN bindings read as the first", LW, 'r["dry_run"] = dry[0] if len(dry) == 1 else (None if not dry else "<multiple>")', 'r["dry_run"] = dry[0] if dry else None', [SFW]),
     ("livewin: incomplete Workers Logs window advances coverage", LW, 'if w["complete"]:\n            self.next = hi + 1\n        return w', "self.next = hi + 1\n        return w", [SFL]),
     ("livewin: non-OPEN draft counted as open", LW, 'elif n.get("status") != "OPEN":', "elif False:", [SFS]),
-    ("livewin: D1 reference not checked", LW, "p = registration_problems(snap, cid) + allowlist(snap, snap, cid, [], pre_max)", "p = []", [SFS]),
+    ("livewin: D1 reference not checked", LW, "p = registration_problems(snap, cid, plan) + allowlist(snap, snap, cid, [], pre_max)", "p = []", [SFS]),
     ("livewin: stale drafts-open accepted", LW, 'if not 0 <= now - float(dr.get("ts", 0)) <= PRECHECK_MAX_AGE_S:', "if False:", [SFS]),
     ("livewin: guard reasons ignored at arming", LW, 'if g.get("safety") or g.get("load") or g.get("actions"):', "if False:", [SFS]),
     ("livewin: restore verified without the restore gate", LW, 'if _txt(_p(d, "restoregate.txt")) != "PASSED" or not rv:', "if not rv:", [SFW]),
@@ -109,7 +155,7 @@ MUTANTS = [
     ("load: resend after a non-success", LD, "        outcome, rid = classify(st, h, body)\n", "        outcome, rid = classify(st, h, body)\n        if outcome != \"SUCCESS\":\n            st, h, body = client.post(MUTATION, {\"id\": row[\"draft_id\"]})\n            outcome, rid = classify(st, h, body)\n", [GOV]),
     ("load: marker not exclusive", LD, "fd = os.open(marker, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)", "fd = os.open(marker, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)", [DRV]),
     ("load: marker check removed", LD, 'if os.path.exists(marker):\n        raise Refused(f"one-shot marker exists', 'if False:\n        raise Refused(f"one-shot marker exists', [DRV]),
-    ("load: phrase check removed", LD, 'if confirm != CONFIRM_LIVE:\n        raise Refused("confirmation phrase missing or wrong")\n    probs', 'if False:\n        raise Refused("x")\n    probs', [DRV]),
+    ("load: phrase check removed", LD, 'if confirm != confirm_live(plan):\n        raise Refused("confirmation phrase missing or wrong")\n    if plan_hash', 'if False:\n        raise Refused("x")\n    if plan_hash', [DRV]),
     ("load: plan sha check removed", LD, "if plan_hash(plan) != expected_sha:", "if False:", [DRV]),
     ("load: exception after send not flagged unknown", LD, '            with lock:\n                flags["unknown"] = True\n            evidence.add("request", rec)\n            return', '            evidence.add("request", rec)\n            return', [GOV]),
     ("load: missing request id counted as delivery", LD, 'if not rid:\n        return "UNKNOWN", rid', "if False:\n        pass", [GOV, DRV]),
@@ -205,7 +251,7 @@ def run_one(desc, path, old, new, classes, base):
 def main(argv):
     sel = argv[argv.index("-k") + 1] if "-k" in argv else ""
     ms = [m for m in MUTANTS if sel in m[0]]
-    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX, SFW, SFL, SFS, SFR, SFI]
+    every = [GOV, FW, DRV, CLA, SAM, STC, REC, REG, GRD, SNP, OBS, MAN, PLN, AMD, CEX, SFW, SFL, SFS, SFR, SFI, RTT]
     _, st, _ = run_one("baseline", "l1/common.py", 'PREFIX = "QAL"', 'PREFIX = "QAL"', every, None)
     if st != "SURVIVED":
         print("BASELINE FAILED: the unmutated copy does not pass its own tests; kills would be meaningless")

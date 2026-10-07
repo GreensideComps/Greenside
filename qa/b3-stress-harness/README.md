@@ -24,7 +24,7 @@ from the environment and never prints them.
 S=<this session's scratchpad directory>
 qa/b3-stress-harness/install.sh "$S"   # refuses a directory that holds a consumed fire-*.done marker
 # allocator worktree used by gate/restore/supervisor (wrangler), at the approved commit:
-git -C /home/user/Greenside worktree add --detach "$S/b3qa" e917bb504a07bf19543555cd037281e1b9e47683
+git -C /home/user/Greenside worktree add --detach "$S/b3qa" 610e1899f352c09848c3bbc79630a0a9289d5658
 (cd "$S/b3qa/greenside-entry-allocator" && npm ci)
 bash "$S/b3stress-selftest-cmds/run-all.sh"   # expected 216/216 offline (49 + 5 + 4 + 43 Workers Logs --no-real + 9 + 4 + 102 fire.py)
 python3 "$S/b3stress-selftest-cmds/wlreal_recent.py" "$S/b3obs"   # optional, read-only: live Workers Logs on a rolling 35-min window

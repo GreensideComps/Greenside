@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """L1 offline tests (Stage 1). No network, no Shopify, no D1, no Worker: every external is a fake or a local SQLite database built
-from the allocator's own migrations (git show e917bb5). Test names carry the requirement number (R01..R38) they prove.
+from the allocator's own migrations (git show 610e189). Test names carry the requirement number (R01..R38) they prove.
 Run: python3 -m unittest -v test_l1   (from this directory)  or  ../run-tests.sh"""
 import contextlib, hashlib, io, json, os, random, shutil, sqlite3, subprocess, sys, tempfile, unittest
 from unittest import mock
@@ -19,8 +19,10 @@ import clamp as clampmod, rehearse, shop  # noqa: E402,E401
 from governor import Governor, Signals  # noqa: E402
 from sim import FakeClock, SimClient, World  # noqa: E402
 
-ALLOC_COMMIT = "e917bb5"
+ALLOC_COMMIT = "610e189"   # A1: the race-fix commit; its migrations are identical to e917bb5's
 L1_CID = "999000111"
+A1_COMMON_SHA = "09974da37791ff9118ec1446783abb6153426705fb2c007e30925e1b6ea185fb"     # amendment A1: re-pinned after review (test_S06)
+A1_LOAD_SHA = "8a726d6bc20906a571c5a71d60354eb396169ef91c279eefd2c57c30bcd2ce4e"
 PINNED_PLAN_SHA = "a0f6f0117e756db0540eb76d07ba626be7ec2adde786c7b628e4727fb0c34b04"   # sha256 of the canonical 750-row template; any change to the plan is a reviewed change
 
 
@@ -32,6 +34,13 @@ def bound_plan(cid=L1_CID):
         r["draft_id"] = f"gid://shopify/DraftOrder/{900000 + r['index']}"
         r["draft_name"] = f"#D{1000 + r['index']}"
     return p
+
+
+def git_show(rev, rel):
+    r = subprocess.run(["git", "-C", GIT_REPO, "show", f"{rev}:{rel}"], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError(f"cannot read {rel} at {rev}: {r.stderr[:200]}")
+    return r.stdout
 
 
 def tmpdir():
@@ -1401,7 +1410,7 @@ class GuardTests(unittest.TestCase):
     def base(self, now, **kw):
         d = {"sampler": {"ts": now, "subs_ts": now, "subs_ok": True}, "d1_count": {"ts": now, "allocated": kw.pop("allocated", 0)},
              "worker": good_worker(now), "wl": [], "wl_from_ms": int(now * 1000),
-             "driver": {"started": 0.0, "done": False, "last_sent_ts": None, "completed_units": 0}}
+             "driver": {"started": 0.0, "done": False, "last_sent_ts": None, "completed_units": 0, "baseline_units": 0}}
         d.update(kw)
         return d
 
@@ -1446,11 +1455,13 @@ class GuardTests(unittest.TestCase):
 
     def test_drain_complete_deadline_and_no_progress(self):
         g = guardl.Guard()
-        g.tick(100.0, self.base(100.0, allocated=1000, driver={"started": 0.0, "done": True, "last_sent_ts": 90.0, "completed_units": 1650}))
-        out = g.tick(130.0, self.base(130.0, allocated=1650, driver={"started": 0.0, "done": True, "last_sent_ts": 90.0, "completed_units": 1650}))
+        g.tick(100.0, self.base(100.0, allocated=1000, driver={"started": 0.0, "done": True, "last_sent_ts": 90.0, "completed_units": 1650,
+                                                                "baseline_units": 0}))
+        out = g.tick(130.0, self.base(130.0, allocated=1650, driver={"started": 0.0, "done": True, "last_sent_ts": 90.0, "completed_units": 1650,
+                                                                     "baseline_units": 0}))
         self.assertEqual((out["verdict"], out["drained"], out["actions"]), ("DRAINED", True, ["RESTORE_DRY_RUN"]))
         g = guardl.Guard()
-        drv = {"started": 0.0, "done": True, "last_sent_ts": 0.0, "completed_units": 1650}
+        drv = {"started": 0.0, "done": True, "last_sent_ts": 0.0, "completed_units": 1650, "baseline_units": 0}
         for t in range(0, 1860, 30):
             out = g.tick(float(t), self.base(float(t), allocated=1000 + t // 3, driver=drv))
         self.assertEqual(out["verdict"], "DRAIN_DEADLINE")
@@ -2182,7 +2193,9 @@ class StageFourStateFileTests(unittest.TestCase):
         self.assertEqual((out["safety"], out["load"], out["actions"]), ([], [], []))
         # the guard config carries the restore/verify commands guardl.sh runs and the Workers Logs start
         cfg = json.load(open(os.path.join(self.d, "guardl-config.json")))
-        self.assertEqual(set(cfg), {"competition_id", "pre_max_order_number", "repo", "restore_cmd", "verify_cmd", "wl_from_ms", "plan_sha256"})
+        self.assertEqual(set(cfg), {"competition_id", "pre_max_order_number", "repo", "restore_cmd", "verify_cmd", "wl_from_ms", "plan_sha256",
+                                    "baseline_units"})
+        self.assertEqual(cfg["baseline_units"], 0, "a run-1 plan has no baseline")
         with self.assertRaises(Refused):
             livewin.guardl_config(self.plan, self.sha, 1029, None, "r", "v")
 
@@ -2202,21 +2215,33 @@ class StageFourStateFileTests(unittest.TestCase):
         self.assertTrue(os.path.exists(P("failwatch-final.json")))
 
     def test_S06_governor_thresholds_and_b3_mechanisms_unchanged(self):
-        """The wiring changes no governor, threshold, failwatch rule, driver or B3 live-control script (sha256 at ef98661)."""
+        """The wiring changes no governor, threshold, failwatch rule, driver or B3 live-control script (sha256 at ef98661).
+        Amendment A1 (7 Oct 2026, reviewed): common.py and load.py gained the run-2 profile (re-pinned below, every ef98661
+        constant still equal); gate.sh and restore.sh differ from ef98661 ONLY by the allocator pin e917bb5 -> 610e189."""
         pinned = {
             "qa/l1-load-harness/l1/governor.py": "eb86ffb442089c1dab49ba6ae9be303d49e9dfd862794d808eee896c4663f7f9",
-            "qa/l1-load-harness/l1/common.py": "9248e02bb11f7ef4d5ddac11557982c5ab361e0f63a50238816df5e6e8741853",
+            "qa/l1-load-harness/l1/common.py": A1_COMMON_SHA,
             "qa/l1-load-harness/l1/failwatch.py": "23f9b2c115b78beb78208ca42655edc3f4039d2bd2d58b28709600b4ad5c26bd",
-            "qa/l1-load-harness/l1/load.py": "d7e81f31452cb08006be6384963d2fef76d8a333866756caeee201897fd4998e",
+            "qa/l1-load-harness/l1/load.py": A1_LOAD_SHA,
             "qa/l1-load-harness/l1/sampler.py": "9a41c6c126835a4027d0e92da8d92e9065da762b6bfe63f63e7b0bd44aa3f55a",
-            "qa/b3-stress-harness/b3stress/gate.sh": "93a1d7f3603ab734da25b5c620c655aefd23f59f1f3ac24406982f780e0998e1",
-            "qa/b3-stress-harness/b3stress/restore.sh": "73926f0fb951d8ca232816188502be8e6afc44ae81074d4b562eafc9badc54e5",
             "qa/b3-stress-harness/b3stress/strictgate.sh": "6d0a3ecbf7c260ac64faa8542d84987b2f121bbbf71d54a4cfa2084fce0c6f76",
             "qa/b3-stress-harness/b3stress/fire.py": "a68efef2cd0e7fed87402d6df917461205db987a68fee42a91ba5469942c4ca7",
             "qa/b3-stress-harness/b3obs/obsq.py": "98a56e2ec29b6a4ba9995c310c0dc86f6e3744d8b5026ca88a15fba87c82525b",
         }
         for rel, sha in pinned.items():
             self.assertEqual(common.sha256_file(os.path.join(REPO, rel)), sha, rel)
+        old_pin, new_pin = "e917bb504a07bf19543555cd037281e1b9e47683", "610e1899f352c09848c3bbc79630a0a9289d5658"
+        for rel in ("qa/b3-stress-harness/b3stress/gate.sh", "qa/b3-stress-harness/b3stress/restore.sh"):
+            before = git_show("ef98661", rel)
+            self.assertIn(old_pin, before, rel)
+            self.assertEqual(open(os.path.join(REPO, rel)).read(),
+                             before.replace(old_pin, new_pin).replace("not clean at e917bb5", "not clean at 610e189"), rel)
+        old = {}
+        exec(compile(git_show("ef98661", "qa/l1-load-harness/l1/common.py"), "common@ef98661", "exec"), old)
+        consts = [k for k in old if k.isupper() and not k.startswith("_")]
+        self.assertGreater(len(consts), 40)
+        for k in consts:
+            self.assertEqual(getattr(common, k), old[k], f"common.{k} changed")
 
 
 # ---- window.sh, run end to end in a sandbox: real window.sh and real livewin.py, stubbed network and stubbed B3 scripts ----------
@@ -2382,6 +2407,19 @@ class StageFourRunbookTests(unittest.TestCase):
             self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
         self.assertEqual(self.calls(), [], "nothing at all runs without the phrase")
 
+    def test_A1_R01_run1_plan_with_run2_phrase_refused(self):
+        r = self.window("live", self.S, self.planf, self.sha, common.CONFIRM_LIVE_RUN2)
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertIn("confirmation phrase missing or wrong", r.stdout)
+        self.assertEqual(self.calls(), [f"livewin phrase --plan --plan-sha {self.sha}"], "only the read-only plan phrase lookup ran")
+
+    def test_A1_R02_bad_plan_sha_refused_before_anything(self):
+        for cmd, extra in (("prelive", []), ("live", [CONFIRM_LIVE])):
+            r = self.window(cmd, self.S, self.planf, "0" * 64, *extra)
+            self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+            self.assertIn("REFUSED: plan invalid", r.stdout)
+        self.assertEqual(self.calls(), [f"livewin phrase --plan --plan-sha {'0' * 64}"] * 2)
+
     def test_R02_prelive_deploys_nothing(self):
         r = self.window("prelive", self.S, self.planf, self.sha)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
@@ -2536,6 +2574,342 @@ class StageFourInstallTests(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(D, used)), "install.sh never ran over the used directory")
             self.assertTrue(any("L1 run state" in p for p in livewin.install_problems(self.S)), used)
             os.remove(os.path.join(D, used))
+
+
+
+# ---- amendment A1 (7 Oct 2026): run 2 on the residual fixture -------------------------------------------------------------------
+EVID = os.path.join(HERE, "..", "evidence")
+RUN1_PLAN_FILE = os.path.join(EVID, "stage3-2026-10-07", "plan-bound.json")
+RUN2_PLAN_SHA = "c6438b909b3037ff6e685b194d273b437f32aa19fee37a7374eeeb72bf1791ea"   # presented for review (A2)
+CID2 = common.L1_COMPETITION_ID
+
+
+def run1_plan():
+    return json.load(open(RUN1_PLAN_FILE))
+
+
+def run2_plan():
+    return common.derive_run2_plan(run1_plan())
+
+
+def parsed(snap):
+    return {k: (json.loads(v) if isinstance(v, str) and v[:1] in "[{" else v) for k, v in snap.items()}
+
+
+def gidnum(g):
+    return str(g).rsplit("/", 1)[-1]
+
+
+class World742:
+    """Run 2: QA D1 (allocator migrations), the unrelated QAE allocation, the QAL registration as Stage 4 left it (the 8 baseline
+    orders holding QAL1001..QAL1013, one event each), then n run-2 orders allocated lowest-first in a shuffled order."""
+
+    def __init__(self, n_orders=742, baseline=True):
+        self.conn = c = sqlite3.connect(":memory:")
+        for m in migrations():
+            c.executescript(m)
+        c.executescript(regsql.competition_sql("15897614614902", "2026-09-20T10:00:00.000Z").replace("'QAL'", "'QAE'").replace("2000, 4", "3, 4"))
+        for s in range(1001, 1004):
+            c.execute("INSERT INTO entry_number (competition_id, seq, entry_number, status, allocation_seq) VALUES (?, ?, ?, 'AVAILABLE', 0)",
+                      ("15897614614902", s, f"QAE{s}"))
+        c.execute("UPDATE competition SET status='OPEN' WHERE competition_id='15897614614902'")
+        World750._alloc(self, "15897614614902", "13500000000001", "#1001", "36000000000001", 1, "QAE", [1001], "2026-09-20T11:00:00.000Z")
+        for name, sql in regsql.build(CID2, "2026-10-07T10:00:00.000Z"):
+            c.executescript(sql)
+        self.plan = run2_plan()
+        nxt = 1001
+        if baseline:
+            for r in self.plan["baseline"]["rows"]:
+                World750._alloc(self, CID2, gidnum(r["order_gid"]), r["order_name"], gidnum(r["line_item_gid"]), r["qty"], "QAL",
+                                list(range(nxt, nxt + r["qty"])), f"2026-10-07T12:02:{30 + r['index']:02d}.000Z")
+                nxt += r["qty"]
+        self.pre = snapshot(c)
+        rows = self.plan["rows"][:n_orders]
+        order = list(range(len(rows)))
+        random.Random(12).shuffle(order)
+        for k in order:
+            r = rows[k]
+            World750._alloc(self, CID2, oid(r["index"]), f"#{1100 + r['index']}", lid(r["index"]), r["qty"], "QAL",
+                            list(range(nxt, nxt + r["qty"])), f"2026-10-08T11:{k // 60 % 60:02d}:{k % 60:02d}.000Z")
+            nxt += r["qty"]
+        self.rows = rows
+
+    def order(self, gid, name, tag, line_gid, qty):
+        return {"id": gid, "name": name, "test": False, "cancelledAt": None, "displayFinancialStatus": "PAID",
+                "tags": ["qa-load", "QAL", tag], "totalPriceSet": {"shopMoney": {"amount": "0.0"}},
+                "totalTaxSet": {"shopMoney": {"amount": "0.0"}},
+                "lineItems": {"nodes": [{"id": line_gid, "quantity": qty, "product": {"id": self.plan["product_gid"]}}]}}
+
+    def inputs(self):
+        done = {r["index"] for r in self.rows}
+        orders = [self.order(r["order_gid"], r["order_name"], r["tag"], r["line_item_gid"], r["qty"]) for r in self.plan["baseline"]["rows"]]
+        drafts = [{"id": r["draft_id"], "status": "COMPLETED"} for r in self.plan["baseline"]["rows"]]
+        driver = []
+        for r in self.plan["rows"]:
+            drafts.append({"id": r["draft_id"], "status": "COMPLETED" if r["index"] in done else "OPEN"})
+            if r["index"] in done:
+                driver.append({"kind": "request", "index": r["index"], "draft_id": r["draft_id"], "qty": r["qty"], "outcome": "SUCCESS",
+                               "shopify_request_id": f"req-{r['index']}", "t_send": 1.0})
+                orders.append(self.order(f"gid://shopify/Order/{oid(r['index'])}", f"#{1100 + r['index']}", r["tag"],
+                                         f"gid://shopify/LineItem/{lid(r['index'])}", r["qty"]))
+        units = sum(r["qty"] for r in self.rows)
+        wl = [{"webhook_id": f"wh-{oid(r['index'])}", "run_id": f"run-{oid(r['index'])}"} for r in self.rows]
+        return {"plan": self.plan, "driver": driver, "orders": orders, "drafts": drafts, "d1_pre": self.pre,
+                "d1_post": snapshot(self.conn), "product": {"inventoryQuantity": 1637 - units, "stock_start": 1637}, "wl": wl}
+
+    def sql(self, baseline=(13, 8)):
+        units = sum(r["qty"] for r in self.rows)
+        p = loadrecon.params_for(CID2, units, len(self.rows), *baseline)
+        return {x["check"]: x["result"] for x in loadrecon.run_sql(self.conn, p)}
+
+
+class RunTwoTests(unittest.TestCase):
+    """Amendment A1: L1 run 2 completes the 742 drafts Stage 4 left OPEN, against the QAL pool as Stage 4 left it."""
+
+    # ---- the plan
+    def test_A1_01_run2_plan_derived_exactly_from_the_approved_run1_plan(self):
+        r1, r2 = run1_plan(), run2_plan()
+        self.assertEqual(plan_hash(r1), common.RUN1_PLAN_SHA)
+        self.assertEqual(plan_hash(r2), RUN2_PLAN_SHA, "the run-2 plan presented for review")
+        self.assertEqual(validate_plan(r2, bound=True), [])
+        self.assertEqual(r2["rows"], r1["rows"][8:], "rows 9..750 unchanged: same indexes, quantities, tags and draft GIDs")
+        self.assertEqual((len(r2["rows"]), sum(r["qty"] for r in r2["rows"]), r2["orders"], r2["units"]), (742, 1637, 742, 1637))
+        self.assertEqual((r2["run"], r2["derived_from"], r2["competition_id"]), (2, common.RUN1_PLAN_SHA, CID2))
+        for k in ("prefix", "start_number", "capacity", "product_gid", "variant_gid", "seed"):
+            self.assertEqual(r2[k], r1[k], k)
+        self.assertEqual([(b["index"], b["qty"], b["draft_id"]) for b in r2["baseline"]["rows"]],
+                         [(r["index"], r["qty"], r["draft_id"]) for r in r1["rows"][:8]])
+        self.assertEqual(r2["baseline"]["units"], 13)
+        self.assertFalse(set(common.baseline_draft_gids(r2)) & {r["draft_id"] for r in r2["rows"]}, "no baseline draft is re-sent")
+        self.assertEqual(common.derive_run2_plan(r1), r2, "deterministic")
+        self.assertEqual((common.expected_orders(r2), common.expected_orders(r1)), (742, 750))
+        self.assertEqual((common.confirm_live(r2), common.confirm_live(r1)),
+                         ("LOAD-QAL-742-ORDERS-1637-ENTRIES", "LOAD-QAL-750-ORDERS-1650-ENTRIES"))
+
+    def test_A1_02_derivation_refusals(self):
+        r1 = run1_plan()
+        bad = json.loads(json.dumps(r1))
+        bad["rows"][100]["draft_id"] = "gid://shopify/DraftOrder/1"
+        with self.assertRaises(Refused):
+            common.derive_run2_plan(bad)                       # not the approved run-1 plan
+        with self.assertRaises(Refused):
+            common.derive_run2_plan(run2_plan())               # a run-2 plan is not a run-1 source
+        swapped = json.loads(json.dumps(r1))
+        swapped["rows"][2]["draft_id"], swapped["rows"][20]["draft_id"] = swapped["rows"][20]["draft_id"], swapped["rows"][2]["draft_id"]
+        with mock.patch.object(common, "RUN1_PLAN_SHA", plan_hash(swapped)):
+            with self.assertRaises(Refused):
+                common.derive_run2_plan(swapped)               # rows 1..8 are not the pinned Stage 4 drafts
+
+    def test_A1_03_run2_validation_is_exact(self):
+        good = run2_plan()
+        self.assertEqual(validate_plan(good, bound=True), [])
+        self.assertTrue(validate_plan(good, bound=False), "a run-2 plan is always bound")
+
+        def mut(f):
+            p = json.loads(json.dumps(good))
+            f(p)
+            return validate_plan(p, bound=True)
+        cases = {
+            "baseline row dropped": lambda p: p["baseline"]["rows"].pop(),
+            "baseline qty changed": lambda p: p["baseline"]["rows"][2].update(qty=4),
+            "baseline order GID changed": lambda p: p["baseline"]["rows"][0].update(order_gid="gid://shopify/Order/1"),
+            "baseline units changed": lambda p: p["baseline"].update(units=0),
+            "row draft swapped": lambda p: p["rows"][5].update(draft_id=p["rows"][6]["draft_id"]),
+            "row dropped": lambda p: p["rows"].pop(),
+            "baseline row re-added": lambda p: p["rows"].insert(0, dict(run1_plan()["rows"][7])),
+            "derived from another plan": lambda p: p.update(derived_from="0" * 64),
+            "another competition": lambda p: p.update(competition_id="15918227030391"),
+            "header units": lambda p: p.update(units=1650),
+            "unknown run": lambda p: p.update(run=3),
+            "run 1 with a baseline": lambda p: p.update(run=1),
+        }
+        for name, f in cases.items():
+            self.assertTrue(mut(f), name)
+        r1 = run1_plan()
+        r1["baseline"] = good["baseline"]
+        self.assertIn("a run-1 plan carries no baseline", validate_plan(r1, bound=True))
+        self.assertEqual(validate_plan(bound_plan(), bound=True), [], "run 1 unchanged")
+
+    def test_A1_04_phrase_gates(self):
+        d = tmpdir()
+        marker = os.path.join(d, "load-x.done")
+        r1, r2 = bound_plan(), run2_plan()
+        load.check_offline_gates(r2, RUN2_PLAN_SHA, common.CONFIRM_LIVE_RUN2, marker)
+        load.check_offline_gates(r1, plan_hash(r1), CONFIRM_LIVE, marker)
+        for plan, sha, phrase in ((r2, RUN2_PLAN_SHA, CONFIRM_LIVE), (r1, plan_hash(r1), common.CONFIRM_LIVE_RUN2),
+                                  (r2, RUN2_PLAN_SHA, "LOAD-QAL-742-ORDERS"), (r2, plan_hash(r1), common.CONFIRM_LIVE_RUN2)):
+            with self.assertRaises(Refused):
+                load.check_offline_gates(plan, sha, phrase, marker)
+        shutil.rmtree(d)
+        self.assertEqual(common.CONFIRM_LIVE_RUN2, "LOAD-QAL-742-ORDERS-1637-ENTRIES")
+
+    def test_A1_05_governor_budget_is_the_plan(self):
+        g = load.governor_for(run2_plan())
+        self.assertEqual((g.n_orders, g.budget["total"], g.budget["A"], g.budget["B_max"], g.budget["C_min"]), (742, 742, 50, 525, 167))
+        self.assertEqual(load.governor_for(bound_plan()).budget["C_min"], 175, "run 1 unchanged")
+        self.assertEqual(common.STAIRCASE, (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0), "staircase unchanged")
+        import inspect
+        self.assertIn('gov = governor_for(plan, a.approve_t, a.approve_t2)', inspect.getsource(load.live))
+        r = sim_run(plan=run2_plan(), gov=load.governor_for(run2_plan()))
+        self.assertEqual(r["summary"]["dispatched"], 742)
+        self.assertEqual(len(r["world"].completed), 742)
+
+    # ---- the D1 reference (baseline state)
+    def test_A1_06_real_stage4_d1_is_exactly_the_run2_baseline(self):
+        snap = parsed(json.load(open(os.path.join(EVID, "stage4-2026-10-07", "d1-final.json"))))
+        r2 = run2_plan()
+        self.assertEqual(livewin.registration_problems(snap, CID2, r2), [])
+        self.assertEqual(guardl.allowlist(snap, snap, CID2, [], 1038), [])
+        self.assertTrue(livewin.registration_problems(snap, CID2, run1_plan()), "the fresh-pool rule (run 1) rejects it")
+        self.assertTrue(livewin.registration_problems(snap, CID2), "no plan = run-1 rule")
+
+    def test_A1_07_real_stage4_orders_are_the_pinned_baseline(self):
+        import gzip
+        inp = json.load(gzip.open(os.path.join(EVID, "stage4-2026-10-07", "recon-input.json.gz")))
+        got = sorted((o["id"], o["name"], ((o["lineItems"]["nodes"])[0])["id"], ((o["lineItems"]["nodes"])[0])["quantity"],
+                      next(t for t in o["tags"] if t.startswith("QAL-0"))) for o in inp["orders"] if o["name"] != "#1029")
+        want = sorted((r["order_gid"], r["order_name"], r["line_item_gid"], r["qty"], r["tag"]) for r in run2_plan()["baseline"]["rows"])
+        self.assertEqual(got, want)
+        self.assertEqual(sorted(r[2] for r in common.RUN2_BASELINE_ROWS),
+                         sorted(r["draft_id"] for r in inp["plan"]["rows"][:8]))
+
+    def test_A1_08_baseline_reference_refusals(self):
+        r2 = run2_plan()
+        w = World742(n_orders=0)
+        self.assertEqual(livewin.registration_problems(snapshot(w.conn), CID2, r2), [])
+        cases = []
+        w1 = World742(n_orders=0)                       # an extra (non-baseline) L1 allocation
+        World750._alloc(w1, CID2, "13609999999999", "#1099", "39999999999999", 1, "QAL", [1014], "x")
+        cases.append(("extra allocation", w1))
+        w2 = World742(n_orders=0)                       # a baseline number released
+        w2.conn.execute(f"UPDATE entry_number SET status='AVAILABLE', allocation_id=NULL WHERE competition_id='{CID2}' AND seq=1005")
+        cases.append(("baseline number released", w2))
+        w3 = World742(n_orders=0)                       # a number above the baseline issued once already
+        w3.conn.execute(f"UPDATE entry_number SET allocation_seq=1 WHERE competition_id='{CID2}' AND seq=1500")
+        cases.append(("number above baseline issued before", w3))
+        w4 = World742(n_orders=0)                       # a baseline event missing
+        w4.conn.execute(f"DELETE FROM entry_event WHERE competition_id='{CID2}' AND seq=1013")
+        cases.append(("baseline event missing", w4))
+        w5 = World742(n_orders=0)                       # a baseline allocation's quantity changed
+        w5.conn.execute(f"UPDATE allocation SET ordered_quantity=3 WHERE competition_id='{CID2}' AND order_name='#1030'")
+        cases.append(("baseline allocation changed", w5))
+        w6 = World742(n_orders=0, baseline=False)       # the fresh pool is not the run-2 baseline
+        cases.append(("no baseline", w6))
+        w7 = World742(n_orders=0)                       # a baseline allocation held_count drifted
+        w7.conn.execute(f"UPDATE allocation SET held_count=1, target_count=1, ordered_quantity=1 WHERE competition_id='{CID2}' AND order_name='#1032'")
+        cases.append(("held_count drift", w7))
+        w8 = World742(n_orders=0)                       # a number moved from one baseline allocation to another
+        w8.conn.execute(f"UPDATE entry_number SET allocation_id=(SELECT allocation_id FROM allocation WHERE order_name='#1030') "
+                        f"WHERE competition_id='{CID2}' AND seq=1003")
+        cases.append(("number held by the wrong baseline allocation", w8))
+        for name, ww in cases:
+            self.assertTrue(livewin.registration_problems(snapshot(ww.conn), CID2, r2), name)
+
+    # ---- the guard
+    def test_A1_09_guard_drains_on_baseline_plus_completed(self):
+        G = GuardTests()
+        drv = lambda base: {"started": 0.0, "done": True, "last_sent_ts": 90.0, "completed_units": 1637, "baseline_units": base}
+        g = guardl.Guard()
+        out = g.tick(100.0, G.base(100.0, allocated=1637, driver=drv(13)))
+        self.assertFalse(out["drained"], "1637 held is 13 short of baseline + completed")
+        out = g.tick(130.0, G.base(130.0, allocated=1650, driver=drv(13)))
+        self.assertEqual((out["verdict"], out["drained"]), ("DRAINED", True))
+        g = guardl.Guard()
+        for t in range(0, 700, 30):
+            out = g.tick(float(t), G.base(float(t), allocated=1637, driver=drv(None)))
+        self.assertFalse(out["drained"], "a missing baseline never drains")
+        self.assertEqual(livewin.guardl_config(run2_plan(), RUN2_PLAN_SHA, 1038, 1, "r", "v")["baseline_units"], 13)
+
+    def test_A1_10_state_check_uses_the_plan(self):
+        d = tmpdir()
+        r2 = run2_plan()
+        P = lambda n: os.path.join(d, n)
+        common.write_json(P("drafts-open.json"), {"plan_sha256": RUN2_PLAN_SHA, "open": 742, "ts": 1000.0})
+        common.write_json(P("guardl-config.json"), livewin.guardl_config(r2, RUN2_PLAN_SHA, 1038, 1, "r", "v"))
+        probs, _ = livewin.check_state(d, r2, RUN2_PLAN_SHA, "final", 1000.0)
+        self.assertFalse([x for x in probs if "drafts-open" in x or "baseline_units" in x], probs)
+        probs, _ = livewin.check_state(d, r2, RUN2_PLAN_SHA, "guarded", 1000.0)
+        self.assertFalse([x for x in probs if "drafts-open" in x or "baseline_units" in x], probs)
+        common.write_json(P("drafts-open.json"), {"plan_sha256": RUN2_PLAN_SHA, "open": 741, "ts": 1000.0})
+        cfg = livewin.guardl_config(r2, RUN2_PLAN_SHA, 1038, 1, "r", "v")
+        cfg["baseline_units"] = 0
+        common.write_json(P("guardl-config.json"), cfg)
+        probs, _ = livewin.check_state(d, r2, RUN2_PLAN_SHA, "guarded", 1000.0)
+        self.assertTrue([x for x in probs if "drafts-open" in x], probs)
+        self.assertTrue([x for x in probs if "baseline_units" in x], probs)
+        shutil.rmtree(d)
+
+    def test_A1_15_collect_carries_the_baseline(self):
+        d = tmpdir()
+        r2 = run2_plan()
+        w = World742(n_orders=0)
+        common.write_json(os.path.join(d, "guardl-config.json"), livewin.guardl_config(r2, RUN2_PLAN_SHA, 1038, 1, "r", "v"))
+        common.write_json(os.path.join(d, "d1-ref.json"), w.pre)
+        inp = guardl.collect(d, now=1000.0, d1_query=sqlite_query(w.conn))
+        self.assertEqual((inp["driver"]["baseline_units"], inp["driver"]["completed_units"], inp["d1_count"]["allocated"]), (13, 0, 13))
+        self.assertEqual(inp["allowlist"]["deviations"], [])
+        shutil.rmtree(d)
+
+    # ---- reconciliation
+    def test_A1_11_run2_reconciliation_passes(self):
+        w = World742()
+        r = loadrecon.reconcile(w.inputs())
+        self.assertEqual(failed(r), [])
+        self.assertEqual((r["expected_orders"], r["expected_units"], r["baseline_units"]), (742, 1637, 13))
+        self.assertEqual(r["stage_counts"], {"driver_confirmed": 742, "shopify_orders": 742, "d1_allocations": 742, "d1_units": 1637,
+                                             "events": 1637})
+        self.assertEqual(r["excluded_baseline"], sorted(x["order_gid"] for x in w.plan["baseline"]["rows"]))
+        self.assertEqual(set(w.sql().values()), {"PASS"})
+        self.assertIn("FAIL", w.sql(baseline=(0, 0)).values(), "recon.sql counts the whole competition: the baseline is added")
+        part = World742(n_orders=60)
+        self.assertEqual(failed(loadrecon.reconcile(part.inputs())), [], "a stopped run: unsent rows OPEN, no order, no allocation")
+
+    def test_A1_12_run2_reconciliation_refusals(self):
+        w = World742(n_orders=40)
+        base = w.inputs()
+
+        def run(f):
+            inp = json.loads(json.dumps(base))
+            f(inp)
+            return failed(loadrecon.reconcile(inp))
+        bg = {x["order_gid"] for x in w.plan["baseline"]["rows"]}
+        self.assertIn("shopify.baseline_orders_present_by_id",
+                      run(lambda i: i.update(orders=[o for o in i["orders"] if o["id"] != sorted(bg)[0]])))
+        # a baseline-tagged order under another GID is not excluded (exact id only) and does not bind to a run-2 row
+        self.assertIn("shopify.orders_bind_to_plan", run(lambda i: i["orders"].append(dict(i["orders"][0], id="gid://shopify/Order/1"))))
+        self.assertIn("shopify.baseline_drafts_completed", run(lambda i: i["drafts"][0].update(status="OPEN")))
+
+        def alter_baseline(i):
+            a = next(a for a in i["d1_post"]["allocations"] if a[4] == "#1032")
+            a[13] = 4
+        r = run(alter_baseline)
+        self.assertIn("d1.baseline_allocations_unchanged", r)
+        # the run numbered from QAL1001 as if there were no baseline
+        nb = World742(n_orders=40, baseline=False)
+        inp = nb.inputs()
+        inp["plan"] = w.plan
+        self.assertTrue(failed(loadrecon.reconcile(inp)))
+
+    def test_A1_13_shopify_export_check_excludes_baseline_by_id_only(self):
+        w = World742(n_orders=5)
+        orders = w.inputs()["orders"] + [canary_order()]
+        bind, probs = shopsnapl.check(orders, w.plan)
+        self.assertEqual((len(bind), probs), (5, []))
+        bind, probs = shopsnapl.check(orders[1:], w.plan)
+        self.assertTrue(any("baseline order(s) missing" in x for x in probs), probs)
+        bind, probs = shopsnapl.check(orders + [dict(orders[0], id="gid://shopify/Order/2", name="#2")], w.plan)
+        self.assertTrue(any("not in the plan" in x for x in probs), probs)
+
+    # ---- pins
+    def test_A1_14_allocator_pin_is_the_race_fix(self):
+        self.assertEqual(livewin.ALLOCATOR_COMMIT, "610e1899f352c09848c3bbc79630a0a9289d5658")
+        for rel in ("qa/b3-stress-harness/b3stress/gate.sh", "qa/b3-stress-harness/b3stress/restore.sh",
+                    "qa/b3-stress-harness/b3stress/goliveb.sh", "qa/b3-stress-harness/README.md", "qa/l1-load-harness/README.md"):
+            t = open(os.path.join(REPO, rel)).read()
+            self.assertIn("610e1899f352c09848c3bbc79630a0a9289d5658", t, rel)
+            self.assertNotIn("e917bb504a07bf19543555cd037281e1b9e47683", t, rel)
+        wsh = open(os.path.join(L1, "window.sh")).read()
+        self.assertNotIn("e917bb5", wsh)
 
 
 if __name__ == "__main__":

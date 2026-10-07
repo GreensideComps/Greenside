@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""H1 load.py: the L1 load driver. Completes the 750 pre-staged QAL drafts at the rate the governor allows, each draft at most
-ONCE (no retry, no re-send, ever), until the plan is sent or a LOAD / SAFETY STOP.
+"""H1 load.py: the L1 load driver. Completes the pre-staged QAL drafts of the bound plan (run 1: 750; run 2, amendment A1: the
+742 left OPEN by Stage 4) at the rate the governor allows, each draft at most ONCE (no retry, no re-send, ever), until the plan is
+sent or a LOAD / SAFETY STOP.
 
   load.py plan-template --out FILE           deterministic 750-row plan (no network)
+  load.py plan-run2 --run1-plan FILE --out FILE
+                                             the run-2 plan derived from the approved bound run-1 plan (no network)
   load.py simulate [--cost N] --out DIR      whole driver + governor against the offline World model (no network)
   load.py live --plan BOUND.json --plan-sha SHA --state-dir DIR --confirm PHRASE [--approve-t P] [--approve-t2 P]
                --restore-cmd CMD             (Stage 4 only, separately approved)
 
-Refusals before anything is sent: confirmation phrase; bound plan valid and its sha256 equal to --plan-sha; QAL allow-list (no
+Refusals before anything is sent: confirmation phrase (exactly the plan's run phrase); bound plan valid and its sha256 equal to --plan-sha; QAL allow-list (no
 retired fixture, every draft in the plan); one-shot marker absent; T/T2 phrases exact; live gates (fire.py check_live_gates:
 production Worker absent, QA Worker single gate-passed version with DRY_RUN "false", arming age, guard running, no manual-stop);
 fresh sampler and failwatch files; drafts-open precheck for this plan sha no older than 30 min.
@@ -20,8 +23,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import (CONFIRM_LIVE, APPROVE_T, APPROVE_T2, PREFIX, Refused, allowed_draft, canonical, plan_hash, plan_template,  # noqa: E402
-                    scrub, validate_plan, write_json)
+from common import (CONFIRM_LIVE, CONFIRM_LIVE_RUN2, APPROVE_T, APPROVE_T2, PREFIX, Refused, allowed_draft, canonical,  # noqa: E402
+                    confirm_live, derive_run2_plan, expected_orders, plan_hash, plan_template, read_json, scrub, validate_plan,
+                    write_json)
 from governor import Governor, Signals  # noqa: E402
 from shop import is_throttled, throttle_of  # noqa: E402
 
@@ -102,11 +106,11 @@ class ThreadExecutor:
 
 def check_offline_gates(plan, expected_sha, confirm, marker, approve_t=None, approve_t2=None):
     """Everything that can refuse without a network call. Raises Refused."""
-    if confirm != CONFIRM_LIVE:
-        raise Refused("confirmation phrase missing or wrong")
     probs = validate_plan(plan, bound=True)
     if probs:
         raise Refused("plan invalid: " + "; ".join(probs[:5]))
+    if confirm != confirm_live(plan):
+        raise Refused("confirmation phrase missing or wrong")
     if plan_hash(plan) != expected_sha:
         raise Refused("plan sha256 differs from the approved one")
     if os.path.exists(marker):
@@ -117,6 +121,12 @@ def check_offline_gates(plan, expected_sha, confirm, marker, approve_t=None, app
         raise Refused("T2 approval phrase is wrong")
     if approve_t2 and not approve_t:
         raise Refused("T2 requires T")
+
+
+def governor_for(plan, approve_t=None, approve_t2=None):
+    """The governor for this plan: its order budget is the plan's own row count (750 in run 1, 742 in run 2), so phase C is
+    whatever the plan holds beyond A and B and the run ends when every plan row has been dispatched."""
+    return Governor(approve_t, approve_t2, n_orders=len(plan["rows"]))
 
 
 def create_marker(marker, plan_sha, now):
@@ -255,13 +265,14 @@ class FileSignals:
 def live(a):
     import importlib.util  # noqa: F401
     from shop import Client, load_fire
-    if a.confirm != CONFIRM_LIVE:
-        raise Refused("confirmation phrase missing or wrong")       # before reading or touching anything
+    if a.confirm not in (CONFIRM_LIVE, CONFIRM_LIVE_RUN2):
+        raise Refused("confirmation phrase missing or wrong")       # before reading or touching anything (exact match: below)
     plan = json.load(open(a.plan))
     marker = os.path.join(a.state_dir, f"load-{plan.get('competition_id')}.done")
     check_offline_gates(plan, a.plan_sha, a.confirm, marker, a.approve_t, a.approve_t2)
     pre = json.load(open(os.path.join(a.state_dir, "drafts-open.json")))
-    if pre.get("plan_sha256") != a.plan_sha or time.time() - pre.get("ts", 0) > PRECHECK_MAX_AGE_S or pre.get("open") != len(plan["rows"]):
+    if (pre.get("plan_sha256") != a.plan_sha or time.time() - pre.get("ts", 0) > PRECHECK_MAX_AGE_S or pre.get("open") != len(plan["rows"])
+            or pre.get("open") != expected_orders(plan)):
         raise Refused("drafts-open precheck missing, stale, for another plan, or not all drafts OPEN")
     fire = load_fire()
     gates = fire.check_live_gates(fire.CloudflareTransport(), os.environ, a.state_dir, time.time())
@@ -270,7 +281,7 @@ def live(a):
     client = Client("stress_driver", {MUTATION})
     if not client.scopes() <= {"write_draft_orders", "read_draft_orders"} or "write_draft_orders" not in client.scopes():
         raise Refused(f"Stress Driver token scopes {sorted(client.scopes())} are not exactly write_draft_orders (+implied read)")
-    gov = Governor(a.approve_t, a.approve_t2)
+    gov = governor_for(plan, a.approve_t, a.approve_t2)
     ev = Evidence(os.path.join(a.state_dir, "load-evidence.jsonl"), client.secrets)
 
     def restore():
@@ -314,6 +325,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(prog="load.py")
     sub = p.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("plan-template"); t.add_argument("--out", required=True)
+    r2 = sub.add_parser("plan-run2"); r2.add_argument("--run1-plan", required=True); r2.add_argument("--out", required=True)
     m = sub.add_parser("simulate"); m.add_argument("--out", required=True); m.add_argument("--cost", type=float, default=28.0)
     lv = sub.add_parser("live")
     for k in ("--plan", "--plan-sha", "--state-dir", "--confirm", "--restore-cmd"):
@@ -325,6 +337,12 @@ def main(argv=None):
             pl = plan_template()
             write_json(a.out, pl)
             print(f"plan template: {pl['orders']} orders, {pl['units']} units, sha256 {plan_hash(pl)}")
+            return 0
+        if a.cmd == "plan-run2":
+            pl = derive_run2_plan(read_json(a.run1_plan))
+            write_json(a.out, pl)
+            print(f"run-2 plan: {len(pl['rows'])} orders, {sum(r['qty'] for r in pl['rows'])} units, baseline "
+                  f"{pl['baseline']['units']} units, sha256 {plan_hash(pl)}, phrase {confirm_live(pl)}")
             return 0
         if a.cmd == "simulate":
             return simulate(a)

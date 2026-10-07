@@ -11,7 +11,8 @@ import argparse, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import ORDER_TAG, Refused, canonical, parse_tag, read_json, split_known_canary_orders, write_json  # noqa: E402
+from common import (ORDER_TAG, Refused, baseline_order_gids, canonical, parse_tag, read_json, split_baseline_orders,  # noqa: E402
+                    split_known_canary_orders, write_json)
 
 ORDERS_DOC = ("query L1Orders($after: String) { orders(first: 100, after: $after, query: \"tag:qa-load\", sortKey: CREATED_AT) { "
               "pageInfo { hasNextPage endCursor } nodes { id name createdAt processedAt test cancelledAt displayFinancialStatus "
@@ -54,11 +55,16 @@ def export(client, state_dir, cid):
 
 def check(orders, plan):
     """Allow-list: every tag:qa-load order maps to exactly one plan row by its QAL-NNNN-qQ tag, with one line of the L1 product
-    at the planned quantity. Returns (bindings {index: order}, problems)."""
+    at the planned quantity. The known canary and (run 2) the plan's baseline orders are excluded by exact GID only; every
+    baseline order must be present. Returns (bindings {index: order}, problems)."""
     rows = {r["index"]: r for r in plan["rows"]}
     product = plan.get("product_gid")
     bind, probs = {}, []
     orders, _excluded = split_known_canary_orders(orders)       # the one known canary, by exact GID only
+    orders, base = split_baseline_orders(orders, plan)          # run 2: the Stage 4 baseline orders, by exact GID only
+    missing = sorted(baseline_order_gids(plan) - {o.get("id") for o in base})
+    if missing:
+        probs.append(f"baseline order(s) missing: {missing[:5]}")
     for o in orders:
         tg = parse_tag(o.get("tags"))
         if ORDER_TAG not in (o.get("tags") or []):
@@ -94,7 +100,9 @@ def main(argv=None):
         r = export(Client("allocator", {ORDERS_DOC}), a.state_dir, plan["competition_id"])
         bind, probs = check(r["orders"], plan)
         _, excluded = split_known_canary_orders(r["orders"])
-        write_json(a.out, {**r, "bound": len(bind), "problems": probs, "excluded_known_canary": [o["id"] for o in excluded]})
+        _, base = split_baseline_orders(r["orders"], plan)
+        write_json(a.out, {**r, "bound": len(bind), "problems": probs, "excluded_known_canary": [o["id"] for o in excluded],
+                           "excluded_baseline": sorted(o["id"] for o in base)})
         print(canonical({"pages": r["pages"], "orders": len(r["orders"]), "bound": len(bind), "problems": len(probs)}))
         return 0 if not probs else 1
     except Refused as e:

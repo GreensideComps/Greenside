@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SW4 Phase B live gate: deploy DRY_RUN=false, fresh confirmation tail, stricter all-request gate (180s budget); on failure restore strictly.
 S=__SCRATCHPAD__; D=$S/b3stress; cd $S/b3qa/greenside-entry-allocator && export WRANGLER_SEND_METRICS=false; U=https://greenside-entry-allocator-qa.hidden-cherry-619e.workers.dev; Q="python3 $D/tailq.py"; ts() { date -u +%T; }; nowms() { date -u +%s%3N; }; rm -f $D/gate.txt
-[ "$(git rev-parse HEAD)" = e917bb504a07bf19543555cd037281e1b9e47683 ] && [ -z "$(git status --porcelain --untracked-files=all)" ] || { echo "ABORT: repo not clean at e917bb5"; exit 1; }
+[ "$(git rev-parse HEAD)" = 610e1899f352c09848c3bbc79630a0a9289d5658 ] && [ -z "$(git status --porcelain --untracked-files=all)" ] || { echo "ABORT: repo not clean at 610e189"; exit 1; }
 nowms > $D/t0.txt; echo "=== [1] deploy --env qa --var DRY_RUN:false ($(ts)) ==="; npx wrangler deploy --env qa --var DRY_RUN:false > $D/live.log 2>&1; echo "    exit=$?"; grep -E 'DRY_RUN' $D/live.log | sed 's/^/    /'
 NEW=$(grep -oE 'Current Version ID: [0-9a-f-]+' $D/live.log | awk '{print $4}'); echo "    new version: $NEW"; echo "$NEW" > $D/newver.txt; BSTART=$(date +%s)
 echo "=== [2] fresh confirmation tail; must capture a request ($(ts)) ==="; touch $D/conf-wanted; for i in $(seq 1 15); do sleep 1; [ -f $D/conf.pid ] && break; done; echo "    conf pid=$(cat $D/conf.pid 2>/dev/null)  pre alive=$(kill -0 $(cat $D/pre.pid) 2>/dev/null && echo yes || echo no)"

@@ -7,7 +7,7 @@ CFG=$D/stress.json; DRYVER=$(jq -r .dry_version $CFG); PG=$(jq -r .product_gid $
 B="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/greenside-entry-allocator-qa"; H="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
 abort() { echo "ABORT BEFORE DEPLOY ($(ts)): $*"; exit 1; }
 grep -q PLACEHOLDER $CFG && abort "stress.json still has placeholders (setup not done)"
-cd $A && [ "$(git rev-parse HEAD)" = e917bb504a07bf19543555cd037281e1b9e47683 ] && [ -z "$(git status --porcelain --untracked-files=all)" ] || abort "repo not clean"
+cd $A && [ "$(git rev-parse HEAD)" = 610e1899f352c09848c3bbc79630a0a9289d5658 ] && [ -z "$(git status --porcelain --untracked-files=all)" ] || abort "repo not clean"
 if ! pgrep -f "b3stress/supervisor.sh" >/dev/null; then date -u +%s%3N > $D/mon-start-ms.txt; setsid nohup $D/supervisor.sh $D $A >/dev/null 2>&1 < /dev/null & setsid nohup $D/heartbeat.sh $D >/dev/null 2>&1 < /dev/null & sleep 12; fi
 echo "monitoring since $(date -u -d @$(( $(cat $D/mon-start-ms.txt)/1000 )) +%T) UTC"
 shopcheck() { $D/shopsnap.sh $D/shop-$1.json $PG
