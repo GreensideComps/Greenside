@@ -52,7 +52,7 @@ MUTANTS = [
     ("window.sh: live without the phrase", WS, 'if [ "$CMD" = live ] && [ "${5:-}" != "$PHRASE_LIVE" ]; then', "if false; then", [SFR]),
     ("window.sh: restore not serialised", WS, "flock -w 1800 9 ||", "true ||", [SFR]),
     ("window.sh: verified restore deployed again", WS, 'if [ "$($LW verify-restore --state-dir "$D")" = true ]; then echo "restore already verified (no second deploy)"; exit 0; fi', ":", [SFR]),
-    ("window.sh: gate failure not stopping", WS, '[ "$(cat "$D/gate.txt" 2>/dev/null)" = PASSED ] || abort gate', "true || abort gate", [SFR]),
+    ("window.sh: gate failure not stopping", WS, 'if [ "$(cat "$D/gate.txt" 2>/dev/null)" != PASSED ]; then', "if false; then", [SFR]),
     ("window.sh: armed state check skipped", WS, '$LW check-state --state-dir "$D" --plan "$PLAN" --plan-sha "$SHA" --phase armed || stop_after_gate armed "armed state check"', "true", [SFR]),
     ("window.sh: driver refusal not restoring", WS, '[ "$LRC" = 2 ] && { log "load.py refused before any mutation -> manual-stop"; touch "$D/manual-stop"; }', "true", [SFR]),
     ("window.sh: no restore when the guard is gone", WS, 'log "no running guard: strict restore directly"; bash "$H/window.sh" restore "$S"', ":", [SFR]),
